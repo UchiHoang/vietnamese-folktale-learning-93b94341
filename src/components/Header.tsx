@@ -26,6 +26,9 @@ const Header = ({ onRoleChange, currentRole = "student" }: HeaderProps) => {
           <Link to="/" className="text-foreground hover:text-primary font-medium transition-colors">
             Trang chủ
           </Link>
+          <Link to="/lessons" className="text-foreground hover:text-primary font-medium transition-colors">
+            Bài giảng
+          </Link>
           <Link to="#about" className="text-foreground hover:text-primary font-medium transition-colors">
             Giới thiệu
           </Link>
@@ -52,8 +55,8 @@ const Header = ({ onRoleChange, currentRole = "student" }: HeaderProps) => {
             <option value="admin">Quản trị</option>
           </select>
 
-          <Button className="hidden md:flex">
-            Đăng nhập
+          <Button className="hidden md:flex" asChild>
+            <Link to="/auth">Đăng nhập</Link>
           </Button>
 
           <button
@@ -70,6 +73,9 @@ const Header = ({ onRoleChange, currentRole = "student" }: HeaderProps) => {
         <div className="md:hidden border-t bg-card p-4 space-y-3">
           <Link to="/" className="block py-2 text-foreground hover:text-primary">
             Trang chủ
+          </Link>
+          <Link to="/lessons" className="block py-2 text-foreground hover:text-primary">
+            Bài giảng
           </Link>
           <Link to="#about" className="block py-2 text-foreground hover:text-primary">
             Giới thiệu
@@ -92,7 +98,9 @@ const Header = ({ onRoleChange, currentRole = "student" }: HeaderProps) => {
             <option value="teacher">Giáo viên</option>
             <option value="admin">Quản trị</option>
           </select>
-          <Button className="w-full">Đăng nhập</Button>
+          <Button className="w-full" asChild>
+            <Link to="/auth">Đăng nhập</Link>
+          </Button>
         </div>
       )}
     </header>
