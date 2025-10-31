@@ -20,10 +20,10 @@ const ProfilePreview = () => {
               <div className="flex-1 pt-16 md:pt-20">
                 <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                   <div>
-                    <h3 className="text-2xl font-heading font-bold mb-1">
+                    <h3 className="text-2xl md:text-3xl font-heading font-bold mb-1">
                       {userProfile.name}
                     </h3>
-                    <p className="text-muted-foreground flex items-center gap-2">
+                    <p className="text-base text-muted-foreground flex items-center gap-2">
                       <User className="h-4 w-4" />
                       {userProfile.level}
                     </p>
@@ -57,7 +57,7 @@ const ProfilePreview = () => {
             </div>
 
             <div>
-              <h4 className="font-heading font-bold mb-3 flex items-center gap-2">
+              <h4 className="text-lg font-heading font-bold mb-3 flex items-center gap-2">
                 <Star className="h-5 w-5 text-primary" />
                 Huy hiệu đã đạt được
               </h4>

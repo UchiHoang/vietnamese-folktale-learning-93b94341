@@ -85,11 +85,11 @@ const ContactForm = () => {
     <section id="contact" className="py-16 md:py-20 bg-gradient-to-b from-background to-secondary/10">
       <div className="container mx-auto px-4">
         <div className="max-w-3xl mx-auto">
-          <div className="text-center mb-10">
-            <h2 className="text-3xl md:text-4xl font-heading font-bold text-primary mb-4">
+          <div className="text-center mb-12 space-y-4">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-heading font-bold">
               Liên hệ với chúng mình
             </h2>
-            <p className="text-lg text-muted-foreground">
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
               Có câu hỏi hoặc cần hỗ trợ? Chúng mình luôn sẵn sàng giúp đỡ bạn!
             </p>
           </div>
@@ -97,7 +97,7 @@ const ContactForm = () => {
           <form onSubmit={handleSubmit} className="bg-card border-4 border-accent rounded-2xl p-6 md:p-8 shadow-lg">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
               <div>
-                <label htmlFor="name" className="block text-sm font-semibold mb-2">
+                <label htmlFor="name" className="block font-semibold mb-2">
                   Họ và tên
                 </label>
                 <Input
@@ -116,7 +116,7 @@ const ContactForm = () => {
               </div>
 
               <div>
-                <label htmlFor="email" className="block text-sm font-semibold mb-2">
+                <label htmlFor="email" className="block font-semibold mb-2">
                   Email
                 </label>
                 <Input
@@ -136,7 +136,7 @@ const ContactForm = () => {
             </div>
 
             <div className="mb-6">
-              <label htmlFor="subject" className="block text-sm font-semibold mb-2">
+              <label htmlFor="subject" className="block font-semibold mb-2">
                 Chủ đề
               </label>
               <Input
@@ -155,7 +155,7 @@ const ContactForm = () => {
             </div>
 
             <div className="mb-6">
-              <label htmlFor="message" className="block text-sm font-semibold mb-2">
+              <label htmlFor="message" className="block font-semibold mb-2">
                 Tin nhắn
               </label>
               <Textarea
