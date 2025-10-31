@@ -44,17 +44,6 @@ const Header = ({ onRoleChange, currentRole = "student" }: HeaderProps) => {
         </nav>
 
         <div className="flex items-center gap-3">
-          {/* Role Switcher */}
-          <select
-            value={currentRole}
-            onChange={(e) => onRoleChange?.(e.target.value as any)}
-            className="hidden md:block px-3 py-1.5 text-sm rounded-lg border bg-background font-medium"
-          >
-            <option value="student">Học sinh</option>
-            <option value="teacher">Giáo viên</option>
-            <option value="admin">Quản trị</option>
-          </select>
-
           <Button className="hidden md:flex" asChild>
             <Link to="/auth">Đăng nhập</Link>
           </Button>
@@ -89,15 +78,6 @@ const Header = ({ onRoleChange, currentRole = "student" }: HeaderProps) => {
           <Link to="#contact" className="block py-2 text-foreground hover:text-primary">
             Liên hệ
           </Link>
-          <select
-            value={currentRole}
-            onChange={(e) => onRoleChange?.(e.target.value as any)}
-            className="w-full px-3 py-2 rounded-lg border bg-background"
-          >
-            <option value="student">Học sinh</option>
-            <option value="teacher">Giáo viên</option>
-            <option value="admin">Quản trị</option>
-          </select>
           <Button className="w-full" asChild>
             <Link to="/auth">Đăng nhập</Link>
           </Button>
