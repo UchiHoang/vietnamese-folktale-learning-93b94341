@@ -31,6 +31,12 @@ export interface StoryNode {
   assets?: {
     bg?: string;
     sprite_main_idle?: string;
+    icon?: string;
+    alt?: {
+      bg?: string;
+      sprite_main_idle?: string;
+      icon?: string;
+    };
   };
 }
 

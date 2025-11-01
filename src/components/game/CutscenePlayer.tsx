@@ -19,8 +19,32 @@ interface CutscenePlayerProps {
 export const CutscenePlayer = ({ frames, onComplete, onSkip }: CutscenePlayerProps) => {
   const [currentFrameIndex, setCurrentFrameIndex] = useState(0);
   
+  // Safety check for empty frames
+  if (!frames || frames.length === 0) {
+    return (
+      <div className="w-full h-[500px] flex items-center justify-center bg-card rounded-lg">
+        <div className="text-center space-y-4">
+          <p className="text-muted-foreground">Không có cutscene</p>
+          <Button onClick={onComplete}>Bắt đầu</Button>
+        </div>
+      </div>
+    );
+  }
+  
   const currentFrame = frames[currentFrameIndex];
   const isLastFrame = currentFrameIndex === frames.length - 1;
+  
+  // Safety check for undefined frame
+  if (!currentFrame) {
+    return (
+      <div className="w-full h-[500px] flex items-center justify-center bg-card rounded-lg">
+        <div className="text-center space-y-4">
+          <p className="text-muted-foreground">Lỗi tải cutscene</p>
+          <Button onClick={onComplete}>Bỏ qua</Button>
+        </div>
+      </div>
+    );
+  }
 
   const handleNext = () => {
     if (isLastFrame) {

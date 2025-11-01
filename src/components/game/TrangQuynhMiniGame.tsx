@@ -5,12 +5,13 @@ import { CutscenePlayer } from "./CutscenePlayer";
 import { QuestionCard } from "./QuestionCard";
 import { HudXpBar } from "./HudXpBar";
 import { BadgeModal } from "./BadgeModal";
+import { LevelSelection } from "./LevelSelection";
 import { loadStory, findActivityByRef, Activity } from "@/utils/storyLoader";
 import { useGameEngine } from "@/hooks/useGameEngine";
 import { Home, RotateCcw } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 
-type GamePhase = "prologue" | "cutscene" | "questions" | "complete";
+type GamePhase = "prologue" | "level-selection" | "cutscene" | "questions" | "complete";
 
 export const TrangQuynhMiniGame = () => {
   const navigate = useNavigate();
@@ -35,6 +36,11 @@ export const TrangQuynhMiniGame = () => {
   }, [currentNode, gamePhase]);
 
   const handlePrologueComplete = () => {
+    setGamePhase("level-selection");
+  };
+
+  const handleSelectLevel = (nodeIndex: number) => {
+    selectNode(nodeIndex);
     setGamePhase("cutscene");
   };
 
@@ -93,7 +99,7 @@ export const TrangQuynhMiniGame = () => {
     if (progress.currentNodeIndex + 1 >= story.nodes.length) {
       setGamePhase("complete");
     } else if (levelPerformance !== "retry") {
-      setGamePhase("cutscene");
+      setGamePhase("level-selection");
     } else {
       setGamePhase("questions");
     }
@@ -112,30 +118,34 @@ export const TrangQuynhMiniGame = () => {
 
   const handleRestart = () => {
     resetProgress();
-    setGamePhase("prologue");
+    setGamePhase("level-selection");
     setEarnedXpThisLevel(0);
   };
 
-  // Prologue Phase
-  if (gamePhase === "prologue") {
+  const handleBackToLevelSelection = () => {
+    setGamePhase("level-selection");
+  };
+
+  // Level Selection Phase
+  if (gamePhase === "level-selection") {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-background to-primary/5 p-4">
-        <div className="max-w-6xl mx-auto py-8">
-          <div className="text-center mb-8">
-            <h1 className="text-4xl md:text-5xl font-heading font-bold text-primary mb-4">
+      <div className="min-h-screen">
+        <div className="sticky top-0 z-50 bg-card/95 backdrop-blur border-b p-4">
+          <div className="max-w-7xl mx-auto flex justify-between items-center">
+            <h1 className="text-2xl font-heading font-bold text-primary">
               {story.meta.title}
             </h1>
-            <p className="text-lg text-muted-foreground">
-              {story.meta.description}
-            </p>
+            <Button onClick={handleExit} variant="ghost" size="sm" className="gap-2">
+              <Home className="w-4 h-4" />
+              Thoát
+            </Button>
           </div>
-          
-          <CutscenePlayer
-            frames={story.prologue}
-            onComplete={handlePrologueComplete}
-            onSkip={handlePrologueComplete}
-          />
         </div>
+        <LevelSelection
+          nodes={story.nodes}
+          progress={progress}
+          onSelectLevel={handleSelectLevel}
+        />
       </div>
     );
   }
@@ -187,15 +197,25 @@ export const TrangQuynhMiniGame = () => {
     return (
       <div className="min-h-screen bg-gradient-to-b from-background to-primary/5 p-4">
         <div className="max-w-6xl mx-auto py-8">
-          <Button
-            onClick={handleExit}
-            variant="ghost"
-            size="sm"
-            className="mb-4 gap-2"
-          >
-            <Home className="w-4 h-4" />
-            Thoát
-          </Button>
+          <div className="flex gap-2 mb-4">
+            <Button
+              onClick={handleBackToLevelSelection}
+              variant="ghost"
+              size="sm"
+              className="gap-2"
+            >
+              ← Chọn màn
+            </Button>
+            <Button
+              onClick={handleExit}
+              variant="ghost"
+              size="sm"
+              className="gap-2"
+            >
+              <Home className="w-4 h-4" />
+              Thoát
+            </Button>
+          </div>
           
           <CutscenePlayer
             frames={currentNode.cutscene}
@@ -229,7 +249,15 @@ export const TrangQuynhMiniGame = () => {
         />
         
         <div className="max-w-7xl mx-auto p-4 md:p-8">
-          <div className="flex justify-between items-center mb-8">
+          <div className="flex gap-2 mb-8">
+            <Button
+              onClick={handleBackToLevelSelection}
+              variant="ghost"
+              size="sm"
+              className="gap-2"
+            >
+              ← Chọn màn
+            </Button>
             <Button
               onClick={handleExit}
               variant="ghost"
