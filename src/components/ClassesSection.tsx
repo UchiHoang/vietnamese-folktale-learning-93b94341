@@ -21,7 +21,7 @@ const ClassesSection = () => {
               className="animate-fade-in"
               style={{ animationDelay: `${index * 100}ms` }}
             >
-              <ClassCard {...classItem} />
+              <ClassCard {...classItem} gameRoute={classItem.gameRoute} />
             </div>
           ))}
         </div>

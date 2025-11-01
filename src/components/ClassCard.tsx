@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Users } from "lucide-react";
+import { ArrowRight, Users, Lock } from "lucide-react";
+import { Link } from "react-router-dom";
 
 interface ClassCardProps {
   level: string;
@@ -7,9 +8,11 @@ interface ClassCardProps {
   ageRange: string;
   image: string;
   description: string;
+  gameRoute?: string | null;
 }
 
-const ClassCard = ({ level, title, ageRange, image, description }: ClassCardProps) => {
+const ClassCard = ({ level, title, ageRange, image, description, gameRoute }: ClassCardProps) => {
+  const isAvailable = gameRoute !== null;
   return (
     <div className="group relative bg-card rounded-2xl overflow-hidden card-shadow hover-lift transition-all duration-300">
       <div className="aspect-square overflow-hidden">
@@ -39,10 +42,19 @@ const ClassCard = ({ level, title, ageRange, image, description }: ClassCardProp
           {description}
         </p>
 
-        <Button className="w-full group/btn">
-          Vào lớp
-          <ArrowRight className="ml-2 h-4 w-4 group-hover/btn:translate-x-1 transition-transform" />
-        </Button>
+        {isAvailable && gameRoute ? (
+          <Button className="w-full group/btn" asChild>
+            <Link to={gameRoute}>
+              Vào lớp
+              <ArrowRight className="ml-2 h-4 w-4 group-hover/btn:translate-x-1 transition-transform" />
+            </Link>
+          </Button>
+        ) : (
+          <Button className="w-full" variant="secondary" disabled>
+            <Lock className="mr-2 h-4 w-4" />
+            Sắp ra mắt
+          </Button>
+        )}
       </div>
 
       {/* Decorative corner */}

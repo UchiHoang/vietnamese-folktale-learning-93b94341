@@ -4,42 +4,48 @@ export const classes = [
     title: "Hành trình đếm bánh chưng cùng chú Cuội",
     ageRange: "3-5",
     image: "/src/assets/class-preschool.jpg",
-    description: "Khám phá số đếm qua câu chuyện dân gian"
+    description: "Khám phá số đếm qua câu chuyện dân gian",
+    gameRoute: null
   },
   {
     level: "Lớp 1",
     title: "Tí và cuộc đua cùng 12 con giáp",
     ageRange: "6-7",
     image: "/src/assets/class-grade1.jpg",
-    description: "Học toán qua truyện 12 con giáp"
+    description: "Học toán qua truyện 12 con giáp",
+    gameRoute: null
   },
   {
     level: "Lớp 2",
     title: "Trạng Quỳnh đi thi",
     ageRange: "7-8",
     image: "/src/assets/class-grade2.jpg",
-    description: "Rèn luyện tư duy logic cùng Trạng Quỳnh"
+    description: "Rèn luyện tư duy logic cùng Trạng Quỳnh",
+    gameRoute: "/classroom/trangquynh"
   },
   {
     level: "Lớp 3",
     title: "Săn kho báu sông Hồng",
     ageRange: "8-9",
     image: "/src/assets/class-grade3.jpg",
-    description: "Phiêu lưu toán học trên dòng sông Hồng"
+    description: "Phiêu lưu toán học trên dòng sông Hồng",
+    gameRoute: null
   },
   {
     level: "Lớp 4",
     title: "Thám hiểm Cổ Loa thành",
     ageRange: "9-10",
     image: "/src/assets/class-grade4.jpg",
-    description: "Khám phá lịch sử qua bài toán"
+    description: "Khám phá lịch sử qua bài toán",
+    gameRoute: null
   },
   {
     level: "Lớp 5",
     title: "Bảo vệ đất nước cùng Trạng Nguyên",
     ageRange: "10-11",
     image: "/src/assets/class-grade5.jpg",
-    description: "Toán học nâng cao với tinh thần yêu nước"
+    description: "Toán học nâng cao với tinh thần yêu nước",
+    gameRoute: null
   }
 ];
 
