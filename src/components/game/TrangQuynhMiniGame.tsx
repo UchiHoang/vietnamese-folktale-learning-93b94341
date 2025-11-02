@@ -6,6 +6,7 @@ import { QuestionCard } from "./QuestionCard";
 import { HudXpBar } from "./HudXpBar";
 import { BadgeModal } from "./BadgeModal";
 import { LevelSelection } from "./LevelSelection";
+import { StoryIntro } from "./StoryIntro";
 import { loadStory, findActivityByRef, Activity } from "@/utils/storyLoader";
 import { useGameEngine } from "@/hooks/useGameEngine";
 import { Home, RotateCcw } from "lucide-react";
@@ -18,7 +19,7 @@ export const TrangQuynhMiniGame = () => {
   const story = loadStory();
   const { progress, recordAnswer, nextQuestion, completeNode, resetProgress, selectNode } = useGameEngine();
   
-  const [gamePhase, setGamePhase] = useState<GamePhase>("level-selection");
+  const [gamePhase, setGamePhase] = useState<GamePhase>("prologue");
   const [currentActivity, setCurrentActivity] = useState<Activity | null>(null);
   const [showBadgeModal, setShowBadgeModal] = useState(false);
   const [levelPerformance, setLevelPerformance] = useState<"excellent" | "good" | "retry">("good");
@@ -125,6 +126,11 @@ export const TrangQuynhMiniGame = () => {
   const handleBackToLevelSelection = () => {
     setGamePhase("level-selection");
   };
+
+  // Prologue Phase
+  if (gamePhase === "prologue") {
+    return <StoryIntro onComplete={handlePrologueComplete} />;
+  }
 
   // Level Selection Phase
   if (gamePhase === "level-selection") {

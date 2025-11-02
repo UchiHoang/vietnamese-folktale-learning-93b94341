@@ -1,7 +1,13 @@
 import { TrangQuynhMiniGame } from "@/components/game/TrangQuynhMiniGame";
+import Header from "@/components/Header";
 
 const TrangQuynhGame = () => {
-  return <TrangQuynhMiniGame />;
+  return (
+    <div className="min-h-screen">
+      <Header />
+      <TrangQuynhMiniGame />
+    </div>
+  );
 };
 
 export default TrangQuynhGame;
