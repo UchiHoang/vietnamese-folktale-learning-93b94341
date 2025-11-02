@@ -18,7 +18,7 @@ export const TrangQuynhMiniGame = () => {
   const story = loadStory();
   const { progress, recordAnswer, nextQuestion, completeNode, resetProgress, selectNode } = useGameEngine();
   
-  const [gamePhase, setGamePhase] = useState<GamePhase>("prologue");
+  const [gamePhase, setGamePhase] = useState<GamePhase>("level-selection");
   const [currentActivity, setCurrentActivity] = useState<Activity | null>(null);
   const [showBadgeModal, setShowBadgeModal] = useState(false);
   const [levelPerformance, setLevelPerformance] = useState<"excellent" | "good" | "retry">("good");
