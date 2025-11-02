@@ -136,14 +136,27 @@ export const TrangQuynhMiniGame = () => {
   if (gamePhase === "level-selection") {
     return (
       <div className="min-h-screen">
-        <div className="sticky top-0 z-50 bg-card/95 backdrop-blur border-b p-4">
-          <div className="max-w-7xl mx-auto flex justify-between items-center">
-            <h1 className="text-2xl font-heading font-bold text-primary">
-              {story.meta.title}
-            </h1>
-            <Button onClick={handleExit} variant="ghost" size="sm" className="gap-2">
+        <div className="sticky top-0 z-50 bg-gradient-to-r from-primary/10 via-accent/10 to-secondary/10 backdrop-blur-md border-b border-primary/20 shadow-md">
+          <div className="max-w-7xl mx-auto px-4 py-6 flex justify-between items-center">
+            <div className="flex items-center gap-3">
+              <div className="bg-gradient-to-br from-primary to-accent p-2 rounded-xl shadow-lg">
+                <span className="text-2xl">🎓</span>
+              </div>
+              <div>
+                <h1 className="text-2xl md:text-3xl font-heading font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+                  {story.meta.title}
+                </h1>
+                <p className="text-xs md:text-sm text-muted-foreground">Chọn màn chơi để bắt đầu phiêu lưu</p>
+              </div>
+            </div>
+            <Button 
+              onClick={handleExit} 
+              variant="outline" 
+              size="sm" 
+              className="gap-2 border-primary/30 hover:bg-primary/10 hover:border-primary transition-all"
+            >
               <Home className="w-4 h-4" />
-              Thoát
+              <span className="hidden sm:inline">Thoát</span>
             </Button>
           </div>
         </div>
