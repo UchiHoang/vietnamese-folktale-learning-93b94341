@@ -42,7 +42,7 @@ export const LevelSelection = ({ nodes, progress, onSelectLevel }: LevelSelectio
             Trạng Quỳnh đi thi
           </h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Chọn màn chơi để bắt đầu hành trình toán học
+            Cậu bé Trạng Quỳnh chuẩn bị đi thi Toán rồi đó! Hãy giúp Quỳnh vượt qua từng màn thử thách và trở thành &quot;Trạng nhí thông minh&quot; nhé!
           </p>
           
           {/* Progress Summary */}

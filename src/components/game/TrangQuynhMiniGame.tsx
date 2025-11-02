@@ -136,12 +136,7 @@ export const TrangQuynhMiniGame = () => {
   if (gamePhase === "level-selection") {
     return (
       <div className="min-h-screen">
-        <LevelSelection
-          nodes={story.nodes}
-          progress={progress}
-          onSelectLevel={handleSelectLevel}
-        />
-        <div className="fixed bottom-8 left-8 z-50">
+        <div className="fixed top-20 left-4 z-50">
           <Button 
             onClick={handleExit} 
             size="lg"
@@ -152,6 +147,11 @@ export const TrangQuynhMiniGame = () => {
             Trang chủ
           </Button>
         </div>
+        <LevelSelection
+          nodes={story.nodes}
+          progress={progress}
+          onSelectLevel={handleSelectLevel}
+        />
       </div>
     );
   }

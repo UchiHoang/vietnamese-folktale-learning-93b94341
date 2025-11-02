@@ -52,7 +52,7 @@ const ClassCard = ({ level, title, ageRange, image, description, gameRoute }: Cl
         ) : (
           <Button className="w-full" variant="secondary" disabled>
             <Lock className="mr-2 h-4 w-4" />
-            Sắp ra mắt
+            Vào học
           </Button>
         )}
       </div>
