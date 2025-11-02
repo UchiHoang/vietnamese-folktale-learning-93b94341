@@ -136,35 +136,22 @@ export const TrangQuynhMiniGame = () => {
   if (gamePhase === "level-selection") {
     return (
       <div className="min-h-screen">
-        <div className="sticky top-0 z-50 bg-gradient-to-r from-primary/10 via-accent/10 to-secondary/10 backdrop-blur-md border-b border-primary/20 shadow-md">
-          <div className="max-w-7xl mx-auto px-4 py-6 flex justify-between items-center">
-            <div className="flex items-center gap-3">
-              <div className="bg-gradient-to-br from-primary to-accent p-2 rounded-xl shadow-lg">
-                <span className="text-2xl">🎓</span>
-              </div>
-              <div>
-                <h1 className="text-2xl md:text-3xl font-heading font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-                  {story.meta.title}
-                </h1>
-                <p className="text-xs md:text-sm text-muted-foreground">Chọn màn chơi để bắt đầu phiêu lưu</p>
-              </div>
-            </div>
-            <Button 
-              onClick={handleExit} 
-              variant="outline" 
-              size="sm" 
-              className="gap-2 border-primary/30 hover:bg-primary/10 hover:border-primary transition-all"
-            >
-              <Home className="w-4 h-4" />
-              <span className="hidden sm:inline">Thoát</span>
-            </Button>
-          </div>
-        </div>
         <LevelSelection
           nodes={story.nodes}
           progress={progress}
           onSelectLevel={handleSelectLevel}
         />
+        <div className="fixed bottom-8 left-8 z-50">
+          <Button 
+            onClick={handleExit} 
+            size="lg"
+            variant="secondary"
+            className="gap-2 shadow-lg hover:shadow-xl transition-all"
+          >
+            <Home className="w-5 h-5" />
+            Trang chủ
+          </Button>
+        </div>
       </div>
     );
   }

@@ -39,66 +39,38 @@ export const StoryIntro = ({ onComplete }: StoryIntroProps) => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-primary/5 flex items-center justify-center p-4">
-      <div className="max-w-3xl w-full animate-fade-in">
-        <div className="bg-card rounded-2xl shadow-xl overflow-hidden">
-          {/* Hero Image */}
-          <div className="bg-primary/10 p-8 flex justify-center">
+      <div className="max-w-4xl w-full animate-fade-in space-y-8">
+        {/* Title Section */}
+        <div className="text-center space-y-4">
+          <h1 className="text-5xl md:text-6xl font-heading font-bold" style={{ color: '#8B5A8C' }}>
+            Trạng Quỳnh đi thi
+          </h1>
+          <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+            Câu bé Trạng Quỳnh chuẩn bị đi thi Toán rồi đó! Hãy giúp Quỳnh vượt qua từng màn thử thách và trở thành &quot;Trạng nhí thông minh&quot; nhé!
+          </p>
+        </div>
+
+        {/* Character Image */}
+        <div className="flex justify-center">
+          <div className="bg-card rounded-3xl p-8 shadow-xl">
             <img 
               src={trangIntro} 
               alt="Trạng Quỳnh"
-              className="w-48 h-48 object-contain"
+              className="w-64 h-64 object-contain"
             />
           </div>
+        </div>
 
-          {/* Content */}
-          <div className="p-8 space-y-6">
-            <div className="text-center space-y-4">
-              <h2 className="text-3xl font-heading font-bold text-primary">
-                {slides[currentSlide].title}
-              </h2>
-              <p className="text-lg text-muted-foreground leading-relaxed">
-                {slides[currentSlide].content}
-              </p>
-            </div>
-
-            {/* Progress Dots */}
-            <div className="flex justify-center gap-2 py-4">
-              {slides.map((_, index) => (
-                <div
-                  key={index}
-                  className={`w-2 h-2 rounded-full transition-all ${
-                    index === currentSlide
-                      ? "bg-primary w-8"
-                      : "bg-muted"
-                  }`}
-                />
-              ))}
-            </div>
-
-            {/* Actions */}
-            <div className="flex gap-4">
-              <Button
-                onClick={handleSkip}
-                variant="ghost"
-                className="flex-1"
-              >
-                Bỏ qua
-              </Button>
-              <Button
-                onClick={handleNext}
-                className="flex-1 gap-2"
-              >
-                {currentSlide < slides.length - 1 ? (
-                  <>
-                    Tiếp theo
-                    <ChevronRight className="w-4 h-4" />
-                  </>
-                ) : (
-                  "Bắt đầu"
-                )}
-              </Button>
-            </div>
-          </div>
+        {/* Action Button */}
+        <div className="flex justify-center">
+          <Button
+            onClick={onComplete}
+            size="lg"
+            className="gap-2 text-lg px-8 py-6"
+          >
+            Bắt đầu phiêu lưu
+            <ChevronRight className="w-5 h-5" />
+          </Button>
         </div>
       </div>
     </div>

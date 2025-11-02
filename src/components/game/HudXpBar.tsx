@@ -1,5 +1,5 @@
 import { Progress } from "@/components/ui/progress";
-import { Trophy, Star } from "lucide-react";
+import { Star } from "lucide-react";
 
 interface HudXpBarProps {
   totalXp: number;
@@ -15,36 +15,31 @@ export const HudXpBar = ({
   levelTitle 
 }: HudXpBarProps) => {
   const progressPercent = (currentQuestion / totalQuestions) * 100;
+  const currentLevel = Math.floor(totalXp / 100) + 1;
+  const xpInCurrentLevel = totalXp % 100;
 
   return (
-    <div className="w-full bg-card/80 backdrop-blur-sm border-b border-primary/20 p-4 shadow-sm">
-      <div className="max-w-7xl mx-auto space-y-3">
-        {/* Level Title */}
-        <div className="flex items-center justify-between">
-          <h2 className="text-lg md:text-xl font-heading font-bold text-primary">
-            {levelTitle}
-          </h2>
+    <div className="w-full bg-card/95 backdrop-blur-sm border-b p-3 shadow-sm">
+      <div className="max-w-7xl mx-auto">
+        <div className="flex items-center justify-between gap-4">
+          {/* Level and Progress Bar */}
+          <div className="flex items-center gap-3 flex-1">
+            <Star className="w-6 h-6 text-yellow-500 fill-yellow-500 flex-shrink-0" />
+            <span className="font-heading font-semibold text-foreground whitespace-nowrap">
+              Cấp độ {currentLevel}
+            </span>
+            <div className="flex-1 min-w-0">
+              <Progress 
+                value={xpInCurrentLevel} 
+                className="h-2.5 bg-muted"
+              />
+            </div>
+          </div>
           
           {/* XP Counter */}
-          <div className="flex items-center gap-2 bg-primary/10 px-4 py-2 rounded-full">
-            <Star className="w-5 h-5 text-primary fill-primary" />
-            <span className="text-lg font-bold text-primary">
-              {totalXp} XP
-            </span>
-          </div>
-        </div>
-
-        {/* Progress Bar */}
-        <div className="space-y-2">
-          <div className="flex items-center justify-between text-sm">
-            <span className="text-muted-foreground">
-              Câu hỏi {currentQuestion} / {totalQuestions}
-            </span>
-            <span className="text-muted-foreground">
-              {Math.round(progressPercent)}% hoàn thành
-            </span>
-          </div>
-          <Progress value={progressPercent} className="h-3" />
+          <span className="text-sm font-medium text-muted-foreground whitespace-nowrap">
+            {xpInCurrentLevel}/100 XP
+          </span>
         </div>
       </div>
     </div>
