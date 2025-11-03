@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ChevronRight } from "lucide-react";
-import trangIntro from "@/assets/trang_intro.png";
+import trangPortrait from "@/assets/trang_portrait.png";
+import trangIdle from "@/assets/trang_idle.png";
+import trangCheer from "@/assets/trang_cheer.png";
 
 interface StoryIntroProps {
   onComplete: () => void;
@@ -14,14 +16,20 @@ export const StoryIntro = ({ onComplete }: StoryIntroProps) => {
     {
       title: "Trạng Quỳnh đi thi",
       content: "Ngày xửa ngày xưa, ở một làng quê yên bình, có một cậu bé thông minh và nhanh trí tên là Trạng Quỳnh.",
+      image: trangPortrait,
+      speaker: "Trạng Quỳnh",
     },
     {
       title: "Cuộc thi toán học",
       content: "Tin đồn có cuộc thi toán học ở làng bên lan rộng. Trạng Quỳnh quyết định đi thi để giúp đỡ bà con và thử thách trí tuệ của mình.",
+      image: trangIdle,
+      speaker: "Trạng Quỳnh",
     },
     {
       title: "Hành trình bắt đầu",
       content: "Trên đường đi, Trạng Quỳnh sẽ gặp nhiều thử thách toán học thú vị. Hãy cùng giúp Trạng Quỳnh vượt qua 9 thử thách để giành được huy hiệu vàng!",
+      image: trangCheer,
+      speaker: "Trạng Quỳnh",
     },
   ];
 
@@ -42,12 +50,13 @@ export const StoryIntro = ({ onComplete }: StoryIntroProps) => {
       <div className="max-w-3xl w-full animate-fade-in">
         <div className="bg-card rounded-2xl shadow-xl overflow-hidden">
           {/* Hero Image */}
-          <div className="bg-primary/10 p-8 flex justify-center">
+          <div className="bg-primary/10 p-8 flex flex-col items-center gap-2">
             <img 
-              src={trangIntro} 
-              alt="Trạng Quỳnh"
+              src={slides[currentSlide].image} 
+              alt={slides[currentSlide].speaker}
               className="w-48 h-48 object-contain"
             />
+            <p className="text-sm font-semibold text-primary">{slides[currentSlide].speaker}</p>
           </div>
 
           {/* Content */}
