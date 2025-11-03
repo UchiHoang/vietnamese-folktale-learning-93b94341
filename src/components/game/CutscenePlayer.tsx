@@ -65,48 +65,58 @@ export const CutscenePlayer = ({ frames, onComplete, onSkip }: CutscenePlayerPro
 
   return (
     <div 
-      className="relative w-full h-[500px] md:h-[600px] rounded-lg overflow-hidden shadow-2xl"
+      className="w-full bg-card rounded-2xl shadow-xl overflow-hidden animate-fade-in"
       onKeyDown={handleKeyDown}
       tabIndex={0}
       role="region"
       aria-label="Cutscene"
     >
-      {/* Background */}
-      <div 
-        className="absolute inset-0 bg-gradient-to-b from-primary/5 to-primary/10"
-        style={{
-          backgroundImage: currentFrame.bg ? `url(${currentFrame.bg})` : undefined,
-          backgroundSize: "cover",
-          backgroundPosition: "center"
-        }}
-      />
-      
-      {/* Character Sprite */}
-      {currentFrame.sprite && (
-        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 animate-fade-in">
-          <img 
-            src={currentFrame.sprite} 
-            alt={currentFrame.speaker}
-            className="w-48 h-48 md:w-64 md:h-64 object-contain drop-shadow-2xl"
-          />
+      <div className="grid md:grid-cols-[400px_1fr] gap-0">
+        {/* Character Image - Left Side */}
+        <div className="bg-primary/10 p-8 flex flex-col items-center justify-center gap-4 min-h-[500px] md:min-h-[600px]">
+          {currentFrame.sprite && (
+            <img 
+              src={`/${currentFrame.sprite}`}
+              alt={currentFrame.speaker}
+              className="w-full max-w-[300px] h-auto object-contain animate-fade-in"
+            />
+          )}
         </div>
-      )}
 
-      {/* Dialogue Box */}
-      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-background via-background/95 to-background/80 backdrop-blur-sm p-6 md:p-8 border-t-4 border-primary/20">
-        <div className="max-w-4xl mx-auto space-y-4">
-          <div className="flex items-center gap-3">
-            <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-            <h3 className="text-lg md:text-xl font-heading font-bold text-primary">
-              {currentFrame.speaker}
-            </h3>
+        {/* Content - Right Side */}
+        <div className="p-6 md:p-8 flex flex-col justify-between min-h-[500px] md:min-h-[600px]">
+          <div className="space-y-6 flex-1 flex flex-col justify-center">
+            <div className="space-y-4">
+              <div className="inline-flex items-center gap-2 bg-primary/10 px-4 py-2 rounded-full">
+                <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
+                <h3 className="text-lg md:text-xl font-heading font-bold text-primary">
+                  {currentFrame.speaker}
+                </h3>
+              </div>
+              <p className="text-base md:text-lg text-foreground leading-relaxed">
+                {currentFrame.text}
+              </p>
+            </div>
+
+            {/* Progress indicator */}
+            <div className="flex items-center gap-2 pt-4">
+              {frames.map((_, index) => (
+                <div
+                  key={index}
+                  className={`h-1 rounded-full transition-all ${
+                    index === currentFrameIndex
+                      ? "bg-primary w-8"
+                      : index < currentFrameIndex
+                      ? "bg-primary/50 w-4"
+                      : "bg-muted w-4"
+                  }`}
+                />
+              ))}
+            </div>
           </div>
-          
-          <p className="text-base md:text-lg leading-relaxed text-foreground">
-            {currentFrame.text}
-          </p>
-          
-          <div className="flex items-center justify-between pt-4">
+
+          {/* Actions */}
+          <div className="flex items-center justify-between pt-4 border-t border-border">
             <span className="text-sm text-muted-foreground">
               {currentFrameIndex + 1} / {frames.length}
             </span>
