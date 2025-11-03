@@ -32,62 +32,69 @@ export const StoryIntro = ({ prologue, onComplete }: StoryIntroProps) => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-primary/5 flex items-center justify-center p-4">
-      <div className="max-w-3xl w-full animate-fade-in">
+      <div className="max-w-6xl w-full animate-fade-in">
         <div className="bg-card rounded-2xl shadow-xl overflow-hidden">
-          {/* Hero Image */}
-          <div className="bg-primary/10 p-8 flex flex-col items-center gap-2">
-            <img 
-              src={`/${prologue[currentSlide].sprite}`}
-              alt={prologue[currentSlide].speaker}
-              className="w-48 h-48 object-contain"
-            />
-            <p className="text-sm font-semibold text-primary">{prologue[currentSlide].speaker}</p>
-          </div>
-
-          {/* Content */}
-          <div className="p-8 space-y-6">
-            <div className="text-center space-y-4">
-              <p className="text-lg text-muted-foreground leading-relaxed">
-                {prologue[currentSlide].text}
-              </p>
+          <div className="grid md:grid-cols-[400px_1fr] gap-0">
+            {/* Character Image - Left Side */}
+            <div className="bg-primary/10 p-8 flex flex-col items-center justify-center gap-4 min-h-[500px]">
+              <img 
+                src={`/${prologue[currentSlide].sprite}`}
+                alt={prologue[currentSlide].speaker}
+                className="w-full max-w-[300px] h-auto object-contain"
+              />
             </div>
 
-            {/* Progress Dots */}
-            <div className="flex justify-center gap-2 py-4">
-              {prologue.map((_, index) => (
-                <div
-                  key={index}
-                  className={`w-2 h-2 rounded-full transition-all ${
-                    index === currentSlide
-                      ? "bg-primary w-8"
-                      : "bg-muted"
-                  }`}
-                />
-              ))}
-            </div>
+            {/* Content - Right Side */}
+            <div className="p-8 flex flex-col justify-between min-h-[500px]">
+              <div className="space-y-6 flex-1 flex flex-col justify-center">
+                <div className="space-y-4">
+                  <div className="inline-flex items-center gap-2 bg-primary/10 px-4 py-2 rounded-full">
+                    <div className="w-2 h-2 bg-primary rounded-full"></div>
+                    <p className="text-sm font-semibold text-primary">{prologue[currentSlide].speaker}</p>
+                  </div>
+                  <p className="text-xl text-foreground leading-relaxed">
+                    {prologue[currentSlide].text}
+                  </p>
+                </div>
 
-            {/* Actions */}
-            <div className="flex gap-4">
-              <Button
-                onClick={handleSkip}
-                variant="ghost"
-                className="flex-1"
-              >
-                Bỏ qua
-              </Button>
-              <Button
-                onClick={handleNext}
-                className="flex-1 gap-2"
-              >
-                {currentSlide < prologue.length - 1 ? (
-                  <>
-                    Tiếp theo
-                    <ChevronRight className="w-4 h-4" />
-                  </>
-                ) : (
-                  "Bắt đầu"
-                )}
-              </Button>
+                {/* Progress Dots */}
+                <div className="flex justify-start gap-2 py-4">
+                  {prologue.map((_, index) => (
+                    <div
+                      key={index}
+                      className={`w-2 h-2 rounded-full transition-all ${
+                        index === currentSlide
+                          ? "bg-primary w-8"
+                          : "bg-muted"
+                      }`}
+                    />
+                  ))}
+                </div>
+              </div>
+
+              {/* Actions */}
+              <div className="flex gap-4">
+                <Button
+                  onClick={handleSkip}
+                  variant="ghost"
+                  className="flex-1"
+                >
+                  Bỏ qua
+                </Button>
+                <Button
+                  onClick={handleNext}
+                  className="flex-1 gap-2"
+                >
+                  {currentSlide < prologue.length - 1 ? (
+                    <>
+                      Tiếp theo
+                      <ChevronRight className="w-4 h-4" />
+                    </>
+                  ) : (
+                    "Bắt đầu"
+                  )}
+                </Button>
+              </div>
             </div>
           </div>
         </div>
