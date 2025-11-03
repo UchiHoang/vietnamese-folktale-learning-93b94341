@@ -129,7 +129,7 @@ export const TrangQuynhMiniGame = () => {
 
   // Prologue Phase
   if (gamePhase === "prologue") {
-    return <StoryIntro onComplete={handlePrologueComplete} />;
+    return <StoryIntro prologue={story.prologue} onComplete={handlePrologueComplete} />;
   }
 
   // Level Selection Phase

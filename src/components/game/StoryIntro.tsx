@@ -1,40 +1,25 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ChevronRight } from "lucide-react";
-import trangPortrait from "@/assets/trang_portrait.png";
-import trangIdle from "@/assets/trang_idle.png";
-import trangCheer from "@/assets/trang_cheer.png";
+
+interface PrologueSlide {
+  id: string;
+  bg?: string;
+  sprite: string;
+  speaker: string;
+  text: string;
+}
 
 interface StoryIntroProps {
+  prologue: PrologueSlide[];
   onComplete: () => void;
 }
 
-export const StoryIntro = ({ onComplete }: StoryIntroProps) => {
+export const StoryIntro = ({ prologue, onComplete }: StoryIntroProps) => {
   const [currentSlide, setCurrentSlide] = useState(0);
 
-  const slides = [
-    {
-      title: "Trạng Quỳnh đi thi",
-      content: "Ngày xửa ngày xưa, ở một làng quê yên bình, có một cậu bé thông minh và nhanh trí tên là Trạng Quỳnh.",
-      image: trangPortrait,
-      speaker: "Trạng Quỳnh",
-    },
-    {
-      title: "Cuộc thi toán học",
-      content: "Tin đồn có cuộc thi toán học ở làng bên lan rộng. Trạng Quỳnh quyết định đi thi để giúp đỡ bà con và thử thách trí tuệ của mình.",
-      image: trangIdle,
-      speaker: "Trạng Quỳnh",
-    },
-    {
-      title: "Hành trình bắt đầu",
-      content: "Trên đường đi, Trạng Quỳnh sẽ gặp nhiều thử thách toán học thú vị. Hãy cùng giúp Trạng Quỳnh vượt qua 9 thử thách để giành được huy hiệu vàng!",
-      image: trangCheer,
-      speaker: "Trạng Quỳnh",
-    },
-  ];
-
   const handleNext = () => {
-    if (currentSlide < slides.length - 1) {
+    if (currentSlide < prologue.length - 1) {
       setCurrentSlide(currentSlide + 1);
     } else {
       onComplete();
@@ -52,27 +37,24 @@ export const StoryIntro = ({ onComplete }: StoryIntroProps) => {
           {/* Hero Image */}
           <div className="bg-primary/10 p-8 flex flex-col items-center gap-2">
             <img 
-              src={slides[currentSlide].image} 
-              alt={slides[currentSlide].speaker}
+              src={`/${prologue[currentSlide].sprite}`}
+              alt={prologue[currentSlide].speaker}
               className="w-48 h-48 object-contain"
             />
-            <p className="text-sm font-semibold text-primary">{slides[currentSlide].speaker}</p>
+            <p className="text-sm font-semibold text-primary">{prologue[currentSlide].speaker}</p>
           </div>
 
           {/* Content */}
           <div className="p-8 space-y-6">
             <div className="text-center space-y-4">
-              <h2 className="text-3xl font-heading font-bold text-primary">
-                {slides[currentSlide].title}
-              </h2>
               <p className="text-lg text-muted-foreground leading-relaxed">
-                {slides[currentSlide].content}
+                {prologue[currentSlide].text}
               </p>
             </div>
 
             {/* Progress Dots */}
             <div className="flex justify-center gap-2 py-4">
-              {slides.map((_, index) => (
+              {prologue.map((_, index) => (
                 <div
                   key={index}
                   className={`w-2 h-2 rounded-full transition-all ${
@@ -97,7 +79,7 @@ export const StoryIntro = ({ onComplete }: StoryIntroProps) => {
                 onClick={handleNext}
                 className="flex-1 gap-2"
               >
-                {currentSlide < slides.length - 1 ? (
+                {currentSlide < prologue.length - 1 ? (
                   <>
                     Tiếp theo
                     <ChevronRight className="w-4 h-4" />
