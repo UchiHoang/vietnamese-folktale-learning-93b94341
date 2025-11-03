@@ -200,6 +200,32 @@ export const TrangQuynhMiniGame = () => {
 
   // Cutscene Phase
   if (gamePhase === "cutscene" && currentNode) {
+    // Enhance cutscene frames with sprites from node assets
+    const enhancedFrames = currentNode.cutscene.map((frame: any) => {
+      let sprite = undefined;
+      
+      // Map speaker to appropriate sprite
+      if (frame.speaker === "Trạng Quỳnh" || frame.speaker.includes("Quỳnh")) {
+        // Use idle or cheer sprite based on text sentiment
+        const isExcited = frame.text.includes("!") || frame.text.includes("thích");
+        sprite = isExcited 
+          ? currentNode.assets?.sprite_main_cheer 
+          : currentNode.assets?.sprite_main_idle;
+      } else if (frame.speaker === "Narrator" || frame.speaker === "Người kể chuyện") {
+        // Narrator doesn't need a sprite
+        sprite = undefined;
+      } else {
+        // Other characters use idle sprite by default
+        sprite = currentNode.assets?.sprite_main_idle;
+      }
+      
+      return {
+        ...frame,
+        sprite,
+        bg: currentNode.assets?.bg
+      };
+    });
+
     return (
       <div className="min-h-screen bg-gradient-to-b from-background to-primary/5 p-4">
         <div className="max-w-6xl mx-auto py-8">
@@ -224,7 +250,7 @@ export const TrangQuynhMiniGame = () => {
           </div>
           
           <CutscenePlayer
-            frames={currentNode.cutscene}
+            frames={enhancedFrames}
             onComplete={handleCutsceneComplete}
             onSkip={handleCutsceneSkip}
           />
