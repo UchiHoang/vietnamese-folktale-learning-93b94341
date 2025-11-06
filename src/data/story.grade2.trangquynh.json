@@ -53,7 +53,7 @@
       "objective": "Cộng trong phạm vi 100 (cộng có nhớ nhẹ)",
       "cutscene": [
         {
-          "speaker": "Narrator",
+          "speaker": "Người kể chuyện",
           "text": "Tin đồn có cuộc thi toán ở làng bên lan rộng. Trạng Quỳnh quyết định đi thi để giúp bà con."
         },
         {
@@ -103,7 +103,7 @@
       "objective": "Trừ trong phạm vi 100 (mượn đơn giản)",
       "cutscene": [
         {
-          "speaker": "Narrator",
+          "speaker": "Người kể chuyện",
           "text": "Trạng Quỳnh tới cầu, người thu vé hỏi một câu toán để cho qua."
         },
         {
@@ -153,7 +153,7 @@
       "objective": "Giải bài toán lời văn đơn giản",
       "cutscene": [
         {
-          "speaker": "Narrator",
+          "speaker": "Người kể chuyện",
           "text": "Chủ vườn cau cần tính toán số cau còn lại sau khi bán và tặng."
         },
         {
@@ -203,7 +203,7 @@
       "objective": "Nhận biết giờ chẵn và giờ rưỡi (đọc đồng hồ)",
       "cutscene": [
         {
-          "speaker": "Narrator",
+          "speaker": "Người kể chuyện",
           "text": "Trạng Quỳnh giúp cô giáo điểm danh. Đồng hồ trường reo chuông."
         },
         {
@@ -254,7 +254,7 @@
       "objective": "So sánh độ dài, khái niệm cm và m",
       "cutscene": [
         {
-          "speaker": "Narrator",
+          "speaker": "Người kể chuyện",
           "text": "Trạng Quỳnh giúp người chài đo dây câu cá tại ao sen."
         },
         {
@@ -304,7 +304,7 @@
       "objective": "Nhận biết đơn vị kg và g, so sánh khối lượng",
       "cutscene": [
         {
-          "speaker": "Narrator",
+          "speaker": "Người kể chuyện",
           "text": "Mẹ nhờ Trạng Quỳnh cân gạo chuẩn bị nấu cơm cho buổi lễ."
         },
         {
@@ -354,7 +354,7 @@
       "objective": "Tính tiền, chia đều, cộng/trừ tiền lẻ đơn giản",
       "cutscene": [
         {
-          "speaker": "Narrator",
+          "speaker": "Người kể chuyện",
           "text": "Sau thi, làng trao tiền thưởng và nhờ Trạng Quỳnh chia đều cho mọi người."
         },
         {
@@ -404,7 +404,7 @@
       "objective": "So sánh, sắp xếp, tư duy logic cơ bản",
       "cutscene": [
         {
-          "speaker": "Narrator",
+          "speaker": "Người kể chuyện",
           "text": "Bô lão tổ chức trò đố mẹo cho trẻ — ai trả lời đúng sẽ nhận kẹo."
         },
         {
@@ -454,7 +454,7 @@
       "objective": "Ôn tập tổng hợp, thử thách tốc độ và chính xác",
       "cutscene": [
         {
-          "speaker": "Narrator",
+          "speaker": "Người kể chuyện",
           "text": "Đêm trao huy hiệu đã tới. Ai đạt đủ điểm sẽ nhận huy hiệu vàng."
         },
         {

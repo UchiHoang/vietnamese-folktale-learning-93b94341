@@ -74,12 +74,16 @@ export const CutscenePlayer = ({ frames, onComplete, onSkip }: CutscenePlayerPro
       <div className="grid md:grid-cols-[400px_1fr] gap-0">
         {/* Character Image - Left Side */}
         <div className="bg-primary/10 p-8 flex flex-col items-center justify-center gap-4 min-h-[500px] md:min-h-[600px]">
-          {currentFrame.sprite && (
+          {currentFrame.sprite ? (
             <img 
               src={`/${currentFrame.sprite}`}
               alt={currentFrame.speaker}
               className="w-full max-w-[300px] h-auto object-contain animate-fade-in"
             />
+          ) : (
+            <div className="w-full max-w-[300px] h-[300px] flex items-center justify-center text-muted-foreground/20">
+              {/* Empty state when no character sprite */}
+            </div>
           )}
         </div>
 
