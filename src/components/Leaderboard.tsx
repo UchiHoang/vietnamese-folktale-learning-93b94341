@@ -114,8 +114,8 @@ const Leaderboard = () => {
                     <Crown className="h-12 w-12 text-yellow-400 mb-2 drop-shadow-lg animate-pulse" />
                   )}
 
-                  {/* Avatar with rank badge */}
-                  <div className="relative mb-4">
+                  {/* Avatar with rank badge - with float animation */}
+                  <div className="relative mb-4 animate-float" style={{ animationDelay: `${idx * 0.5}s` }}>
                     <div className={`w-20 h-20 md:w-24 md:h-24 rounded-full ${getRankBadge(actualRank)} flex items-center justify-center border-4 border-white shadow-2xl`}>
                       <span className="text-4xl">{student.avatar}</span>
                     </div>
@@ -124,8 +124,8 @@ const Leaderboard = () => {
                     </div>
                   </div>
 
-                  {/* Student info */}
-                  <div className="text-center mb-3 px-2">
+                  {/* Student info - with float animation */}
+                  <div className="text-center mb-3 px-2 animate-float" style={{ animationDelay: `${idx * 0.5}s` }}>
                     <h3 className="font-heading font-bold text-base md:text-lg text-white drop-shadow-md mb-1">
                       {student.name}
                     </h3>
@@ -135,7 +135,7 @@ const Leaderboard = () => {
                   </div>
 
                   {/* Floating Island platform */}
-                  <div className="relative animate-float">
+                  <div className="relative animate-float" style={{ animationDelay: `${idx * 0.5}s` }}>
                     <img 
                       src="/assets/floating-island.png" 
                       alt="Floating Island" 
