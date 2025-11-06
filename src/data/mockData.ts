@@ -50,11 +50,16 @@ export const classes = [
 ];
 
 export const leaderboard = [
-  { rank: 1, name: "Mai An", points: 1240, avatar: "👧" },
-  { rank: 2, name: "Nam Khoa", points: 1120, avatar: "👦" },
-  { rank: 3, name: "Linh Chi", points: 985, avatar: "👧" },
-  { rank: 4, name: "Minh Tuấn", points: 920, avatar: "👦" },
-  { rank: 5, name: "Hà My", points: 880, avatar: "👧" }
+  { rank: 1, name: "Nguyễn Phú Cường", points: 1240, avatar: "👦" },
+  { rank: 2, name: "Đặng Lê Thiên Ân", points: 1120, avatar: "👧" },
+  { rank: 3, name: "Võ Hữu Thiên Ngân", points: 985, avatar: "👧" },
+  { rank: 4, name: "Nguyễn Trần Ngọc Nhi", points: 920, avatar: "👧" },
+  { rank: 5, name: "Quách Quốc Phúc Thịnh", points: 880, avatar: "👦" },
+  { rank: 6, name: "Nguyễn Trung Quân", points: 840, avatar: "👦" },
+  { rank: 7, name: "Lê Cát Mỹ Anh", points: 800, avatar: "👧" },
+  { rank: 8, name: "Mai Anh Khôi", points: 760, avatar: "👦" },
+  { rank: 9, name: "Nguyễn Trần Minh Ngọc", points: 720, avatar: "👧" },
+  { rank: 10, name: "Nguyễn Bùi Trúc Linh", points: 680, avatar: "👧" }
 ];
 
 export const badges = [
