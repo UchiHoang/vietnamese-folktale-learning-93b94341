@@ -134,14 +134,15 @@ const Leaderboard = () => {
                     </p>
                   </div>
 
-                  {/* Island platform */}
-                  <div className="relative">
-                    <div className="w-32 h-24 md:w-40 md:h-28 bg-gradient-to-b from-green-400 to-green-600 rounded-t-[100%] shadow-2xl" />
-                    <div className="w-28 h-16 md:w-36 md:h-20 bg-gradient-to-b from-amber-700 to-amber-900 mx-auto relative -mt-2 rounded-b-lg shadow-xl">
-                      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-3 h-6 bg-amber-950 rounded-b-full" />
-                    </div>
-                    <div className="absolute inset-x-0 bottom-0 text-center -mb-2">
-                      <span className="font-bold text-4xl md:text-5xl text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]">
+                  {/* Floating Island platform */}
+                  <div className="relative animate-float">
+                    <img 
+                      src="/assets/floating-island.png" 
+                      alt="Floating Island" 
+                      className="w-36 h-32 md:w-44 md:h-36 object-contain drop-shadow-2xl"
+                    />
+                    <div className="absolute inset-x-0 top-1/3 text-center">
+                      <span className="font-bold text-5xl md:text-6xl text-white drop-shadow-[0_4px_8px_rgba(0,0,0,0.6)]">
                         {actualRank}
                       </span>
                     </div>
