@@ -204,15 +204,20 @@ export const TrangQuynhMiniGame = () => {
     const enhancedFrames = currentNode.cutscene.map((frame: any) => {
       let sprite = undefined;
       
-      // Map speaker to appropriate sprite - only show for Trạng Quỳnh
+      // Map speaker to appropriate sprite
       if (frame.speaker === "Trạng Quỳnh" || frame.speaker.includes("Quỳnh")) {
         // Use idle or cheer sprite based on text sentiment
         const isExcited = frame.text.includes("!") || frame.text.includes("thích");
         sprite = isExcited 
-          ? currentNode.assets?.sprite_main_cheer 
-          : currentNode.assets?.sprite_main_idle;
+          ? (currentNode.assets?.sprite_main_cheer || "assets/user/trang_cheer.png")
+          : (currentNode.assets?.sprite_main_idle || "assets/user/trang_idle.png");
+      } else if (frame.speaker !== "Người kể chuyện") {
+        // Other characters (not narrator) use portrait or idle sprite
+        sprite = currentNode.assets?.sprite_main_idle || "assets/user/trang_portrait.png";
       }
-      // Người kể chuyện and other characters don't show sprite
+      // Người kể chuyện doesn't show sprite
+      
+      console.log("Frame sprite:", frame.speaker, "->", sprite);
       
       return {
         ...frame,
