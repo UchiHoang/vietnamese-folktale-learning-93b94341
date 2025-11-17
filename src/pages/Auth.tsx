@@ -1,16 +1,18 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { GraduationCap, Eye, EyeOff, Mail, Lock, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 const Auth = () => {
   const navigate = useNavigate();
   const [isLogin, setIsLogin] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     username: "",
     password: "",
@@ -18,31 +20,96 @@ const Auth = () => {
     confirmPassword: ""
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (session) {
+        navigate("/");
+      }
+    });
+
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) {
+        navigate("/");
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [navigate]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsLoading(true);
     
-    if (!isLogin && formData.password !== formData.confirmPassword) {
+    try {
+      if (isLogin) {
+        const { error } = await supabase.auth.signInWithPassword({
+          email: formData.email,
+          password: formData.password,
+        });
+
+        if (error) throw error;
+
+        toast({
+          title: "Đăng nhập thành công!",
+          description: "Chào mừng bạn quay trở lại!"
+        });
+        navigate("/");
+      } else {
+        if (formData.password !== formData.confirmPassword) {
+          toast({
+            title: "Lỗi",
+            description: "Mật khẩu xác nhận không khớp",
+            variant: "destructive"
+          });
+          return;
+        }
+
+        const { error } = await supabase.auth.signUp({
+          email: formData.email,
+          password: formData.password,
+          options: {
+            emailRedirectTo: `${window.location.origin}/`,
+            data: {
+              display_name: formData.username || formData.email.split('@')[0],
+            }
+          }
+        });
+
+        if (error) throw error;
+
+        toast({
+          title: "Đăng ký thành công!",
+          description: "Tài khoản của bạn đã được tạo. Vui lòng kiểm tra email để xác nhận."
+        });
+      }
+    } catch (error: any) {
       toast({
         title: "Lỗi",
-        description: "Mật khẩu xác nhận không khớp",
+        description: error.message || "Đã xảy ra lỗi. Vui lòng thử lại.",
         variant: "destructive"
       });
-      return;
+    } finally {
+      setIsLoading(false);
     }
-
-    toast({
-      title: isLogin ? "Đăng nhập thành công!" : "Đăng ký thành công!",
-      description: isLogin 
-        ? "Chào mừng bạn quay trở lại!" 
-        : "Tài khoản của bạn đã được tạo thành công."
-    });
   };
 
-  const handleGoogleLogin = () => {
-    toast({
-      title: "Đăng nhập bằng Google",
-      description: "Tính năng đang được phát triển"
-    });
+  const handleGoogleLogin = async () => {
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}/`,
+        }
+      });
+
+      if (error) throw error;
+    } catch (error: any) {
+      toast({
+        title: "Lỗi",
+        description: error.message || "Không thể đăng nhập bằng Google",
+        variant: "destructive"
+      });
+    }
   };
 
   return (
@@ -255,8 +322,9 @@ const Auth = () => {
                     <Button 
                       type="submit" 
                       className="w-full h-13 text-base font-bold rounded-xl bg-primary hover:bg-primary/90 shadow-lg hover:shadow-xl transition-all"
+                      disabled={isLoading}
                     >
-                      {isLogin ? "Đăng nhập ngay" : "Tạo tài khoản"}
+                      {isLoading ? "Đang xử lý..." : (isLogin ? "Đăng nhập ngay" : "Tạo tài khoản")}
                     </Button>
                   </form>
 
