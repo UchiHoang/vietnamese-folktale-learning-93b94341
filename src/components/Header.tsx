@@ -117,9 +117,9 @@ const Header = ({ onRoleChange, currentRole = "student" }: HeaderProps) => {
               <DropdownMenuContent align="end" className="w-56">
                 <DropdownMenuLabel>Tài khoản của tôi</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem className="cursor-pointer">
+                <DropdownMenuItem className="cursor-pointer" onClick={() => navigate("/profile")}>
                   <User className="mr-2 h-4 w-4" />
-                  <span>Hồ sơ</span>
+                  <span>Hồ sơ cá nhân</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem className="cursor-pointer text-destructive" onClick={handleLogout}>
                   <LogOut className="mr-2 h-4 w-4" />
