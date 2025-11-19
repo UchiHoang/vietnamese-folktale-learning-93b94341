@@ -18,7 +18,8 @@ const Auth = () => {
     username: "",
     password: "",
     email: "",
-    confirmPassword: ""
+    confirmPassword: "",
+    role: "student" as "student" | "teacher"
   });
 
   useEffect(() => {
@@ -85,6 +86,7 @@ const Auth = () => {
             emailRedirectTo: `${window.location.origin}/`,
             data: {
               display_name: formData.username || formData.email.split('@')[0],
+              role: formData.role
             }
           }
         });
