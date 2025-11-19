@@ -103,7 +103,12 @@ const Profile = () => {
       return;
     }
 
-    setGameProgress(data);
+    if (data) {
+      setGameProgress({
+        ...data,
+        earned_badges: (data.earned_badges as string[]) || [],
+      });
+    }
   };
 
   const loadUserRole = async (userId: string) => {
