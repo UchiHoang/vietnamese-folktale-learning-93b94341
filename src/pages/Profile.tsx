@@ -23,7 +23,7 @@ interface GameProgress {
   total_xp: number;
   total_points: number;
   level: number;
-  earned_badges: string[];
+  earned_badges: any[];
 }
 
 interface UserRole {
