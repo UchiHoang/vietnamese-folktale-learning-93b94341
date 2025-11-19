@@ -6,10 +6,12 @@ import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "@/hooks/use-toast";
-import { User, Settings, Award, BarChart3, Users, BookOpen } from "lucide-react";
+import { User, Settings, Award, BarChart3, Users, BookOpen, TrendingUp, Calendar } from "lucide-react";
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer, BarChart, Bar } from "recharts";
 
 interface Profile {
   id: string;
@@ -42,6 +44,27 @@ const Profile = () => {
     school: "",
     grade: "",
   });
+
+  // Mock data for charts - in production, this would come from the database
+  const [xpData] = useState([
+    { date: "T2", xp: 120 },
+    { date: "T3", xp: 180 },
+    { date: "T4", xp: 250 },
+    { date: "T5", xp: 320 },
+    { date: "T6", xp: 400 },
+    { date: "T7", xp: 480 },
+    { date: "CN", xp: gameProgress?.total_xp || 500 },
+  ]);
+
+  const [pointsData] = useState([
+    { date: "T2", points: 50 },
+    { date: "T3", points: 75 },
+    { date: "T4", points: 120 },
+    { date: "T5", points: 180 },
+    { date: "T6", points: 240 },
+    { date: "T7", points: 290 },
+    { date: "CN", points: gameProgress?.total_points || 350 },
+  ]);
 
   useEffect(() => {
     checkUser();
