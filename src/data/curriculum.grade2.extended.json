@@ -1,0 +1,418 @@
+{
+  "grade": 2,
+  "chapters": [
+    {
+      "id": "addition-subtraction",
+      "title": "Cộng trừ có nhớ",
+      "description": "Phép cộng và trừ các số có nhớ với nhiều hình thức tương tác",
+      "icon": "calculator",
+      "color": "primary",
+      "lessons": [
+        {
+          "id": "lesson-1-extended",
+          "title": "Nối cặp - Số và kết quả",
+          "duration": 180,
+          "questions": [
+            {
+              "id": "matching-1",
+              "type": "matching-pairs",
+              "question": "Nối các phép tính với kết quả đúng",
+              "pairs": [
+                {
+                  "id": "pair1",
+                  "left": "15 + 8",
+                  "right": "23"
+                },
+                {
+                  "id": "pair2",
+                  "left": "27 + 16",
+                  "right": "43"
+                },
+                {
+                  "id": "pair3",
+                  "left": "34 + 29",
+                  "right": "63"
+                },
+                {
+                  "id": "pair4",
+                  "left": "48 + 35",
+                  "right": "83"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "lesson-2-extended",
+          "title": "Kéo thả - So sánh số",
+          "duration": 180,
+          "questions": [
+            {
+              "id": "drag-1",
+              "type": "drag-drop",
+              "question": "Kéo các số vào ô phù hợp: Nhỏ hơn 50 hoặc Lớn hơn 50",
+              "dragItems": [
+                {
+                  "id": "num1",
+                  "content": "23",
+                  "correctSlot": "less50"
+                },
+                {
+                  "id": "num2",
+                  "content": "67",
+                  "correctSlot": "more50"
+                },
+                {
+                  "id": "num3",
+                  "content": "41",
+                  "correctSlot": "less50"
+                },
+                {
+                  "id": "num4",
+                  "content": "89",
+                  "correctSlot": "more50"
+                },
+                {
+                  "id": "num5",
+                  "content": "35",
+                  "correctSlot": "less50"
+                },
+                {
+                  "id": "num6",
+                  "content": "72",
+                  "correctSlot": "more50"
+                }
+              ],
+              "dropSlots": [
+                {
+                  "id": "less50",
+                  "label": "Nhỏ hơn 50"
+                },
+                {
+                  "id": "more50",
+                  "label": "Lớn hơn 50"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "lesson-3-extended",
+          "title": "Điền vào chỗ trống - Phép cộng",
+          "duration": 180,
+          "questions": [
+            {
+              "id": "fill-1",
+              "type": "fill-blank",
+              "question": "25 + ___ = 48, vậy ___ = 48 - 25 = ___",
+              "blanks": [
+                {
+                  "position": 5,
+                  "answer": "23",
+                  "placeholder": "?"
+                },
+                {
+                  "position": 16,
+                  "answer": "23",
+                  "placeholder": "?"
+                },
+                {
+                  "position": 29,
+                  "answer": "23",
+                  "placeholder": "?"
+                }
+              ],
+              "explanation": "Để tìm số hạng còn thiếu, ta lấy tổng trừ đi số hạng đã biết: 48 - 25 = 23"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "counting-visual",
+      "title": "Đếm và nhận dạng",
+      "description": "Đếm vật thể và nhận dạng nhóm một cách trực quan",
+      "icon": "eye",
+      "color": "secondary",
+      "lessons": [
+        {
+          "id": "lesson-counting-1",
+          "title": "Đếm vật thể",
+          "duration": 180,
+          "questions": [
+            {
+              "id": "count-1",
+              "type": "counting",
+              "question": "Đếm xem có bao nhiêu quả táo?",
+              "countingItems": [
+                {
+                  "image": "/src/assets/game/counting-apple.png",
+                  "count": 7
+                }
+              ],
+              "countingAnswer": 7,
+              "explanation": "Đếm từng quả táo: 1, 2, 3, 4, 5, 6, 7. Có tất cả 7 quả táo."
+            },
+            {
+              "id": "count-2",
+              "type": "counting",
+              "question": "Có tất cả bao nhiêu vật?",
+              "countingItems": [
+                {
+                  "image": "/src/assets/game/counting-apple.png",
+                  "count": 5
+                },
+                {
+                  "image": "/src/assets/game/counting-apple.png",
+                  "count": 4
+                }
+              ],
+              "countingAnswer": 9,
+              "explanation": "5 quả táo + 4 quả táo = 9 quả táo"
+            }
+          ]
+        },
+        {
+          "id": "lesson-shapes-1",
+          "title": "Nhận dạng hình học",
+          "duration": 180,
+          "questions": [
+            {
+              "id": "shapes-match-1",
+              "type": "matching-pairs",
+              "question": "Nối hình với tên gọi đúng",
+              "pairs": [
+                {
+                  "id": "shape1",
+                  "left": "Hình tròn",
+                  "right": "⭕"
+                },
+                {
+                  "id": "shape2",
+                  "left": "Hình vuông",
+                  "right": "⬜"
+                },
+                {
+                  "id": "shape3",
+                  "left": "Hình tam giác",
+                  "right": "🔺"
+                },
+                {
+                  "id": "shape4",
+                  "left": "Hình chữ nhật",
+                  "right": "▭"
+                }
+              ]
+            },
+            {
+              "id": "shapes-drag-1",
+              "type": "drag-drop",
+              "question": "Phân loại các hình theo số cạnh",
+              "dragItems": [
+                {
+                  "id": "circle",
+                  "content": "⭕ Tròn",
+                  "correctSlot": "no-corner"
+                },
+                {
+                  "id": "triangle",
+                  "content": "🔺 Tam giác",
+                  "correctSlot": "3-corner"
+                },
+                {
+                  "id": "square",
+                  "content": "⬜ Vuông",
+                  "correctSlot": "4-corner"
+                },
+                {
+                  "id": "rectangle",
+                  "content": "▭ Chữ nhật",
+                  "correctSlot": "4-corner"
+                }
+              ],
+              "dropSlots": [
+                {
+                  "id": "no-corner",
+                  "label": "Không có góc"
+                },
+                {
+                  "id": "3-corner",
+                  "label": "3 góc"
+                },
+                {
+                  "id": "4-corner",
+                  "label": "4 góc"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "measurement-interactive",
+      "title": "Đo lường tương tác",
+      "description": "Thực hành đo lường thông qua các hoạt động kéo thả và điền chỗ trống",
+      "icon": "ruler",
+      "color": "accent",
+      "lessons": [
+        {
+          "id": "lesson-measure-1",
+          "title": "Đổi đơn vị độ dài",
+          "duration": 180,
+          "questions": [
+            {
+              "id": "measure-fill-1",
+              "type": "fill-blank",
+              "question": "1 mét = ___ cm, vậy 3 mét = ___ cm",
+              "blanks": [
+                {
+                  "position": 9,
+                  "answer": "100",
+                  "placeholder": "?"
+                },
+                {
+                  "position": 30,
+                  "answer": "300",
+                  "placeholder": "?"
+                }
+              ],
+              "explanation": "1 mét = 100 cm. Vậy 3 mét = 3 × 100 = 300 cm"
+            },
+            {
+              "id": "measure-drag-1",
+              "type": "drag-drop",
+              "question": "Sắp xếp các độ dài từ nhỏ đến lớn",
+              "dragItems": [
+                {
+                  "id": "len1",
+                  "content": "50 cm",
+                  "correctSlot": "small"
+                },
+                {
+                  "id": "len2",
+                  "content": "1 m 20 cm",
+                  "correctSlot": "medium"
+                },
+                {
+                  "id": "len3",
+                  "content": "2 m",
+                  "correctSlot": "large"
+                }
+              ],
+              "dropSlots": [
+                {
+                  "id": "small",
+                  "label": "Nhỏ nhất"
+                },
+                {
+                  "id": "medium",
+                  "label": "Trung bình"
+                },
+                {
+                  "id": "large",
+                  "label": "Lớn nhất"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "lesson-weight-1",
+          "title": "Khối lượng - Kéo thả",
+          "duration": 180,
+          "questions": [
+            {
+              "id": "weight-match-1",
+              "type": "matching-pairs",
+              "question": "Nối khối lượng tương đương",
+              "pairs": [
+                {
+                  "id": "w1",
+                  "left": "1 kg",
+                  "right": "1000 g"
+                },
+                {
+                  "id": "w2",
+                  "left": "2 kg 500 g",
+                  "right": "2500 g"
+                },
+                {
+                  "id": "w3",
+                  "left": "500 g",
+                  "right": "0.5 kg"
+                },
+                {
+                  "id": "w4",
+                  "left": "3 kg",
+                  "right": "3000 g"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "time-interactive",
+      "title": "Thời gian tương tác",
+      "description": "Học về thời gian qua các trò chơi điền chỗ trống và nối cặp",
+      "icon": "clock",
+      "color": "primary",
+      "lessons": [
+        {
+          "id": "lesson-time-1",
+          "title": "Đọc đồng hồ - Nối cặp",
+          "duration": 180,
+          "questions": [
+            {
+              "id": "time-match-1",
+              "type": "matching-pairs",
+              "question": "Nối giờ với cách đọc đúng",
+              "pairs": [
+                {
+                  "id": "t1",
+                  "left": "🕐",
+                  "right": "1 giờ"
+                },
+                {
+                  "id": "t2",
+                  "left": "🕑",
+                  "right": "2 giờ"
+                },
+                {
+                  "id": "t3",
+                  "left": "🕒",
+                  "right": "3 giờ"
+                },
+                {
+                  "id": "t4",
+                  "left": "🕓",
+                  "right": "4 giờ"
+                }
+              ]
+            },
+            {
+              "id": "time-fill-1",
+              "type": "fill-blank",
+              "question": "1 giờ = ___ phút, vậy 2 giờ 30 phút = ___ phút",
+              "blanks": [
+                {
+                  "position": 9,
+                  "answer": "60",
+                  "placeholder": "?"
+                },
+                {
+                  "position": 43,
+                  "answer": "150",
+                  "placeholder": "?"
+                }
+              ],
+              "explanation": "1 giờ = 60 phút. 2 giờ 30 phút = (2 × 60) + 30 = 120 + 30 = 150 phút"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

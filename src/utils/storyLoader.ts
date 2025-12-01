@@ -3,11 +3,47 @@ import curriculumData from "@/data/curriculum.grade2.json";
 
 export interface Question {
   id: string;
-  type: string;
+  type: "multiple-choice" | "matching-pairs" | "drag-drop" | "fill-blank" | "counting";
   question: string;
-  options: string[];
-  correctAnswer: number;
-  explanation: string;
+  options?: string[];
+  correctAnswer?: number;
+  explanation?: string;
+  
+  // For matching-pairs
+  pairs?: {
+    id: string;
+    left: string;
+    right: string;
+    leftImage?: string;
+    rightImage?: string;
+  }[];
+  
+  // For drag-drop
+  dragItems?: {
+    id: string;
+    content: string;
+    image?: string;
+    correctSlot: string;
+  }[];
+  dropSlots?: {
+    id: string;
+    label: string;
+    image?: string;
+  }[];
+  
+  // For fill-blank
+  blanks?: {
+    position: number;
+    answer: string;
+    placeholder?: string;
+  }[];
+  
+  // For counting
+  countingItems?: {
+    image: string;
+    count: number;
+  }[];
+  countingAnswer?: number;
 }
 
 export interface Activity {
