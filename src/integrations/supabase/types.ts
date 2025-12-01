@@ -14,6 +14,36 @@ export type Database = {
   }
   public: {
     Tables: {
+      curriculumGrade0: {
+        Row: {
+          id: number
+          metadata: Json
+        }
+        Insert: {
+          id?: number
+          metadata: Json
+        }
+        Update: {
+          id?: number
+          metadata?: Json
+        }
+        Relationships: []
+      }
+      curriculumGrade1: {
+        Row: {
+          id: number
+          metadata: Json
+        }
+        Insert: {
+          id?: number
+          metadata: Json
+        }
+        Update: {
+          id?: number
+          metadata?: Json
+        }
+        Relationships: []
+      }
       game_progress: {
         Row: {
           completed_nodes: Json
@@ -107,6 +137,102 @@ export type Database = {
           id?: string
           school?: string | null
           updated_at?: string
+        }
+        Relationships: []
+      }
+      progressGrade0: {
+        Row: {
+          completedNodes: Json | null
+          correctAnswers: number | null
+          currentNodeIndex: number | null
+          currentQuestionIndex: number | null
+          earnedBadges: Json | null
+          id: number
+          incorrectAnswers: number | null
+          totalXp: number | null
+        }
+        Insert: {
+          completedNodes?: Json | null
+          correctAnswers?: number | null
+          currentNodeIndex?: number | null
+          currentQuestionIndex?: number | null
+          earnedBadges?: Json | null
+          id?: number
+          incorrectAnswers?: number | null
+          totalXp?: number | null
+        }
+        Update: {
+          completedNodes?: Json | null
+          correctAnswers?: number | null
+          currentNodeIndex?: number | null
+          currentQuestionIndex?: number | null
+          earnedBadges?: Json | null
+          id?: number
+          incorrectAnswers?: number | null
+          totalXp?: number | null
+        }
+        Relationships: []
+      }
+      progressGrade1: {
+        Row: {
+          completedNodes: Json | null
+          correctAnswers: number | null
+          currentNodeIndex: number | null
+          currentQuestionIndex: number | null
+          earnedBadges: Json | null
+          id: number
+          incorrectAnswers: number | null
+          totalXp: number | null
+        }
+        Insert: {
+          completedNodes?: Json | null
+          correctAnswers?: number | null
+          currentNodeIndex?: number | null
+          currentQuestionIndex?: number | null
+          earnedBadges?: Json | null
+          id?: number
+          incorrectAnswers?: number | null
+          totalXp?: number | null
+        }
+        Update: {
+          completedNodes?: Json | null
+          correctAnswers?: number | null
+          currentNodeIndex?: number | null
+          currentQuestionIndex?: number | null
+          earnedBadges?: Json | null
+          id?: number
+          incorrectAnswers?: number | null
+          totalXp?: number | null
+        }
+        Relationships: []
+      }
+      storyGrade0: {
+        Row: {
+          id: number
+          metadata: Json
+        }
+        Insert: {
+          id?: number
+          metadata: Json
+        }
+        Update: {
+          id?: number
+          metadata?: Json
+        }
+        Relationships: []
+      }
+      storyGrade1: {
+        Row: {
+          id: number
+          metadata: Json
+        }
+        Insert: {
+          id?: number
+          metadata: Json
+        }
+        Update: {
+          id?: number
+          metadata?: Json
         }
         Relationships: []
       }
