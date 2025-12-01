@@ -4,7 +4,7 @@
     {
       "id": "addition-subtraction",
       "title": "Cộng trừ có nhớ",
-      "description": "Phép cộng và trừ các số có nhớ",
+      "description": "Phép cộng và trừ các số có nhớ với nhiều hình thức tương tác",
       "icon": "calculator",
       "color": "primary",
       "lessons": [
@@ -99,6 +99,78 @@
               "options": ["27", "37", "47", "57"],
               "correctAnswer": 1,
               "explanation": "84 - 47 = 37"
+            }
+          ]
+        },
+        {
+          "id": "lesson-1b",
+          "title": "Nối cặp - Số và kết quả",
+          "duration": 150,
+          "questions": [
+            {
+              "id": "matching-add-1",
+              "type": "matching-pairs",
+              "question": "Nối các phép tính với kết quả đúng",
+              "pairs": [
+                {
+                  "id": "pair1",
+                  "left": "15 + 8",
+                  "right": "23"
+                },
+                {
+                  "id": "pair2",
+                  "left": "27 + 16",
+                  "right": "43"
+                },
+                {
+                  "id": "pair3",
+                  "left": "34 + 29",
+                  "right": "63"
+                },
+                {
+                  "id": "pair4",
+                  "left": "48 + 35",
+                  "right": "83"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "lesson-2b",
+          "title": "Điền chỗ trống - Phép cộng",
+          "duration": 150,
+          "questions": [
+            {
+              "id": "fill-add-1",
+              "type": "fill-blank",
+              "question": "25 + ___ = 48",
+              "blanks": [
+                {
+                  "position": 5,
+                  "answer": "23",
+                  "placeholder": "?"
+                }
+              ],
+              "explanation": "Để tìm số hạng còn thiếu, ta lấy tổng trừ đi số hạng đã biết: 48 - 25 = 23"
+            },
+            {
+              "id": "fill-add-2",
+              "type": "fill-blank",
+              "question": "37 + 28 = 65. Cộng hàng đơn vị: 7 + 8 = 15 (nhớ ___). Cộng hàng chục: 3 + 2 + ___ = 6",
+              "blanks": [
+                {
+                  "position": 56,
+                  "answer": "1",
+                  "placeholder": "?"
+                },
+                {
+                  "position": 83,
+                  "answer": "1",
+                  "placeholder": "?"
+                }
+              ],
+              "explanation": "7 + 8 = 15, viết 5 nhớ 1. Sau đó 3 + 2 + 1 (số nhớ) = 6"
             }
           ]
         }
@@ -204,6 +276,83 @@
               "explanation": "1200 g + 800 g = 2000 g = 2 kg"
             }
           ]
+        },
+        {
+          "id": "lesson-3b",
+          "title": "Kéo thả - Đổi đơn vị",
+          "duration": 150,
+          "questions": [
+            {
+              "id": "drag-measure-1",
+              "type": "drag-drop",
+              "question": "Sắp xếp các độ dài từ nhỏ đến lớn",
+              "dragItems": [
+                {
+                  "id": "len1",
+                  "content": "50 cm",
+                  "correctSlot": "small"
+                },
+                {
+                  "id": "len2",
+                  "content": "1 m 20 cm",
+                  "correctSlot": "medium"
+                },
+                {
+                  "id": "len3",
+                  "content": "2 m",
+                  "correctSlot": "large"
+                }
+              ],
+              "dropSlots": [
+                {
+                  "id": "small",
+                  "label": "Nhỏ nhất"
+                },
+                {
+                  "id": "medium",
+                  "label": "Trung bình"
+                },
+                {
+                  "id": "large",
+                  "label": "Lớn nhất"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "lesson-4b",
+          "title": "Nối cặp - Khối lượng",
+          "duration": 150,
+          "questions": [
+            {
+              "id": "match-weight-1",
+              "type": "matching-pairs",
+              "question": "Nối các khối lượng tương đương",
+              "pairs": [
+                {
+                  "id": "w1",
+                  "left": "1 kg",
+                  "right": "1000 g"
+                },
+                {
+                  "id": "w2",
+                  "left": "2 kg 500 g",
+                  "right": "2500 g"
+                },
+                {
+                  "id": "w3",
+                  "left": "500 g",
+                  "right": "0.5 kg"
+                },
+                {
+                  "id": "w4",
+                  "left": "3 kg",
+                  "right": "3000 g"
+                }
+              ]
+            }
+          ]
         }
       ]
     },
@@ -258,6 +407,188 @@
               "options": ["1 giờ", "2 giờ", "3 giờ", "4 giờ"],
               "correctAnswer": 1,
               "explanation": "10 giờ - 8 giờ = 2 giờ"
+            }
+          ]
+        },
+        {
+          "id": "lesson-5b",
+          "title": "Nối cặp - Đọc đồng hồ",
+          "duration": 150,
+          "questions": [
+            {
+              "id": "time-match-1",
+              "type": "matching-pairs",
+              "question": "Nối đồng hồ với giờ tương ứng",
+              "pairs": [
+                {
+                  "id": "t1",
+                  "left": "🕐",
+                  "right": "1 giờ"
+                },
+                {
+                  "id": "t2",
+                  "left": "🕑",
+                  "right": "2 giờ"
+                },
+                {
+                  "id": "t3",
+                  "left": "🕒",
+                  "right": "3 giờ"
+                },
+                {
+                  "id": "t4",
+                  "left": "🕓",
+                  "right": "4 giờ"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "lesson-5c",
+          "title": "Điền chỗ trống - Tính thời gian",
+          "duration": 150,
+          "questions": [
+            {
+              "id": "time-fill-1",
+              "type": "fill-blank",
+              "question": "1 giờ = ___ phút, vậy 2 giờ 30 phút = ___ phút",
+              "blanks": [
+                {
+                  "position": 9,
+                  "answer": "60",
+                  "placeholder": "?"
+                },
+                {
+                  "position": 43,
+                  "answer": "150",
+                  "placeholder": "?"
+                }
+              ],
+              "explanation": "1 giờ = 60 phút. 2 giờ 30 phút = (2 × 60) + 30 = 120 + 30 = 150 phút"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "counting-shapes",
+      "title": "Đếm và nhận dạng hình",
+      "description": "Đếm vật thể và nhận dạng hình học một cách trực quan",
+      "icon": "shapes",
+      "color": "secondary",
+      "lessons": [
+        {
+          "id": "lesson-count-1",
+          "title": "Đếm vật thể",
+          "duration": 150,
+          "questions": [
+            {
+              "id": "count-basic-1",
+              "type": "counting",
+              "question": "Đếm xem có bao nhiêu vật?",
+              "countingItems": [
+                {
+                  "image": "/src/assets/game/counting-apple.png",
+                  "count": 8
+                }
+              ],
+              "countingAnswer": 8,
+              "explanation": "Đếm từng vật: 1, 2, 3, 4, 5, 6, 7, 8. Có tất cả 8 vật."
+            },
+            {
+              "id": "count-groups-1",
+              "type": "counting",
+              "question": "Đếm tổng số vật trong tất cả các nhóm",
+              "countingItems": [
+                {
+                  "image": "/src/assets/game/counting-apple.png",
+                  "count": 5
+                },
+                {
+                  "image": "/src/assets/game/counting-apple.png",
+                  "count": 4
+                }
+              ],
+              "countingAnswer": 9,
+              "explanation": "Nhóm 1 có 5 vật, nhóm 2 có 4 vật. Tổng: 5 + 4 = 9 vật"
+            }
+          ]
+        },
+        {
+          "id": "lesson-shapes-1",
+          "title": "Nhận dạng hình học",
+          "duration": 150,
+          "questions": [
+            {
+              "id": "shapes-match-1",
+              "type": "matching-pairs",
+              "question": "Nối tên hình với hình tương ứng",
+              "pairs": [
+                {
+                  "id": "shape1",
+                  "left": "Hình tròn",
+                  "right": "⭕"
+                },
+                {
+                  "id": "shape2",
+                  "left": "Hình vuông",
+                  "right": "⬜"
+                },
+                {
+                  "id": "shape3",
+                  "left": "Hình tam giác",
+                  "right": "🔺"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "lesson-shapes-2",
+          "title": "Phân loại hình theo cạnh",
+          "duration": 150,
+          "questions": [
+            {
+              "id": "shapes-drag-1",
+              "type": "drag-drop",
+              "question": "Kéo các hình vào nhóm theo số cạnh",
+              "dragItems": [
+                {
+                  "id": "circle",
+                  "content": "⭕",
+                  "correctSlot": "no-side"
+                },
+                {
+                  "id": "triangle",
+                  "content": "🔺",
+                  "correctSlot": "3-side"
+                },
+                {
+                  "id": "square",
+                  "content": "⬜",
+                  "correctSlot": "4-side"
+                },
+                {
+                  "id": "rectangle",
+                  "content": "▭",
+                  "correctSlot": "4-side"
+                }
+              ],
+              "dropSlots": [
+                {
+                  "id": "no-side",
+                  "label": "Không có cạnh"
+                },
+                {
+                  "id": "3-side",
+                  "label": "3 cạnh"
+                },
+                {
+                  "id": "4-side",
+                  "label": "4 cạnh"
+                }
+              ]
             }
           ]
         }

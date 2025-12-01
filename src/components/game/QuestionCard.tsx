@@ -2,6 +2,10 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { CheckCircle2, XCircle, Lightbulb } from "lucide-react";
 import { Question } from "@/utils/storyLoader";
+import { MatchingPairsGame } from "./MatchingPairsGame";
+import { DragDropGame } from "./DragDropGame";
+import { FillInTheBlankGame } from "./FillInTheBlankGame";
+import { CountingGame } from "./CountingGame";
 
 interface QuestionCardProps {
   question: Question;
@@ -45,6 +49,55 @@ export const QuestionCard = ({
 
   const isCorrect = selectedAnswer === question.correctAnswer;
 
+  // Render different game types
+  if (question.type === "matching-pairs" && question.pairs) {
+    return (
+      <MatchingPairsGame
+        pairs={question.pairs}
+        title={question.question}
+        onComplete={onAnswer}
+      />
+    );
+  }
+
+  if (question.type === "drag-drop" && question.dragItems && question.dropSlots) {
+    return (
+      <DragDropGame
+        items={question.dragItems}
+        slots={question.dropSlots}
+        title={question.question}
+        onComplete={onAnswer}
+      />
+    );
+  }
+
+  if (question.type === "fill-blank" && question.blanks) {
+    return (
+      <FillInTheBlankGame
+        question={{
+          id: question.id,
+          text: question.question,
+          blanks: question.blanks,
+          explanation: question.explanation
+        }}
+        onComplete={onAnswer}
+      />
+    );
+  }
+
+  if (question.type === "counting" && question.countingItems && question.countingAnswer !== undefined) {
+    return (
+      <CountingGame
+        items={question.countingItems}
+        correctAnswer={question.countingAnswer}
+        question={question.question}
+        explanation={question.explanation}
+        onComplete={onAnswer}
+      />
+    );
+  }
+
+  // Default: multiple-choice
   return (
     <div className="w-full max-w-3xl mx-auto space-y-6 animate-fade-in">
       {/* Progress */}
