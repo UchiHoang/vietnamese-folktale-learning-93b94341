@@ -1,9 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { CutscenePlayer } from "./CutscenePlayer";
 import { QuestionCard } from "./QuestionCard";
-import { HudXpBar } from "./HudXpBar";
+import { GameHud } from "./GameHud";
 import { BadgeModal } from "./BadgeModal";
 import { LevelSelection } from "./LevelSelection";
 import { StoryIntro } from "./StoryIntro";
@@ -25,6 +25,9 @@ export const TrangQuynhMiniGame = () => {
   const [levelPerformance, setLevelPerformance] = useState<"excellent" | "good" | "retry">("good");
   const [earnedXpThisLevel, setEarnedXpThisLevel] = useState(0);
   const [completedBadgeId, setCompletedBadgeId] = useState<string | null>(null);
+  const [timerSeconds, setTimerSeconds] = useState<number>(0);
+  const [correctThisLevel, setCorrectThisLevel] = useState(0);
+  const [incorrectThisLevel, setIncorrectThisLevel] = useState(0);
 
   const currentNode = story.nodes[progress.currentNodeIndex];
   const isGameComplete = progress.currentNodeIndex >= story.nodes.length;
@@ -42,14 +45,32 @@ export const TrangQuynhMiniGame = () => {
 
   const handleSelectLevel = (nodeIndex: number) => {
     selectNode(nodeIndex);
+    setCorrectThisLevel(0);
+    setIncorrectThisLevel(0);
+    setEarnedXpThisLevel(0);
     setGamePhase("cutscene");
   };
 
+  const handleTimeUp = useCallback(() => {
+    toast({
+      title: "Hết giờ!",
+      description: "Thời gian đã hết, hãy thử lại nhé!",
+      variant: "destructive"
+    });
+    setLevelPerformance("retry");
+    setShowBadgeModal(true);
+  }, []);
+
   const handleCutsceneComplete = () => {
+    // Set timer based on activity duration (default 120 seconds)
+    const activity = findActivityByRef(currentNode?.activityRef || "");
+    setTimerSeconds(activity?.timerSec || activity?.duration || 120);
     setGamePhase("questions");
   };
 
   const handleCutsceneSkip = () => {
+    const activity = findActivityByRef(currentNode?.activityRef || "");
+    setTimerSeconds(activity?.timerSec || activity?.duration || 120);
     setGamePhase("questions");
   };
 
@@ -59,10 +80,13 @@ export const TrangQuynhMiniGame = () => {
     
     if (isCorrect) {
       setEarnedXpThisLevel(prev => prev + xpReward);
+      setCorrectThisLevel(prev => prev + 1);
       toast({
         title: "Chính xác! 🎉",
         description: `+${xpReward} XP`,
       });
+    } else {
+      setIncorrectThisLevel(prev => prev + 1);
     }
 
     const totalQuestions = currentActivity?.questions.length || 1;
@@ -273,34 +297,18 @@ export const TrangQuynhMiniGame = () => {
 
     return (
       <div className="min-h-screen bg-gradient-to-b from-background to-primary/5">
-        <HudXpBar
-          totalXp={progress.totalXp}
-          currentQuestion={progress.currentQuestionIndex + 1}
-          totalQuestions={currentActivity.questions.length}
+        <GameHud
           levelTitle={currentNode.title}
+          totalXp={earnedXpThisLevel}
+          maxXp={currentActivity.questions.length * (currentActivity.xpReward || 10)}
+          correctCount={correctThisLevel}
+          incorrectCount={incorrectThisLevel}
+          timerSeconds={timerSeconds}
+          onTimeUp={handleTimeUp}
+          onBack={handleBackToLevelSelection}
         />
         
-        <div className="max-w-7xl mx-auto p-4 md:p-8">
-          <div className="flex gap-2 mb-8">
-            <Button
-              onClick={handleBackToLevelSelection}
-              variant="ghost"
-              size="sm"
-              className="gap-2"
-            >
-              ← Chọn màn
-            </Button>
-            <Button
-              onClick={handleExit}
-              variant="ghost"
-              size="sm"
-              className="gap-2"
-            >
-              <Home className="w-4 h-4" />
-              Thoát
-            </Button>
-          </div>
-
+        <div className="max-w-7xl mx-auto p-4 md:p-8 pt-4">
           <QuestionCard
             question={currentQuestion}
             questionNumber={progress.currentQuestionIndex + 1}
