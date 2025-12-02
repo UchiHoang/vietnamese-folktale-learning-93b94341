@@ -3,15 +3,13 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import ProfileSidebar from "@/components/profile/ProfileSidebar";
+import PersonalInfoTab from "@/components/profile/PersonalInfoTab";
+import StatsTab from "@/components/profile/StatsTab";
+import SettingsTab from "@/components/profile/SettingsTab";
+import PasswordTab from "@/components/profile/PasswordTab";
+import CoursesTab from "@/components/profile/CoursesTab";
 import { toast } from "@/hooks/use-toast";
-import { User, Settings, Award, BarChart3, Users, BookOpen, TrendingUp, Calendar } from "lucide-react";
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer, BarChart, Bar } from "recharts";
 
 interface Profile {
   id: string;
@@ -19,52 +17,50 @@ interface Profile {
   avatar: string;
   school?: string;
   grade?: string;
+  email?: string;
+  phone?: string;
+  address?: string;
+  ward?: string;
+  district?: string;
+  province?: string;
+  birth_date?: string;
+  class_name?: string;
 }
 
 interface GameProgress {
   total_xp: number;
   total_points: number;
   level: number;
+  current_node: number;
+  completed_nodes: string[];
   earned_badges: string[];
 }
 
-interface UserRole {
-  role: string;
+interface StreakData {
+  current_streak: number;
+  longest_streak: number;
+  total_learning_days: number;
+  last_activity_date: string | null;
+}
+
+interface Achievement {
+  id: string;
+  achievement_id: string;
+  achievement_name: string;
+  achievement_icon: string;
+  achievement_description: string;
+  earned_at: string;
 }
 
 const Profile = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState("info");
   const [profile, setProfile] = useState<Profile | null>(null);
   const [gameProgress, setGameProgress] = useState<GameProgress | null>(null);
   const [userRole, setUserRole] = useState<string>("student");
-  const [editing, setEditing] = useState(false);
-  const [formData, setFormData] = useState({
-    display_name: "",
-    school: "",
-    grade: "",
-  });
-
-  // Mock data for charts - in production, this would come from the database
-  const [xpData] = useState([
-    { date: "T2", xp: 120 },
-    { date: "T3", xp: 180 },
-    { date: "T4", xp: 250 },
-    { date: "T5", xp: 320 },
-    { date: "T6", xp: 400 },
-    { date: "T7", xp: 480 },
-    { date: "CN", xp: gameProgress?.total_xp || 500 },
-  ]);
-
-  const [pointsData] = useState([
-    { date: "T2", points: 50 },
-    { date: "T3", points: 75 },
-    { date: "T4", points: 120 },
-    { date: "T5", points: 180 },
-    { date: "T6", points: 240 },
-    { date: "T7", points: 290 },
-    { date: "CN", points: gameProgress?.total_points || 350 },
-  ]);
+  const [streak, setStreak] = useState<StreakData | null>(null);
+  const [achievements, setAchievements] = useState<Achievement[]>([]);
 
   useEffect(() => {
     checkUser();
@@ -79,9 +75,16 @@ const Profile = () => {
         return;
       }
 
-      await loadProfile(session.user.id);
-      await loadGameProgress(session.user.id);
-      await loadUserRole(session.user.id);
+      await Promise.all([
+        loadProfile(session.user.id),
+        loadGameProgress(session.user.id),
+        loadUserRole(session.user.id),
+        loadStreak(session.user.id),
+        loadAchievements(session.user.id),
+      ]);
+
+      // Update streak on login
+      await updateStreak(session.user.id);
     } catch (error) {
       console.error("Error checking user:", error);
       toast({
@@ -106,12 +109,7 @@ const Profile = () => {
       return;
     }
 
-    setProfile(data);
-    setFormData({
-      display_name: data.display_name || "",
-      school: data.school || "",
-      grade: data.grade || "",
-    });
+    setProfile(data as Profile);
   };
 
   const loadGameProgress = async (userId: string) => {
@@ -129,6 +127,7 @@ const Profile = () => {
     if (data) {
       setGameProgress({
         ...data,
+        completed_nodes: (data.completed_nodes as string[]) || [],
         earned_badges: (data.earned_badges as string[]) || [],
       });
     }
@@ -149,16 +148,58 @@ const Profile = () => {
     setUserRole(data.role);
   };
 
-  const handleUpdateProfile = async () => {
+  const loadStreak = async (userId: string) => {
+    const { data, error } = await supabase
+      .from("user_streaks")
+      .select("*")
+      .eq("user_id", userId)
+      .single();
+
+    if (error) {
+      // If no streak record, create one
+      if (error.code === "PGRST116") {
+        const { data: newStreak } = await supabase
+          .from("user_streaks")
+          .insert({ user_id: userId })
+          .select()
+          .single();
+        if (newStreak) setStreak(newStreak as StreakData);
+      }
+      return;
+    }
+
+    setStreak(data as StreakData);
+  };
+
+  const loadAchievements = async (userId: string) => {
+    const { data, error } = await supabase
+      .from("user_achievements")
+      .select("*")
+      .eq("user_id", userId);
+
+    if (error) {
+      console.error("Error loading achievements:", error);
+      return;
+    }
+
+    setAchievements((data as Achievement[]) || []);
+  };
+
+  const updateStreak = async (userId: string) => {
+    try {
+      await supabase.rpc("update_user_streak", { p_user_id: userId });
+      await loadStreak(userId);
+    } catch (error) {
+      console.error("Error updating streak:", error);
+    }
+  };
+
+  const handleUpdateProfile = async (data: Partial<Profile>) => {
     if (!profile) return;
 
     const { error } = await supabase
       .from("profiles")
-      .update({
-        display_name: formData.display_name,
-        school: formData.school,
-        grade: formData.grade,
-      })
+      .update(data)
       .eq("id", profile.id);
 
     if (error) {
@@ -175,8 +216,12 @@ const Profile = () => {
       description: "Đã cập nhật thông tin cá nhân",
     });
 
-    setEditing(false);
     await loadProfile(profile.id);
+  };
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    navigate("/");
   };
 
   if (loading) {
@@ -192,247 +237,57 @@ const Profile = () => {
 
   const isAdmin = userRole === "teacher" || userRole === "admin";
 
+  const renderContent = () => {
+    switch (activeTab) {
+      case "info":
+        return (
+          <PersonalInfoTab
+            profile={profile}
+            isAdmin={isAdmin}
+            onUpdate={handleUpdateProfile}
+          />
+        );
+      case "stats":
+        return (
+          <StatsTab
+            gameProgress={gameProgress}
+            streak={streak}
+            achievements={achievements}
+          />
+        );
+      case "settings":
+        return <SettingsTab />;
+      case "password":
+        return <PasswordTab />;
+      case "courses":
+        return <CoursesTab gameProgress={gameProgress} />;
+      default:
+        return null;
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-muted/30">
       <Header />
       
       <main className="container mx-auto px-4 py-8 mt-20">
-        <div className="max-w-4xl mx-auto">
-          {/* Profile Header */}
-          <Card className="p-6 mb-6">
-            <div className="flex flex-col md:flex-row gap-6 items-start md:items-center">
-              <div className="w-24 h-24 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-5xl">
-                {profile?.avatar || "👤"}
-              </div>
-              
-              <div className="flex-1">
-                <h1 className="text-3xl font-heading font-bold mb-2">
-                  {profile?.display_name}
-                </h1>
-                <div className="flex flex-wrap gap-2 mb-2">
-                  <span className="px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-medium">
-                    {isAdmin ? "Giáo viên" : "Học sinh"}
-                  </span>
-                  {profile?.grade && (
-                    <span className="px-3 py-1 rounded-full bg-secondary/10 text-secondary text-sm">
-                      Lớp {profile.grade}
-                    </span>
-                  )}
-                </div>
-                {profile?.school && (
-                  <p className="text-muted-foreground">{profile.school}</p>
-                )}
-              </div>
+        <div className="max-w-6xl mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-[300px_1fr] gap-6">
+            {/* Sidebar */}
+            <ProfileSidebar
+              activeTab={activeTab}
+              onTabChange={setActiveTab}
+              profile={profile}
+              streak={streak?.current_streak || 0}
+              onLogout={handleLogout}
+              onAvatarUpdate={() => toast({ title: "Tính năng đang phát triển" })}
+            />
 
-              <Button
-                variant={editing ? "outline" : "default"}
-                onClick={() => setEditing(!editing)}
-              >
-                {editing ? "Hủy" : "Chỉnh sửa"}
-              </Button>
+            {/* Main Content */}
+            <div className="min-w-0">
+              {renderContent()}
             </div>
-          </Card>
-
-          <Tabs defaultValue="stats" className="w-full">
-            <TabsList className="grid w-full grid-cols-3">
-              <TabsTrigger value="stats">
-                <BarChart3 className="h-4 w-4 mr-2" />
-                Thống kê
-              </TabsTrigger>
-              <TabsTrigger value="info">
-                <User className="h-4 w-4 mr-2" />
-                Thông tin
-              </TabsTrigger>
-              <TabsTrigger value="settings">
-                <Settings className="h-4 w-4 mr-2" />
-                Cài đặt
-              </TabsTrigger>
-            </TabsList>
-
-            {/* Statistics Tab */}
-            <TabsContent value="stats">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                <Card className="p-6 text-center">
-                  <div className="text-4xl font-bold text-primary mb-2">
-                    {gameProgress?.total_xp || 0}
-                  </div>
-                  <div className="text-sm text-muted-foreground">Tổng XP</div>
-                </Card>
-                
-                <Card className="p-6 text-center">
-                  <div className="text-4xl font-bold text-primary mb-2">
-                    {gameProgress?.total_points || 0}
-                  </div>
-                  <div className="text-sm text-muted-foreground">Điểm</div>
-                </Card>
-                
-                <Card className="p-6 text-center">
-                  <div className="text-4xl font-bold text-primary mb-2">
-                    {gameProgress?.level || 1}
-                  </div>
-                  <div className="text-sm text-muted-foreground">Cấp độ</div>
-                </Card>
-              </div>
-
-              <Card className="p-6">
-                <h3 className="text-xl font-heading font-bold mb-4 flex items-center gap-2">
-                  <Award className="h-5 w-5 text-primary" />
-                  Huy hiệu đã đạt được
-                </h3>
-                <div className="flex flex-wrap gap-4">
-                  {gameProgress?.earned_badges && gameProgress.earned_badges.length > 0 ? (
-                    gameProgress.earned_badges.map((badge, index) => (
-                      <div
-                        key={index}
-                        className="text-5xl hover-scale cursor-pointer"
-                        title={`Huy hiệu ${index + 1}`}
-                      >
-                        {badge}
-                      </div>
-                    ))
-                  ) : (
-                    <p className="text-muted-foreground">Chưa có huy hiệu nào</p>
-                  )}
-                </div>
-              </Card>
-
-              {isAdmin && (
-                <Card className="p-6 mt-4">
-                  <h3 className="text-xl font-heading font-bold mb-4 flex items-center gap-2">
-                    <Users className="h-5 w-5 text-primary" />
-                    Quản lý giáo viên
-                  </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <Button variant="outline" className="justify-start">
-                      <Users className="h-4 w-4 mr-2" />
-                      Quản lý học sinh
-                    </Button>
-                    <Button variant="outline" className="justify-start">
-                      <BookOpen className="h-4 w-4 mr-2" />
-                      Quản lý bài giảng
-                    </Button>
-                  </div>
-                </Card>
-              )}
-            </TabsContent>
-
-            {/* Info Tab */}
-            <TabsContent value="info">
-              <Card className="p-6">
-                <h3 className="text-xl font-heading font-bold mb-4">
-                  Thông tin cá nhân
-                </h3>
-                
-                {editing ? (
-                  <div className="space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="display_name">Tên hiển thị</Label>
-                      <Input
-                        id="display_name"
-                        value={formData.display_name}
-                        onChange={(e) => setFormData({ ...formData, display_name: e.target.value })}
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="school">Trường học</Label>
-                      <Input
-                        id="school"
-                        value={formData.school}
-                        onChange={(e) => setFormData({ ...formData, school: e.target.value })}
-                        placeholder="Tên trường học của bạn"
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="grade">Lớp</Label>
-                      <Input
-                        id="grade"
-                        value={formData.grade}
-                        onChange={(e) => setFormData({ ...formData, grade: e.target.value })}
-                        placeholder="Ví dụ: 1, 2, 3..."
-                      />
-                    </div>
-
-                    <Button onClick={handleUpdateProfile} className="w-full">
-                      Lưu thay đổi
-                    </Button>
-                  </div>
-                ) : (
-                  <div className="space-y-4">
-                    <div>
-                      <Label className="text-muted-foreground">Tên hiển thị</Label>
-                      <p className="text-lg">{profile?.display_name}</p>
-                    </div>
-
-                    <div>
-                      <Label className="text-muted-foreground">Trường học</Label>
-                      <p className="text-lg">{profile?.school || "Chưa cập nhật"}</p>
-                    </div>
-
-                    <div>
-                      <Label className="text-muted-foreground">Lớp</Label>
-                      <p className="text-lg">{profile?.grade ? `Lớp ${profile.grade}` : "Chưa cập nhật"}</p>
-                    </div>
-
-                    <div>
-                      <Label className="text-muted-foreground">Vai trò</Label>
-                      <p className="text-lg">{isAdmin ? "Giáo viên" : "Học sinh"}</p>
-                    </div>
-                  </div>
-                )}
-              </Card>
-            </TabsContent>
-
-            {/* Settings Tab */}
-            <TabsContent value="settings">
-              <Card className="p-6">
-                <h3 className="text-xl font-heading font-bold mb-4">
-                  Cài đặt tài khoản
-                </h3>
-                
-                <div className="space-y-4">
-                  <Button
-                    variant="outline"
-                    className="w-full justify-start"
-                    onClick={async () => {
-                      const { error } = await supabase.auth.resetPasswordForEmail(
-                        profile?.id || "",
-                        { redirectTo: `${window.location.origin}/auth?reset=true` }
-                      );
-                      
-                      if (error) {
-                        toast({
-                          title: "Lỗi",
-                          description: "Không thể gửi email đặt lại mật khẩu",
-                          variant: "destructive",
-                        });
-                        return;
-                      }
-                      
-                      toast({
-                        title: "Thành công",
-                        description: "Vui lòng kiểm tra email để đặt lại mật khẩu",
-                      });
-                    }}
-                  >
-                    Đổi mật khẩu
-                  </Button>
-
-                  <Button
-                    variant="destructive"
-                    className="w-full"
-                    onClick={async () => {
-                      await supabase.auth.signOut();
-                      navigate("/");
-                    }}
-                  >
-                    Đăng xuất
-                  </Button>
-                </div>
-              </Card>
-            </TabsContent>
-          </Tabs>
+          </div>
         </div>
       </main>
 
