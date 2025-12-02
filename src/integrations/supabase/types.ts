@@ -44,6 +44,39 @@ export type Database = {
         }
         Relationships: []
       }
+      daily_activity: {
+        Row: {
+          activity_date: string
+          created_at: string
+          id: string
+          lessons_completed: number
+          points_earned: number
+          time_spent_minutes: number
+          user_id: string
+          xp_earned: number
+        }
+        Insert: {
+          activity_date?: string
+          created_at?: string
+          id?: string
+          lessons_completed?: number
+          points_earned?: number
+          time_spent_minutes?: number
+          user_id: string
+          xp_earned?: number
+        }
+        Update: {
+          activity_date?: string
+          created_at?: string
+          id?: string
+          lessons_completed?: number
+          points_earned?: number
+          time_spent_minutes?: number
+          user_id?: string
+          xp_earned?: number
+        }
+        Relationships: []
+      }
       game_progress: {
         Row: {
           completed_nodes: Json
@@ -112,31 +145,55 @@ export type Database = {
       }
       profiles: {
         Row: {
+          address: string | null
           avatar: string | null
+          birth_date: string | null
+          class_name: string | null
           created_at: string
           display_name: string
+          district: string | null
+          email: string | null
           grade: string | null
           id: string
+          phone: string | null
+          province: string | null
           school: string | null
           updated_at: string
+          ward: string | null
         }
         Insert: {
+          address?: string | null
           avatar?: string | null
+          birth_date?: string | null
+          class_name?: string | null
           created_at?: string
           display_name: string
+          district?: string | null
+          email?: string | null
           grade?: string | null
           id: string
+          phone?: string | null
+          province?: string | null
           school?: string | null
           updated_at?: string
+          ward?: string | null
         }
         Update: {
+          address?: string | null
           avatar?: string | null
+          birth_date?: string | null
+          class_name?: string | null
           created_at?: string
           display_name?: string
+          district?: string | null
+          email?: string | null
           grade?: string | null
           id?: string
+          phone?: string | null
+          province?: string | null
           school?: string | null
           updated_at?: string
+          ward?: string | null
         }
         Relationships: []
       }
@@ -236,6 +293,36 @@ export type Database = {
         }
         Relationships: []
       }
+      user_achievements: {
+        Row: {
+          achievement_description: string | null
+          achievement_icon: string
+          achievement_id: string
+          achievement_name: string
+          earned_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          achievement_description?: string | null
+          achievement_icon?: string
+          achievement_id: string
+          achievement_name: string
+          earned_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          achievement_description?: string | null
+          achievement_icon?: string
+          achievement_id?: string
+          achievement_name?: string
+          earned_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           id: string
@@ -254,6 +341,39 @@ export type Database = {
         }
         Relationships: []
       }
+      user_streaks: {
+        Row: {
+          created_at: string
+          current_streak: number
+          id: string
+          last_activity_date: string | null
+          longest_streak: number
+          total_learning_days: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          current_streak?: number
+          id?: string
+          last_activity_date?: string | null
+          longest_streak?: number
+          total_learning_days?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          current_streak?: number
+          id?: string
+          last_activity_date?: string | null
+          longest_streak?: number
+          total_learning_days?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -266,6 +386,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      update_user_streak: { Args: { p_user_id: string }; Returns: undefined }
     }
     Enums: {
       app_role: "student" | "teacher" | "admin"
