@@ -9,6 +9,8 @@ import StatsTab from "@/components/profile/StatsTab";
 import SettingsTab from "@/components/profile/SettingsTab";
 import PasswordTab from "@/components/profile/PasswordTab";
 import CoursesTab from "@/components/profile/CoursesTab";
+import AnalyticsTab from "@/components/profile/AnalyticsTab";
+import AvatarUploadModal from "@/components/profile/AvatarUploadModal";
 import { toast } from "@/hooks/use-toast";
 
 interface Profile {
@@ -61,6 +63,7 @@ const Profile = () => {
   const [userRole, setUserRole] = useState<string>("student");
   const [streak, setStreak] = useState<StreakData | null>(null);
   const [achievements, setAchievements] = useState<Achievement[]>([]);
+  const [avatarModalOpen, setAvatarModalOpen] = useState(false);
 
   useEffect(() => {
     checkUser();
@@ -224,6 +227,31 @@ const Profile = () => {
     navigate("/");
   };
 
+  const handleAvatarSave = async (avatar: string) => {
+    if (!profile) return;
+    
+    const { error } = await supabase
+      .from("profiles")
+      .update({ avatar })
+      .eq("id", profile.id);
+
+    if (error) {
+      toast({
+        title: "Lỗi",
+        description: "Không thể cập nhật avatar",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    toast({
+      title: "Thành công",
+      description: "Đã cập nhật avatar",
+    });
+
+    await loadProfile(profile.id);
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -255,6 +283,13 @@ const Profile = () => {
             achievements={achievements}
           />
         );
+      case "analytics":
+        return (
+          <AnalyticsTab
+            gameProgress={gameProgress}
+            streak={streak}
+          />
+        );
       case "settings":
         return <SettingsTab />;
       case "password":
@@ -280,7 +315,7 @@ const Profile = () => {
               profile={profile}
               streak={streak?.current_streak || 0}
               onLogout={handleLogout}
-              onAvatarUpdate={() => toast({ title: "Tính năng đang phát triển" })}
+              onAvatarUpdate={() => setAvatarModalOpen(true)}
             />
 
             {/* Main Content */}
@@ -292,6 +327,14 @@ const Profile = () => {
       </main>
 
       <Footer />
+
+      {/* Avatar Modal */}
+      <AvatarUploadModal
+        open={avatarModalOpen}
+        onClose={() => setAvatarModalOpen(false)}
+        currentAvatar={profile?.avatar || "👤"}
+        onSave={handleAvatarSave}
+      />
     </div>
   );
 };
