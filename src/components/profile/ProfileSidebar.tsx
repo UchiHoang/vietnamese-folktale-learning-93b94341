@@ -1,5 +1,6 @@
-import { User, TrendingUp, Settings, Lock, BookOpen, LogOut, Flame } from "lucide-react";
+import { User, TrendingUp, Settings, Lock, BookOpen, LogOut, Flame, BarChart3, Camera } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface ProfileSidebarProps {
   activeTab: string;
@@ -25,19 +26,53 @@ const ProfileSidebar = ({
   const menuItems = [
     { id: "info", label: "Thông tin cá nhân", icon: User },
     { id: "stats", label: "Thống kê", icon: TrendingUp },
+    { id: "analytics", label: "Phân tích học tập", icon: BarChart3 },
     { id: "settings", label: "Cài đặt", icon: Settings },
     { id: "password", label: "Đổi mật khẩu", icon: Lock },
     { id: "courses", label: "Khóa học của bạn", icon: BookOpen },
   ];
 
+  // Check if avatar is an emoji (short string with emoji pattern)
+  const isEmojiAvatar = !profile?.avatar || 
+    (profile.avatar.length <= 4 && /\p{Emoji}/u.test(profile.avatar));
+  
+  const getInitials = (name: string) => {
+    return name
+      .split(' ')
+      .map(word => word[0])
+      .join('')
+      .toUpperCase()
+      .slice(0, 2);
+  };
+
   return (
     <div className="bg-card rounded-2xl shadow-lg p-6 h-fit">
       {/* Avatar Section */}
       <div className="flex flex-col items-center mb-6">
-        <div className="relative">
-          <div className="w-24 h-24 rounded-full bg-muted flex items-center justify-center text-5xl border-4 border-background shadow-md">
-            {profile?.avatar || "👤"}
-          </div>
+        <div className="relative group">
+          <Avatar className="w-24 h-24 border-4 border-background shadow-md">
+            {isEmojiAvatar ? (
+              <AvatarFallback className="bg-gradient-to-br from-primary/20 to-secondary/20 text-4xl">
+                {profile?.avatar || "👤"}
+              </AvatarFallback>
+            ) : (
+              <>
+                <AvatarImage src={profile?.avatar} alt={profile?.display_name} />
+                <AvatarFallback className="bg-gradient-to-br from-primary/20 to-secondary/20 text-xl font-bold">
+                  {getInitials(profile?.display_name || "U")}
+                </AvatarFallback>
+              </>
+            )}
+          </Avatar>
+          
+          {/* Avatar update overlay */}
+          <button
+            onClick={onAvatarUpdate}
+            className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+          >
+            <Camera className="h-6 w-6 text-white" />
+          </button>
+          
           {/* Streak indicator */}
           {streak > 0 && (
             <div className="absolute -bottom-1 -right-1 bg-gradient-to-r from-orange-400 to-red-500 rounded-full p-1.5 shadow-lg">
@@ -52,13 +87,6 @@ const ProfileSidebar = ({
         <p className="text-sm text-muted-foreground">
           {profile?.grade ? `Khối ${profile.grade}` : "Chưa cập nhật"}
         </p>
-        
-        <button 
-          onClick={onAvatarUpdate}
-          className="mt-3 px-4 py-2 text-sm font-medium text-primary border-2 border-primary/30 rounded-full hover:bg-primary/10 transition-colors"
-        >
-          Cập nhật avatar
-        </button>
 
         {/* Streak Display */}
         <div className="flex items-center gap-2 mt-4 px-4 py-2 bg-gradient-to-r from-orange-100 to-red-100 dark:from-orange-900/30 dark:to-red-900/30 rounded-full">
