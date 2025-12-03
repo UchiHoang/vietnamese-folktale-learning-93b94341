@@ -1,19 +1,24 @@
 import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { GraduationCap, Eye, EyeOff, Mail, Lock, User } from "lucide-react";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { GraduationCap, Eye, EyeOff, Mail, Lock, User, Users, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { cn } from "@/lib/utils";
+
+type UserRole = "student" | "teacher";
 
 const Auth = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [isLogin, setIsLogin] = useState(true);
   const [isForgotPassword, setIsForgotPassword] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [selectedRole, setSelectedRole] = useState<UserRole>("student");
   const [formData, setFormData] = useState({
     username: "",
     password: "",
@@ -21,21 +26,24 @@ const Auth = () => {
     confirmPassword: ""
   });
 
+  // Check if redirected from game requiring login
+  const redirectTo = searchParams.get("redirect");
+
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (session) {
-        navigate("/");
+        navigate(redirectTo || "/");
       }
     });
 
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session) {
-        navigate("/");
+        navigate(redirectTo || "/");
       }
     });
 
     return () => subscription.unsubscribe();
-  }, [navigate]);
+  }, [navigate, redirectTo]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -82,9 +90,10 @@ const Auth = () => {
           email: formData.email,
           password: formData.password,
           options: {
-            emailRedirectTo: `${window.location.origin}/`,
+            emailRedirectTo: `${window.location.origin}${redirectTo || '/'}`,
             data: {
               display_name: formData.username || formData.email.split('@')[0],
+              role: selectedRole,
             }
           }
         });
@@ -239,21 +248,58 @@ const Auth = () => {
 
                   <form onSubmit={handleSubmit} className="space-y-5">
                     {!isLogin && !isForgotPassword && (
-                      <div className="space-y-2">
-                        <label className="text-sm font-semibold text-foreground">
-                          Tên hiển thị
-                        </label>
-                        <div className="relative">
-                          <User className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                          <Input
-                            type="text"
-                            placeholder="Nhập tên hiển thị"
-                            value={formData.username}
-                            onChange={(e) => setFormData({...formData, username: e.target.value})}
-                            className="h-12 pl-12 rounded-xl border-2 focus:border-primary transition-all"
-                          />
+                      <>
+                        {/* Role Selection */}
+                        <div className="space-y-3">
+                          <label className="text-sm font-semibold text-foreground">
+                            Bạn là
+                          </label>
+                          <div className="grid grid-cols-2 gap-3">
+                            <button
+                              type="button"
+                              onClick={() => setSelectedRole("student")}
+                              className={cn(
+                                "flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all",
+                                selectedRole === "student"
+                                  ? "border-primary bg-primary/10 text-primary"
+                                  : "border-border hover:border-primary/50"
+                              )}
+                            >
+                              <Users className="h-8 w-8" />
+                              <span className="font-semibold">Học sinh</span>
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setSelectedRole("teacher")}
+                              className={cn(
+                                "flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all",
+                                selectedRole === "teacher"
+                                  ? "border-primary bg-primary/10 text-primary"
+                                  : "border-border hover:border-primary/50"
+                              )}
+                            >
+                              <BookOpen className="h-8 w-8" />
+                              <span className="font-semibold">Giáo viên</span>
+                            </button>
+                          </div>
                         </div>
-                      </div>
+
+                        <div className="space-y-2">
+                          <label className="text-sm font-semibold text-foreground">
+                            Tên hiển thị
+                          </label>
+                          <div className="relative">
+                            <User className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                            <Input
+                              type="text"
+                              placeholder="Nhập tên hiển thị"
+                              value={formData.username}
+                              onChange={(e) => setFormData({...formData, username: e.target.value})}
+                              className="h-12 pl-12 rounded-xl border-2 focus:border-primary transition-all"
+                            />
+                          </div>
+                        </div>
+                      </>
                     )}
 
                     <div className="space-y-2">

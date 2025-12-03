@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Menu, GraduationCap, LogOut, User } from "lucide-react";
+import { Menu, GraduationCap, LogOut, User, Shield } from "lucide-react";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
@@ -24,14 +24,17 @@ const Header = ({ onRoleChange, currentRole = "student" }: HeaderProps) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [user, setUser] = useState<any>(null);
   const [profile, setProfile] = useState<any>(null);
+  const [userRole, setUserRole] = useState<string | null>(null);
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       setUser(session?.user ?? null);
       if (session?.user) {
         loadProfile(session.user.id);
+        loadUserRole(session.user.id);
       } else {
         setProfile(null);
+        setUserRole(null);
       }
     });
 
@@ -39,6 +42,7 @@ const Header = ({ onRoleChange, currentRole = "student" }: HeaderProps) => {
       setUser(session?.user ?? null);
       if (session?.user) {
         loadProfile(session.user.id);
+        loadUserRole(session.user.id);
       }
     });
 
@@ -53,6 +57,17 @@ const Header = ({ onRoleChange, currentRole = "student" }: HeaderProps) => {
       .single();
     setProfile(data);
   };
+
+  const loadUserRole = async (userId: string) => {
+    const { data } = await supabase
+      .from('user_roles')
+      .select('role')
+      .eq('user_id', userId)
+      .single();
+    setUserRole(data?.role || null);
+  };
+
+  const isTeacherOrAdmin = userRole === 'admin' || userRole === 'teacher';
 
   const handleLogout = async () => {
     const { error } = await supabase.auth.signOut();
@@ -121,6 +136,13 @@ const Header = ({ onRoleChange, currentRole = "student" }: HeaderProps) => {
                   <User className="mr-2 h-4 w-4" />
                   <span>Hồ sơ cá nhân</span>
                 </DropdownMenuItem>
+                {isTeacherOrAdmin && (
+                  <DropdownMenuItem className="cursor-pointer" onClick={() => navigate("/admin")}>
+                    <Shield className="mr-2 h-4 w-4" />
+                    <span>Quản trị giáo viên</span>
+                  </DropdownMenuItem>
+                )}
+                <DropdownMenuSeparator />
                 <DropdownMenuItem className="cursor-pointer text-destructive" onClick={handleLogout}>
                   <LogOut className="mr-2 h-4 w-4" />
                   <span>Đăng xuất</span>
@@ -169,7 +191,15 @@ const Header = ({ onRoleChange, currentRole = "student" }: HeaderProps) => {
                 <p className="text-sm font-medium">{profile?.display_name || user.email?.split('@')[0]}</p>
                 <p className="text-xs text-muted-foreground">{user.email}</p>
               </div>
-              <Button className="w-full" variant="destructive" onClick={handleLogout}>
+              <Link to="/profile" className="block py-2 text-foreground hover:text-primary">
+                Hồ sơ cá nhân
+              </Link>
+              {isTeacherOrAdmin && (
+                <Link to="/admin" className="block py-2 text-primary font-medium">
+                  Quản trị giáo viên
+                </Link>
+              )}
+              <Button className="w-full mt-2" variant="destructive" onClick={handleLogout}>
                 <LogOut className="mr-2 h-4 w-4" />
                 Đăng xuất
               </Button>
