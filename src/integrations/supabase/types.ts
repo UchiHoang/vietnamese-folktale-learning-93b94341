@@ -263,6 +263,54 @@ export type Database = {
         }
         Relationships: []
       }
+      stage_history: {
+        Row: {
+          attempt_number: number
+          completed: boolean
+          correct_answers: number
+          course_id: string
+          created_at: string
+          id: string
+          max_score: number
+          score: number
+          stage_id: string
+          time_spent_seconds: number
+          total_questions: number
+          user_id: string
+          xp_earned: number
+        }
+        Insert: {
+          attempt_number?: number
+          completed?: boolean
+          correct_answers?: number
+          course_id?: string
+          created_at?: string
+          id?: string
+          max_score?: number
+          score?: number
+          stage_id: string
+          time_spent_seconds?: number
+          total_questions?: number
+          user_id: string
+          xp_earned?: number
+        }
+        Update: {
+          attempt_number?: number
+          completed?: boolean
+          correct_answers?: number
+          course_id?: string
+          created_at?: string
+          id?: string
+          max_score?: number
+          score?: number
+          stage_id?: string
+          time_spent_seconds?: number
+          total_questions?: number
+          user_id?: string
+          xp_earned?: number
+        }
+        Relationships: []
+      }
       storyGrade0: {
         Row: {
           id: number
@@ -323,6 +371,45 @@ export type Database = {
         }
         Relationships: []
       }
+      user_best_scores: {
+        Row: {
+          best_accuracy: number
+          best_score: number
+          course_id: string
+          first_completed_at: string | null
+          id: string
+          last_played_at: string
+          stage_id: string
+          total_attempts: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          best_accuracy?: number
+          best_score?: number
+          course_id?: string
+          first_completed_at?: string | null
+          id?: string
+          last_played_at?: string
+          stage_id: string
+          total_attempts?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          best_accuracy?: number
+          best_score?: number
+          course_id?: string
+          first_completed_at?: string | null
+          id?: string
+          last_played_at?: string
+          stage_id?: string
+          total_attempts?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           id: string
@@ -379,6 +466,19 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      calculate_level_from_xp: { Args: { p_xp: number }; Returns: number }
+      complete_stage: {
+        Args: {
+          p_correct_answers: number
+          p_course_id: string
+          p_max_score: number
+          p_score: number
+          p_stage_id: string
+          p_time_spent_seconds: number
+          p_total_questions: number
+        }
+        Returns: Json
+      }
       get_public_profile: {
         Args: { profile_id: string }
         Returns: {
@@ -389,12 +489,22 @@ export type Database = {
           school: string
         }[]
       }
+      get_user_progress: { Args: never; Returns: Json }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
           _user_id: string
         }
         Returns: boolean
+      }
+      unlock_badge: {
+        Args: {
+          p_badge_description?: string
+          p_badge_icon?: string
+          p_badge_id: string
+          p_badge_name: string
+        }
+        Returns: Json
       }
       update_user_streak: { Args: { p_user_id: string }; Returns: undefined }
     }

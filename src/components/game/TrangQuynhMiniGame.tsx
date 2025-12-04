@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { CutscenePlayer } from "./CutscenePlayer";
@@ -8,18 +8,28 @@ import { BadgeModal } from "./BadgeModal";
 import { LevelSelection } from "./LevelSelection";
 import { StoryIntro } from "./StoryIntro";
 import { loadStory, findActivityByRef, Activity } from "@/utils/storyLoader";
-import { useGameEngine } from "@/hooks/useGameEngine";
-import { Home, RotateCcw } from "lucide-react";
-import { toast } from "@/hooks/use-toast";
+import { useSupabaseProgress } from "@/hooks/useSupabaseProgress";
+import { Home, RotateCcw, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
 type GamePhase = "prologue" | "level-selection" | "cutscene" | "questions" | "complete";
 
 export const TrangQuynhMiniGame = () => {
   const navigate = useNavigate();
   const story = loadStory();
-  const { progress, recordAnswer, nextQuestion, completeNode, resetProgress, selectNode } = useGameEngine();
+  const { 
+    progress, 
+    isLoading, 
+    completeStage, 
+    unlockBadge, 
+    updateCurrentNode, 
+    resetProgress,
+    fetchProgress 
+  } = useSupabaseProgress();
   
   const [gamePhase, setGamePhase] = useState<GamePhase>("prologue");
+  const [currentNodeIndex, setCurrentNodeIndex] = useState(0);
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [currentActivity, setCurrentActivity] = useState<Activity | null>(null);
   const [showBadgeModal, setShowBadgeModal] = useState(false);
   const [levelPerformance, setLevelPerformance] = useState<"excellent" | "good" | "retry">("good");
@@ -28,14 +38,26 @@ export const TrangQuynhMiniGame = () => {
   const [timerSeconds, setTimerSeconds] = useState<number>(0);
   const [correctThisLevel, setCorrectThisLevel] = useState(0);
   const [incorrectThisLevel, setIncorrectThisLevel] = useState(0);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  // Track time spent on level
+  const levelStartTime = useRef<number>(Date.now());
 
-  const currentNode = story.nodes[progress.currentNodeIndex];
-  const isGameComplete = progress.currentNodeIndex >= story.nodes.length;
+  const currentNode = story.nodes[currentNodeIndex];
+  const isGameComplete = currentNodeIndex >= story.nodes.length;
+
+  // Initialize from Supabase progress
+  useEffect(() => {
+    if (!isLoading && progress.currentNode >= 0) {
+      setCurrentNodeIndex(progress.currentNode);
+    }
+  }, [isLoading, progress.currentNode]);
 
   useEffect(() => {
     if (currentNode && gamePhase === "cutscene") {
       const activity = findActivityByRef(currentNode.activityRef);
       setCurrentActivity(activity);
+      levelStartTime.current = Date.now();
     }
   }, [currentNode, gamePhase]);
 
@@ -43,26 +65,24 @@ export const TrangQuynhMiniGame = () => {
     setGamePhase("level-selection");
   };
 
-  const handleSelectLevel = (nodeIndex: number) => {
-    selectNode(nodeIndex);
+  const handleSelectLevel = async (nodeIndex: number) => {
+    setCurrentNodeIndex(nodeIndex);
+    setCurrentQuestionIndex(0);
     setCorrectThisLevel(0);
     setIncorrectThisLevel(0);
     setEarnedXpThisLevel(0);
+    levelStartTime.current = Date.now();
+    await updateCurrentNode(nodeIndex);
     setGamePhase("cutscene");
   };
 
   const handleTimeUp = useCallback(() => {
-    toast({
-      title: "Hết giờ!",
-      description: "Thời gian đã hết, hãy thử lại nhé!",
-      variant: "destructive"
-    });
+    toast.error("Hết giờ! Thời gian đã hết, hãy thử lại nhé!");
     setLevelPerformance("retry");
     setShowBadgeModal(true);
   }, []);
 
   const handleCutsceneComplete = () => {
-    // Set timer based on activity duration (default 120 seconds)
     const activity = findActivityByRef(currentNode?.activityRef || "");
     setTimerSeconds(activity?.timerSec || activity?.duration || 120);
     setGamePhase("questions");
@@ -74,58 +94,95 @@ export const TrangQuynhMiniGame = () => {
     setGamePhase("questions");
   };
 
-  const handleAnswer = (isCorrect: boolean) => {
+  const handleAnswer = async (isCorrect: boolean) => {
+    if (isSubmitting) return;
+    
     const xpReward = currentActivity?.xpReward || 10;
-    recordAnswer(isCorrect, xpReward);
     
     if (isCorrect) {
       setEarnedXpThisLevel(prev => prev + xpReward);
       setCorrectThisLevel(prev => prev + 1);
-      toast({
-        title: "Chính xác! 🎉",
-        description: `+${xpReward} XP`,
-      });
+      toast.success(`Chính xác! +${xpReward} XP`);
     } else {
       setIncorrectThisLevel(prev => prev + 1);
     }
 
     const totalQuestions = currentActivity?.questions.length || 1;
+    const newCorrect = correctThisLevel + (isCorrect ? 1 : 0);
+    const newIncorrect = incorrectThisLevel + (isCorrect ? 0 : 1);
     
-    if (progress.currentQuestionIndex + 1 >= totalQuestions) {
-      // Level complete - evaluate performance
-      const correctRate = ((progress.correctAnswers + (isCorrect ? 1 : 0)) / totalQuestions) * 100;
+    if (currentQuestionIndex + 1 >= totalQuestions) {
+      // Level complete - submit to backend
+      setIsSubmitting(true);
       
-      let performance: "excellent" | "good" | "retry";
-      if (correctRate >= 90) {
-        performance = "excellent";
-      } else if (correctRate >= 70) {
-        performance = "good";
+      const timeSpent = Math.floor((Date.now() - levelStartTime.current) / 1000);
+      const score = newCorrect * xpReward;
+      const maxScore = totalQuestions * xpReward;
+      
+      const result = await completeStage(
+        currentNode?.id || `stage-${currentNodeIndex}`,
+        'grade2-trangquynh',
+        score,
+        maxScore,
+        newCorrect,
+        totalQuestions,
+        timeSpent
+      );
+      
+      setIsSubmitting(false);
+      
+      if (result) {
+        let performance: "excellent" | "good" | "retry";
+        if (result.accuracy >= 90) {
+          performance = "excellent";
+        } else if (result.accuracy >= 60) {
+          performance = "good";
+        } else {
+          performance = "retry";
+        }
+        
+        setLevelPerformance(performance);
+        setEarnedXpThisLevel(result.xpEarned);
+        
+        // Award badge if passed
+        if (performance !== "retry" && currentNode?.badgeOnComplete) {
+          const badgeResult = await unlockBadge(
+            currentNode.badgeOnComplete,
+            currentNode.title,
+            `Hoàn thành: ${currentNode.title}`,
+            '🏆'
+          );
+          setCompletedBadgeId(badgeResult?.success ? currentNode.badgeOnComplete : null);
+        } else {
+          setCompletedBadgeId(null);
+        }
+        
+        setShowBadgeModal(true);
       } else {
-        performance = "retry";
+        toast.error("Không thể lưu kết quả. Vui lòng thử lại.");
       }
-      
-      setLevelPerformance(performance);
-      setCompletedBadgeId(performance !== "retry" ? currentNode?.badgeOnComplete || "default-badge" : null);
-      setShowBadgeModal(true);
     } else {
-      nextQuestion();
+      setCurrentQuestionIndex(prev => prev + 1);
     }
   };
 
-  const handleBadgeModalContinue = () => {
+  const handleBadgeModalContinue = async () => {
     setShowBadgeModal(false);
-    
-    if (levelPerformance !== "retry" && currentNode) {
-      completeNode(currentNode.id, completedBadgeId || undefined);
-    }
-    
     setEarnedXpThisLevel(0);
+    setCurrentQuestionIndex(0);
+    setCorrectThisLevel(0);
+    setIncorrectThisLevel(0);
     
-    if (progress.currentNodeIndex + 1 >= story.nodes.length) {
+    if (currentNodeIndex + 1 >= story.nodes.length) {
       setGamePhase("complete");
     } else if (levelPerformance !== "retry") {
+      const newIndex = currentNodeIndex + 1;
+      setCurrentNodeIndex(newIndex);
+      await updateCurrentNode(newIndex);
       setGamePhase("level-selection");
     } else {
+      // Retry - stay on questions
+      levelStartTime.current = Date.now();
       setGamePhase("questions");
     }
   };
@@ -133,7 +190,10 @@ export const TrangQuynhMiniGame = () => {
   const handleRetry = () => {
     setShowBadgeModal(false);
     setEarnedXpThisLevel(0);
-    selectNode(progress.currentNodeIndex);
+    setCurrentQuestionIndex(0);
+    setCorrectThisLevel(0);
+    setIncorrectThisLevel(0);
+    levelStartTime.current = Date.now();
     setGamePhase("cutscene");
   };
 
@@ -141,23 +201,49 @@ export const TrangQuynhMiniGame = () => {
     navigate("/");
   };
 
-  const handleRestart = () => {
-    resetProgress();
+  const handleRestart = async () => {
+    await resetProgress();
+    setCurrentNodeIndex(0);
+    setCurrentQuestionIndex(0);
     setGamePhase("level-selection");
     setEarnedXpThisLevel(0);
+    await fetchProgress();
   };
 
   const handleBackToLevelSelection = () => {
     setGamePhase("level-selection");
   };
 
+  // Loading state
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="flex flex-col items-center gap-4">
+          <Loader2 className="h-12 w-12 animate-spin text-primary" />
+          <p className="text-muted-foreground">Đang tải tiến độ...</p>
+        </div>
+      </div>
+    );
+  }
+
   // Prologue Phase
   if (gamePhase === "prologue") {
     return <StoryIntro prologue={story.prologue} onComplete={handlePrologueComplete} />;
   }
 
-  // Level Selection Phase
+  // Level Selection Phase - use progress from Supabase
   if (gamePhase === "level-selection") {
+    // Convert Supabase progress to format expected by LevelSelection
+    const gameEngineProgress = {
+      currentNodeIndex,
+      completedNodes: progress.completedNodes,
+      totalXp: progress.xp,
+      earnedBadges: progress.earnedBadges,
+      currentQuestionIndex: 0,
+      correctAnswers: 0,
+      incorrectAnswers: 0,
+    };
+
     return (
       <div className="min-h-screen">
         <div className="fixed top-20 left-4 z-50">
@@ -173,7 +259,7 @@ export const TrangQuynhMiniGame = () => {
         </div>
         <LevelSelection
           nodes={story.nodes}
-          progress={progress}
+          progress={gameEngineProgress}
           onSelectLevel={handleSelectLevel}
         />
       </div>
@@ -195,10 +281,14 @@ export const TrangQuynhMiniGame = () => {
           </div>
 
           <div className="bg-card rounded-xl p-8 shadow-lg space-y-6">
-            <div className="grid grid-cols-2 gap-4 text-center">
+            <div className="grid grid-cols-3 gap-4 text-center">
               <div className="bg-primary/10 rounded-lg p-4">
-                <div className="text-3xl font-bold text-primary">{progress.totalXp}</div>
+                <div className="text-3xl font-bold text-primary">{progress.xp}</div>
                 <div className="text-sm text-muted-foreground">Tổng XP</div>
+              </div>
+              <div className="bg-primary/10 rounded-lg p-4">
+                <div className="text-3xl font-bold text-primary">{progress.level}</div>
+                <div className="text-sm text-muted-foreground">Cấp độ</div>
               </div>
               <div className="bg-primary/10 rounded-lg p-4">
                 <div className="text-3xl font-bold text-primary">{progress.earnedBadges.length}</div>
@@ -224,24 +314,17 @@ export const TrangQuynhMiniGame = () => {
 
   // Cutscene Phase
   if (gamePhase === "cutscene" && currentNode) {
-    // Enhance cutscene frames with sprites from node assets
     const enhancedFrames = currentNode.cutscene.map((frame: any) => {
       let sprite = undefined;
       
-      // Map speaker to appropriate sprite
       if (frame.speaker === "Trạng Quỳnh" || frame.speaker.includes("Quỳnh")) {
-        // Use idle or cheer sprite based on text sentiment
         const isExcited = frame.text.includes("!") || frame.text.includes("thích");
         sprite = isExcited 
           ? (currentNode.assets?.sprite_main_cheer || "assets/user/trang_cheer.png")
           : (currentNode.assets?.sprite_main_idle || "assets/user/trang_idle.png");
       } else if (frame.speaker !== "Người kể chuyện") {
-        // Other characters (not narrator) use portrait or idle sprite
         sprite = currentNode.assets?.sprite_main_idle || "assets/user/trang_portrait.png";
       }
-      // Người kể chuyện doesn't show sprite
-      
-      console.log("Frame sprite:", frame.speaker, "->", sprite);
       
       return {
         ...frame,
@@ -285,12 +368,15 @@ export const TrangQuynhMiniGame = () => {
 
   // Questions Phase
   if (gamePhase === "questions" && currentNode && currentActivity) {
-    const currentQuestion = currentActivity.questions[progress.currentQuestionIndex];
+    const currentQuestion = currentActivity.questions[currentQuestionIndex];
     
     if (!currentQuestion) {
       return (
         <div className="min-h-screen flex items-center justify-center">
-          <p>Đang tải...</p>
+          <div className="flex flex-col items-center gap-4">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            <p>Đang tải...</p>
+          </div>
         </div>
       );
     }
@@ -311,7 +397,7 @@ export const TrangQuynhMiniGame = () => {
         <div className="max-w-7xl mx-auto p-4 md:p-8 pt-4">
           <QuestionCard
             question={currentQuestion}
-            questionNumber={progress.currentQuestionIndex + 1}
+            questionNumber={currentQuestionIndex + 1}
             totalQuestions={currentActivity.questions.length}
             onAnswer={handleAnswer}
           />
@@ -325,13 +411,25 @@ export const TrangQuynhMiniGame = () => {
           onContinue={handleBadgeModalContinue}
           onRetry={levelPerformance === "retry" ? handleRetry : undefined}
         />
+        
+        {isSubmitting && (
+          <div className="fixed inset-0 bg-background/80 flex items-center justify-center z-50">
+            <div className="flex flex-col items-center gap-4">
+              <Loader2 className="h-12 w-12 animate-spin text-primary" />
+              <p className="text-muted-foreground">Đang lưu kết quả...</p>
+            </div>
+          </div>
+        )}
       </div>
     );
   }
 
   return (
     <div className="min-h-screen flex items-center justify-center">
-      <p>Đang tải...</p>
+      <div className="flex flex-col items-center gap-4">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <p>Đang tải...</p>
+      </div>
     </div>
   );
 };
