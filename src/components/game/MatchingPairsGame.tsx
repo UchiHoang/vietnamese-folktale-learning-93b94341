@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, memo, useRef, useCallback } from "react";
 import { CheckCircle2, XCircle } from "lucide-react";
 import { motion } from "framer-motion";
 
@@ -16,45 +16,57 @@ interface MatchingPairsGameProps {
   title?: string;
 }
 
-export const MatchingPairsGame = ({ pairs, onComplete, title }: MatchingPairsGameProps) => {
+const MatchingPairsGameComponent = ({ pairs, onComplete, title }: MatchingPairsGameProps) => {
   const [leftSelected, setLeftSelected] = useState<string | null>(null);
   const [rightSelected, setRightSelected] = useState<string | null>(null);
   const [matched, setMatched] = useState<Set<string>>(new Set());
   const [incorrect, setIncorrect] = useState<Set<string>>(new Set());
   const [shuffledRight, setShuffledRight] = useState<MatchPair[]>([]);
+  
+  // Use ref to avoid dependency issues
+  const onCompleteRef = useRef(onComplete);
+  onCompleteRef.current = onComplete;
+  const matchedRef = useRef(matched);
+  matchedRef.current = matched;
 
   useEffect(() => {
-    // Shuffle right side items
+    // Shuffle right side items only once on mount
     const shuffled = [...pairs].sort(() => Math.random() - 0.5);
     setShuffledRight(shuffled);
   }, [pairs]);
 
+  const checkMatch = useCallback((left: string, right: string) => {
+    const leftPair = pairs.find(p => p.id === left);
+    const isMatch = leftPair?.id === right;
+
+    if (isMatch) {
+      setMatched(prev => {
+        const newMatched = new Set([...prev, left]);
+        // Check if all matched after this
+        if (newMatched.size === pairs.length) {
+          setTimeout(() => onCompleteRef.current(true), 500);
+        }
+        return newMatched;
+      });
+      setTimeout(() => {
+        setLeftSelected(null);
+        setRightSelected(null);
+      }, 800);
+    } else {
+      setIncorrect(new Set([left, right]));
+      setTimeout(() => {
+        setLeftSelected(null);
+        setRightSelected(null);
+        setIncorrect(new Set());
+      }, 1000);
+    }
+  }, [pairs]);
+
   useEffect(() => {
     if (leftSelected && rightSelected) {
-      const leftPair = pairs.find(p => p.id === leftSelected);
-      const isMatch = leftPair?.id === rightSelected;
-
-      if (isMatch) {
-        setMatched(prev => new Set([...prev, leftSelected]));
-        setTimeout(() => {
-          setLeftSelected(null);
-          setRightSelected(null);
-          
-          // Check if all matched
-          if (matched.size + 1 === pairs.length) {
-            setTimeout(() => onComplete(true), 500);
-          }
-        }, 800);
-      } else {
-        setIncorrect(new Set([leftSelected, rightSelected]));
-        setTimeout(() => {
-          setLeftSelected(null);
-          setRightSelected(null);
-          setIncorrect(new Set());
-        }, 1000);
-      }
+      checkMatch(leftSelected, rightSelected);
     }
-  }, [leftSelected, rightSelected, pairs, matched, onComplete]);
+  }, [leftSelected, rightSelected, checkMatch]);
 
   const handleLeftClick = (id: string) => {
     if (matched.has(id)) return;
@@ -141,3 +153,5 @@ export const MatchingPairsGame = ({ pairs, onComplete, title }: MatchingPairsGam
     </div>
   );
 };
+
+export const MatchingPairsGame = memo(MatchingPairsGameComponent);

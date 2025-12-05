@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { Progress } from "@/components/ui/progress";
 import { Star, CheckCircle2, XCircle, Trophy, ArrowLeft } from "lucide-react";
 import { GameTimer } from "./GameTimer";
@@ -15,7 +16,7 @@ interface GameHudProps {
   isPaused?: boolean;
 }
 
-export const GameHud = ({
+const GameHudComponent = ({
   levelTitle,
   totalXp,
   maxXp = 100,
@@ -115,3 +116,5 @@ export const GameHud = ({
     </div>
   );
 };
+
+export const GameHud = memo(GameHudComponent);

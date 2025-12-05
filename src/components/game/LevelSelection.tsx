@@ -1,3 +1,4 @@
+import { memo, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Lock, CheckCircle, Star } from "lucide-react";
 import { StoryNode } from "@/utils/storyLoader";
@@ -32,7 +33,7 @@ interface LevelSelectionProps {
   onSelectLevel: (nodeIndex: number) => void;
 }
 
-export const LevelSelection = ({ nodes, progress, onSelectLevel }: LevelSelectionProps) => {
+const LevelSelectionComponent = ({ nodes, progress, onSelectLevel }: LevelSelectionProps) => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-primary/5 p-4 md:p-8">
       <div className="max-w-7xl mx-auto">
@@ -151,3 +152,5 @@ export const LevelSelection = ({ nodes, progress, onSelectLevel }: LevelSelectio
     </div>
   );
 };
+
+export const LevelSelection = memo(LevelSelectionComponent);

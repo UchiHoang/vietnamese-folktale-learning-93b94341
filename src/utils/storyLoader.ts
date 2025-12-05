@@ -89,11 +89,25 @@ export interface StoryData {
   nodes: StoryNode[];
 }
 
+// Cache story data - only parse JSON once
+let cachedStory: StoryData | null = null;
+
 export const loadStory = (): StoryData => {
-  return storyData as StoryData;
+  if (!cachedStory) {
+    cachedStory = storyData as StoryData;
+  }
+  return cachedStory;
 };
 
+// Cache activities to avoid repeated parsing
+const activityCache = new Map<string, Activity>();
+
 export const findActivityByRef = (activityRef: string): Activity | null => {
+  // Return cached activity if available
+  if (activityCache.has(activityRef)) {
+    return activityCache.get(activityRef)!;
+  }
+
   // Parse activityRef like "grade2.c1.l1.a1"
   const parts = activityRef.split(".");
   
@@ -105,17 +119,21 @@ export const findActivityByRef = (activityRef: string): Activity | null => {
   const curriculum = curriculumData as any;
   
   if (!curriculum.chapters || !curriculum.chapters[chapterIndex]) {
-    return createFallbackActivity(activityRef);
+    const fallback = createFallbackActivity(activityRef);
+    activityCache.set(activityRef, fallback);
+    return fallback;
   }
   
   const chapter = curriculum.chapters[chapterIndex];
   if (!chapter.lessons || !chapter.lessons[lessonIndex]) {
-    return createFallbackActivity(activityRef);
+    const fallback = createFallbackActivity(activityRef);
+    activityCache.set(activityRef, fallback);
+    return fallback;
   }
   
   const lesson = chapter.lessons[lessonIndex];
   
-  return {
+  const activity: Activity = {
     id: activityRef,
     title: lesson.title || "Bài học",
     duration: lesson.duration || 120,
@@ -123,6 +141,10 @@ export const findActivityByRef = (activityRef: string): Activity | null => {
     xpReward: 10,
     timerSec: lesson.timerSec
   };
+
+  // Cache the result
+  activityCache.set(activityRef, activity);
+  return activity;
 };
 
 const createFallbackActivity = (ref: string): Activity => {

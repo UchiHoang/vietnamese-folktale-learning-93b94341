@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, memo, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { ChevronRight, SkipForward } from "lucide-react";
 
@@ -16,7 +16,7 @@ interface CutscenePlayerProps {
   onSkip: () => void;
 }
 
-export const CutscenePlayer = ({ frames, onComplete, onSkip }: CutscenePlayerProps) => {
+const CutscenePlayerComponent = ({ frames, onComplete, onSkip }: CutscenePlayerProps) => {
   const [currentFrameIndex, setCurrentFrameIndex] = useState(0);
   
   // Safety check for empty frames
@@ -152,3 +152,5 @@ export const CutscenePlayer = ({ frames, onComplete, onSkip }: CutscenePlayerPro
     </div>
   );
 };
+
+export const CutscenePlayer = memo(CutscenePlayerComponent);

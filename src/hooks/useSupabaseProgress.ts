@@ -303,9 +303,20 @@ export const useSupabaseProgress = () => {
     }
   }, []);
 
-  // Load progress on mount
+  // Load progress on mount - with deduplication
   useEffect(() => {
-    fetchProgress();
+    let mounted = true;
+    
+    const loadProgress = async () => {
+      if (!mounted) return;
+      await fetchProgress();
+    };
+    
+    loadProgress();
+    
+    return () => {
+      mounted = false;
+    };
   }, [fetchProgress]);
 
   return {

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, memo, useRef, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { CheckCircle2, XCircle } from "lucide-react";
@@ -16,10 +16,12 @@ interface FillInTheBlankGameProps {
   onComplete: (isCorrect: boolean) => void;
 }
 
-export const FillInTheBlankGame = ({ question, onComplete }: FillInTheBlankGameProps) => {
+const FillInTheBlankGameComponent = ({ question, onComplete }: FillInTheBlankGameProps) => {
   const [answers, setAnswers] = useState<Record<number, string>>({});
   const [showFeedback, setShowFeedback] = useState(false);
   const [isCorrect, setIsCorrect] = useState(false);
+  const onCompleteRef = useRef(onComplete);
+  onCompleteRef.current = onComplete;
 
   const handleSubmit = () => {
     const correct = question.blanks.every(blank => {
@@ -32,16 +34,19 @@ export const FillInTheBlankGame = ({ question, onComplete }: FillInTheBlankGameP
     setShowFeedback(true);
 
     setTimeout(() => {
-      onComplete(correct);
+      onCompleteRef.current(correct);
     }, 2500);
   };
+
+  // Memoize sorted blanks
+  const sortedBlanks = useMemo(() => 
+    [...question.blanks].sort((a, b) => a.position - b.position),
+    [question.blanks]
+  );
 
   const renderTextWithBlanks = () => {
     const parts = [];
     let lastIndex = 0;
-
-    // Sort blanks by position
-    const sortedBlanks = [...question.blanks].sort((a, b) => a.position - b.position);
 
     sortedBlanks.forEach((blank, blankIndex) => {
       // Add text before blank
@@ -151,3 +156,5 @@ export const FillInTheBlankGame = ({ question, onComplete }: FillInTheBlankGameP
     </div>
   );
 };
+
+export const FillInTheBlankGame = memo(FillInTheBlankGameComponent);

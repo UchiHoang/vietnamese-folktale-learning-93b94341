@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, memo, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { CheckCircle2, XCircle, Lightbulb } from "lucide-react";
 import { Question } from "@/utils/storyLoader";
@@ -14,7 +14,7 @@ interface QuestionCardProps {
   onAnswer: (isCorrect: boolean) => void;
 }
 
-export const QuestionCard = ({ 
+const QuestionCardComponent = ({
   question, 
   questionNumber, 
   totalQuestions,
@@ -185,3 +185,5 @@ export const QuestionCard = ({
     </div>
   );
 };
+
+export const QuestionCard = memo(QuestionCardComponent);

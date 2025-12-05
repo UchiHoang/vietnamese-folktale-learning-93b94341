@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { CutscenePlayer } from "./CutscenePlayer";
@@ -16,7 +16,8 @@ type GamePhase = "prologue" | "level-selection" | "cutscene" | "questions" | "co
 
 export const TrangQuynhMiniGame = () => {
   const navigate = useNavigate();
-  const story = loadStory();
+  // Memoize story to prevent reloading on every render
+  const story = useMemo(() => loadStory(), []);
   const { 
     progress, 
     isLoading, 
@@ -53,13 +54,20 @@ export const TrangQuynhMiniGame = () => {
     }
   }, [isLoading, progress.currentNode]);
 
+  // Memoize activity loading to prevent repeated lookups
+  const loadedActivity = useMemo(() => {
+    if (currentNode?.activityRef) {
+      return findActivityByRef(currentNode.activityRef);
+    }
+    return null;
+  }, [currentNode?.activityRef]);
+
   useEffect(() => {
     if (currentNode && gamePhase === "cutscene") {
-      const activity = findActivityByRef(currentNode.activityRef);
-      setCurrentActivity(activity);
+      setCurrentActivity(loadedActivity);
       levelStartTime.current = Date.now();
     }
-  }, [currentNode, gamePhase]);
+  }, [currentNode, gamePhase, loadedActivity]);
 
   const handlePrologueComplete = () => {
     setGamePhase("level-selection");
