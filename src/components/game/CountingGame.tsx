@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, memo, useRef, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { CheckCircle2, XCircle } from "lucide-react";
 import { motion } from "framer-motion";
@@ -14,9 +14,11 @@ interface CountingGameProps {
   onComplete: (isCorrect: boolean) => void;
 }
 
-export const CountingGame = ({ items, correctAnswer, question, explanation, onComplete }: CountingGameProps) => {
+const CountingGameComponent = ({ items, correctAnswer, question, explanation, onComplete }: CountingGameProps) => {
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
   const [showFeedback, setShowFeedback] = useState(false);
+  const onCompleteRef = useRef(onComplete);
+  onCompleteRef.current = onComplete;
 
   const handleAnswer = (answer: number) => {
     if (showFeedback) return;
@@ -27,21 +29,24 @@ export const CountingGame = ({ items, correctAnswer, question, explanation, onCo
     const isCorrect = answer === correctAnswer;
     
     setTimeout(() => {
-      onComplete(isCorrect);
+      onCompleteRef.current(isCorrect);
     }, 2500);
   };
 
   const isCorrect = selectedAnswer === correctAnswer;
 
-  // Generate answer options (correct answer ± 2)
-  const options = Array.from({ length: 4 }, (_, i) => {
-    const offset = i - 2;
-    return Math.max(1, correctAnswer + offset);
-  }).filter((v, i, arr) => arr.indexOf(v) === i).sort((a, b) => a - b);
+  // Memoize options to prevent recalculation on every render
+  const options = useMemo(() => {
+    const opts = Array.from({ length: 4 }, (_, i) => {
+      const offset = i - 2;
+      return Math.max(1, correctAnswer + offset);
+    }).filter((v, i, arr) => arr.indexOf(v) === i).sort((a, b) => a - b);
 
-  if (!options.includes(correctAnswer)) {
-    options[Math.floor(Math.random() * options.length)] = correctAnswer;
-  }
+    if (!opts.includes(correctAnswer)) {
+      opts[Math.floor(Math.random() * opts.length)] = correctAnswer;
+    }
+    return opts;
+  }, [correctAnswer]);
 
   return (
     <div className="w-full max-w-4xl mx-auto space-y-6 animate-fade-in">
@@ -134,3 +139,5 @@ export const CountingGame = ({ items, correctAnswer, question, explanation, onCo
     </div>
   );
 };
+
+export const CountingGame = memo(CountingGameComponent);

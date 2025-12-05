@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, memo, useRef } from "react";
 import { CheckCircle2, X } from "lucide-react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -23,10 +23,12 @@ interface DragDropGameProps {
   title?: string;
 }
 
-export const DragDropGame = ({ items, slots, onComplete, title }: DragDropGameProps) => {
+const DragDropGameComponent = ({ items, slots, onComplete, title }: DragDropGameProps) => {
   const [draggedItem, setDraggedItem] = useState<string | null>(null);
   const [droppedItems, setDroppedItems] = useState<Record<string, string>>({});
   const [showFeedback, setShowFeedback] = useState(false);
+  const onCompleteRef = useRef(onComplete);
+  onCompleteRef.current = onComplete;
 
   const handleDragStart = (itemId: string) => {
     setDraggedItem(itemId);
@@ -62,7 +64,7 @@ export const DragDropGame = ({ items, slots, onComplete, title }: DragDropGamePr
 
     setShowFeedback(true);
     setTimeout(() => {
-      onComplete(isCorrect);
+      onCompleteRef.current(isCorrect);
     }, 2000);
   };
 
@@ -208,3 +210,5 @@ export const DragDropGame = ({ items, slots, onComplete, title }: DragDropGamePr
     </div>
   );
 };
+
+export const DragDropGame = memo(DragDropGameComponent);

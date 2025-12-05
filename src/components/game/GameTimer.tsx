@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef, memo } from "react";
 import { Clock } from "lucide-react";
 import { motion } from "framer-motion";
 
@@ -9,7 +9,7 @@ interface GameTimerProps {
   showWarning?: boolean;
 }
 
-export const GameTimer = ({ 
+const GameTimerComponent = ({ 
   initialSeconds, 
   onTimeUp, 
   isPaused = false,
@@ -17,6 +17,9 @@ export const GameTimer = ({
 }: GameTimerProps) => {
   const [seconds, setSeconds] = useState(initialSeconds);
   const [isWarning, setIsWarning] = useState(false);
+  // Use ref to avoid dependency issues
+  const onTimeUpRef = useRef(onTimeUp);
+  onTimeUpRef.current = onTimeUp;
 
   useEffect(() => {
     setSeconds(initialSeconds);
@@ -29,7 +32,7 @@ export const GameTimer = ({
       setSeconds((prev) => {
         if (prev <= 1) {
           clearInterval(interval);
-          onTimeUp?.();
+          onTimeUpRef.current?.();
           return 0;
         }
         return prev - 1;
@@ -37,7 +40,7 @@ export const GameTimer = ({
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [isPaused, onTimeUp]);
+  }, [isPaused]);
 
   useEffect(() => {
     if (showWarning && seconds <= 10 && seconds > 0) {
@@ -86,3 +89,5 @@ export const GameTimer = ({
     </motion.div>
   );
 };
+
+export const GameTimer = memo(GameTimerComponent);
