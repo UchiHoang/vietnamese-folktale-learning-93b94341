@@ -5,7 +5,7 @@ export const classes = [
     ageRange: "3-5",
     image: "/src/assets/class-preschool.jpg",
     description: "Khám phá số đếm qua câu chuyện dân gian",
-    gameRoute: null
+    gameRoute: "/classroom/preschool"
   },
   {
     level: "Lớp 1",
@@ -13,7 +13,7 @@ export const classes = [
     ageRange: "6-7",
     image: "/src/assets/class-grade1.jpg",
     description: "Học toán qua truyện 12 con giáp",
-    gameRoute: null
+    gameRoute: "/classroom/grade1"
   },
   {
     level: "Lớp 2",
@@ -29,7 +29,7 @@ export const classes = [
     ageRange: "8-9",
     image: "/src/assets/class-grade3.jpg",
     description: "Phiêu lưu toán học trên dòng sông Hồng",
-    gameRoute: null
+    gameRoute: "/classroom/grade3"
   },
   {
     level: "Lớp 4",
@@ -37,7 +37,7 @@ export const classes = [
     ageRange: "9-10",
     image: "/src/assets/class-grade4.jpg",
     description: "Khám phá lịch sử qua bài toán",
-    gameRoute: null
+    gameRoute: "/classroom/grade4"
   },
   {
     level: "Lớp 5",
@@ -45,7 +45,7 @@ export const classes = [
     ageRange: "10-11",
     image: "/src/assets/class-grade5.jpg",
     description: "Toán học nâng cao với tinh thần yêu nước",
-    gameRoute: null
+    gameRoute: "/classroom/grade5"
   }
 ];
 
