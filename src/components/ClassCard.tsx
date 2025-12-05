@@ -14,8 +14,8 @@ interface ClassCardProps {
 const ClassCard = ({ level, title, ageRange, image, description, gameRoute }: ClassCardProps) => {
   const isAvailable = gameRoute !== null;
   return (
-    <div className="group relative bg-card rounded-2xl overflow-hidden card-shadow hover-lift transition-all duration-300">
-      <div className="aspect-square overflow-hidden">
+    <div className="group relative h-full flex flex-col bg-card rounded-2xl overflow-hidden card-shadow hover-lift transition-all duration-300">
+      <div className="aspect-[4/3] overflow-hidden flex-shrink-0">
         <img
           src={image}
           alt={title}
@@ -23,8 +23,8 @@ const ClassCard = ({ level, title, ageRange, image, description, gameRoute }: Cl
         />
       </div>
       
-      <div className="p-6 space-y-3">
-        <div className="flex items-center justify-between">
+      <div className="p-6 flex flex-col flex-grow">
+        <div className="flex items-center justify-between mb-3">
           <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-semibold">
             <Users className="h-3.5 w-3.5" />
             {ageRange} tuổi
@@ -34,27 +34,29 @@ const ClassCard = ({ level, title, ageRange, image, description, gameRoute }: Cl
           </span>
         </div>
 
-        <h3 className="text-xl font-heading font-bold leading-snug group-hover:text-primary transition-colors">
+        <h3 className="text-xl font-heading font-bold leading-snug group-hover:text-primary transition-colors mb-2 min-h-[3.5rem]">
           {title}
         </h3>
 
-        <p className="text-sm text-muted-foreground line-clamp-2">
+        <p className="text-sm text-muted-foreground line-clamp-2 flex-grow mb-4">
           {description}
         </p>
 
-        {isAvailable && gameRoute ? (
-          <Button className="w-full group/btn" asChild>
-            <Link to={gameRoute}>
-              Vào lớp
-              <ArrowRight className="ml-2 h-4 w-4 group-hover/btn:translate-x-1 transition-transform" />
-            </Link>
-          </Button>
-        ) : (
-          <Button className="w-full" variant="secondary" disabled>
-            <Lock className="mr-2 h-4 w-4" />
-            Vào học
-          </Button>
-        )}
+        <div className="mt-auto">
+          {isAvailable && gameRoute ? (
+            <Button className="w-full group/btn" asChild>
+              <Link to={gameRoute}>
+                Vào lớp
+                <ArrowRight className="ml-2 h-4 w-4 group-hover/btn:translate-x-1 transition-transform" />
+              </Link>
+            </Button>
+          ) : (
+            <Button className="w-full" variant="secondary" disabled>
+              <Lock className="mr-2 h-4 w-4" />
+              Vào học
+            </Button>
+          )}
+        </div>
       </div>
 
       {/* Decorative corner */}
