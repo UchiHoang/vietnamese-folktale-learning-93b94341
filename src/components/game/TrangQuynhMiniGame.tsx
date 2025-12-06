@@ -254,12 +254,12 @@ export const TrangQuynhMiniGame = () => {
 
     return (
       <div className="min-h-screen">
-        <div className="fixed top-6 right-6 z-50">
+        <div className="fixed top-24 right-6 z-50">
           <Button 
             onClick={handleExit} 
             size="sm"
-            variant="ghost"
-            className="gap-2 hover:bg-background/80 backdrop-blur-sm"
+            variant="outline"
+            className="gap-2 bg-sky-50 hover:bg-sky-100 text-sky-700 border-sky-200 backdrop-blur-sm shadow-sm"
           >
             <ArrowLeft className="w-4 h-4" />
             Quay về
