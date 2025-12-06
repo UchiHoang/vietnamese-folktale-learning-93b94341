@@ -9,7 +9,7 @@ import { LevelSelection } from "./LevelSelection";
 import { StoryIntro } from "./StoryIntro";
 import { loadStory, findActivityByRef, Activity } from "@/utils/storyLoader";
 import { useSupabaseProgress } from "@/hooks/useSupabaseProgress";
-import { Home, RotateCcw, Loader2 } from "lucide-react";
+import { ArrowLeft, RotateCcw, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
 type GamePhase = "prologue" | "level-selection" | "cutscene" | "questions" | "complete";
@@ -254,15 +254,15 @@ export const TrangQuynhMiniGame = () => {
 
     return (
       <div className="min-h-screen">
-        <div className="fixed top-20 left-4 z-50">
+        <div className="fixed top-6 right-6 z-50">
           <Button 
             onClick={handleExit} 
-            size="lg"
-            variant="secondary"
-            className="gap-2 shadow-lg hover:shadow-xl transition-all"
+            size="sm"
+            variant="ghost"
+            className="gap-2 hover:bg-background/80 backdrop-blur-sm"
           >
-            <Home className="w-5 h-5" />
-            Trang chủ
+            <ArrowLeft className="w-4 h-4" />
+            Quay về
           </Button>
         </div>
         <LevelSelection
@@ -310,8 +310,8 @@ export const TrangQuynhMiniGame = () => {
                 Chơi lại
               </Button>
               <Button onClick={handleExit} className="flex-1 gap-2">
-                <Home className="w-4 h-4" />
-                Về trang chủ
+                <ArrowLeft className="w-4 h-4" />
+                Quay về
               </Button>
             </div>
           </div>
@@ -359,8 +359,8 @@ export const TrangQuynhMiniGame = () => {
               size="sm"
               className="gap-2"
             >
-              <Home className="w-4 h-4" />
-              Thoát
+              <ArrowLeft className="w-4 h-4" />
+              Quay về
             </Button>
           </div>
           
