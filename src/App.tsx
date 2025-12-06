@@ -7,6 +7,7 @@ import Index from "./pages/Index";
 import Lessons from "./pages/Lessons";
 import Auth from "./pages/Auth";
 import TrangQuynhGame from "./pages/TrangQuynhGame";
+import ClassroomComingSoon from "./pages/ClassroomComingSoon";
 import Profile from "./pages/Profile";
 import AdminDashboard from "./pages/AdminDashboard";
 import NotFound from "./pages/NotFound";
@@ -26,6 +27,7 @@ const App = () => (
           <Route path="/profile" element={<Profile />} />
           <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/classroom/trangquynh" element={<TrangQuynhGame />} />
+          <Route path="/classroom/:gradeId" element={<ClassroomComingSoon />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
