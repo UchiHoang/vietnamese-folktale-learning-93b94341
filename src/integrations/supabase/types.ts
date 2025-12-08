@@ -77,14 +77,42 @@ export type Database = {
         }
         Relationships: []
       }
+      game_content: {
+        Row: {
+          content: Json
+          created_at: string | null
+          grade: string
+          id: string
+          type: string
+        }
+        Insert: {
+          content: Json
+          created_at?: string | null
+          grade: string
+          id: string
+          type: string
+        }
+        Update: {
+          content?: Json
+          created_at?: string | null
+          grade?: string
+          id?: string
+          type?: string
+        }
+        Relationships: []
+      }
       game_progress: {
         Row: {
           completed_nodes: Json
           created_at: string
           current_node: number
           earned_badges: Json
+          grade: string | null
           id: string
+          last_played_at: string | null
           level: number
+          points: number | null
+          streak: Json | null
           total_points: number
           total_xp: number
           updated_at: string
@@ -95,8 +123,12 @@ export type Database = {
           created_at?: string
           current_node?: number
           earned_badges?: Json
+          grade?: string | null
           id?: string
+          last_played_at?: string | null
           level?: number
+          points?: number | null
+          streak?: Json | null
           total_points?: number
           total_xp?: number
           updated_at?: string
@@ -107,8 +139,12 @@ export type Database = {
           created_at?: string
           current_node?: number
           earned_badges?: Json
+          grade?: string | null
           id?: string
+          last_played_at?: string | null
           level?: number
+          points?: number | null
+          streak?: Json | null
           total_points?: number
           total_xp?: number
           updated_at?: string
@@ -265,6 +301,7 @@ export type Database = {
       }
       stage_history: {
         Row: {
+          accuracy: number | null
           attempt_number: number
           completed: boolean
           correct_answers: number
@@ -280,6 +317,7 @@ export type Database = {
           xp_earned: number
         }
         Insert: {
+          accuracy?: number | null
           attempt_number?: number
           completed?: boolean
           correct_answers?: number
@@ -295,6 +333,7 @@ export type Database = {
           xp_earned?: number
         }
         Update: {
+          accuracy?: number | null
           attempt_number?: number
           completed?: boolean
           correct_answers?: number
@@ -373,6 +412,7 @@ export type Database = {
       }
       user_best_scores: {
         Row: {
+          attempts: number | null
           best_accuracy: number
           best_score: number
           course_id: string
@@ -385,6 +425,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          attempts?: number | null
           best_accuracy?: number
           best_score?: number
           course_id?: string
@@ -397,6 +438,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          attempts?: number | null
           best_accuracy?: number
           best_score?: number
           course_id?: string
@@ -474,10 +516,23 @@ export type Database = {
           p_max_score: number
           p_score: number
           p_stage_id: string
-          p_time_spent_seconds: number
+          p_time_spent_seconds?: number
           p_total_questions: number
         }
         Returns: Json
+      }
+      get_leaderboard: {
+        Args: { p_grade?: string; p_limit?: number; p_period?: string }
+        Returns: {
+          avatar: string
+          display_name: string
+          grade: string
+          rank: number
+          school: string
+          total_points: number
+          total_xp: number
+          user_id: string
+        }[]
       }
       get_public_profile: {
         Args: { profile_id: string }
@@ -489,7 +544,7 @@ export type Database = {
           school: string
         }[]
       }
-      get_user_progress: { Args: never; Returns: Json }
+      get_user_progress: { Args: { p_grade_id?: string }; Returns: Json }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]

@@ -51,7 +51,7 @@ const DEFAULT_PROGRESS: UserProgress = {
   leaderboardRank: null,
 };
 
-export const useSupabaseProgress = () => {
+export const useSupabaseProgress = (gradeId: string = 'grade2-trangquynh') => {
   const [progress, setProgress] = useState<UserProgress>(DEFAULT_PROGRESS);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -62,7 +62,15 @@ export const useSupabaseProgress = () => {
       setIsLoading(true);
       setError(null);
 
-      const { data, error: rpcError } = await supabase.rpc('get_user_progress');
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        setIsLoading(false);
+        return;
+      }
+
+      const { data, error: rpcError } = await supabase.rpc('get_user_progress', {
+        p_grade_id: gradeId
+      });
 
       if (rpcError) {
         console.error('Error fetching progress:', rpcError);
@@ -94,9 +102,9 @@ export const useSupabaseProgress = () => {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [gradeId]);
 
-  // Complete a stage - atomic operation
+  // Complete a stage - atomic operation with retry logic
   const completeStage = useCallback(async (
     stageId: string,
     courseId: string,
@@ -104,9 +112,14 @@ export const useSupabaseProgress = () => {
     maxScore: number,
     correctAnswers: number,
     totalQuestions: number,
-    timeSpentSeconds: number
+    timeSpentSeconds: number,
+    retryCount: number = 0
   ): Promise<StageResult | null> => {
+    const MAX_RETRIES = 2;
+    
     try {
+      console.log('Submitting stage result:', { stageId, courseId, score, maxScore, correctAnswers, totalQuestions, timeSpentSeconds });
+      
       const { data, error: rpcError } = await supabase.rpc('complete_stage', {
         p_stage_id: stageId,
         p_course_id: courseId,
@@ -119,22 +132,39 @@ export const useSupabaseProgress = () => {
 
       if (rpcError) {
         console.error('Error completing stage:', rpcError);
-        toast.error('Không thể lưu tiến độ');
+        
+        // Retry on transient errors
+        if (retryCount < MAX_RETRIES && (rpcError.message.includes('timeout') || rpcError.message.includes('connection'))) {
+          console.log(`Retrying... attempt ${retryCount + 1}`);
+          await new Promise(resolve => setTimeout(resolve, 1000 * (retryCount + 1)));
+          return completeStage(stageId, courseId, score, maxScore, correctAnswers, totalQuestions, timeSpentSeconds, retryCount + 1);
+        }
+        
+        toast.error('Không thể lưu tiến độ. Vui lòng thử lại.');
         return null;
       }
 
+      console.log('Stage result saved:', data);
+      
       const result = data as Record<string, unknown>;
+      
+      if (!result.success) {
+        console.error('Stage completion failed:', result.error);
+        toast.error('Lỗi khi lưu tiến độ');
+        return null;
+      }
+      
       const stageResult: StageResult = {
         success: result.success as boolean,
-        xpEarned: result.xp_earned as number,
-        totalXp: result.total_xp as number,
-        newLevel: result.new_level as number,
-        levelUp: result.level_up as boolean,
-        completed: result.completed as boolean,
-        accuracy: result.accuracy as number,
-        isNewBest: result.is_new_best as boolean,
-        attemptNumber: result.attempt_number as number,
-        badgeEarned: result.badge_earned as string | null,
+        xpEarned: (result.xp_earned as number) || 0,
+        totalXp: (result.total_xp as number) || 0,
+        newLevel: (result.new_level as number) || 1,
+        levelUp: (result.level_up as boolean) || false,
+        completed: (result.completed as boolean) || false,
+        accuracy: (result.accuracy as number) || 0,
+        isNewBest: (result.is_new_best as boolean) || false,
+        attemptNumber: (result.attempt_number as number) || 1,
+        badgeEarned: (result.badge_earned as string) || null,
       };
 
       // Update local state
@@ -155,7 +185,15 @@ export const useSupabaseProgress = () => {
       return stageResult;
     } catch (err) {
       console.error('Unexpected error completing stage:', err);
-      toast.error('Lỗi khi lưu tiến độ');
+      
+      // Retry on network errors
+      if (retryCount < MAX_RETRIES) {
+        console.log(`Retrying after error... attempt ${retryCount + 1}`);
+        await new Promise(resolve => setTimeout(resolve, 1000 * (retryCount + 1)));
+        return completeStage(stageId, courseId, score, maxScore, correctAnswers, totalQuestions, timeSpentSeconds, retryCount + 1);
+      }
+      
+      toast.error('Lỗi kết nối. Vui lòng kiểm tra mạng và thử lại.');
       return null;
     }
   }, []);
@@ -215,7 +253,8 @@ export const useSupabaseProgress = () => {
       const { error: updateError } = await supabase
         .from('game_progress')
         .update({ current_node: nodeIndex, updated_at: new Date().toISOString() })
-        .eq('user_id', user.id);
+        .eq('user_id', user.id)
+        .eq('grade', gradeId);
 
       if (updateError) {
         console.error('Error updating current node:', updateError);
@@ -226,7 +265,7 @@ export const useSupabaseProgress = () => {
     } catch (err) {
       console.error('Unexpected error:', err);
     }
-  }, []);
+  }, [gradeId]);
 
   // Reset progress (for testing/admin)
   const resetProgress = useCallback(async () => {
@@ -238,21 +277,22 @@ export const useSupabaseProgress = () => {
         .from('game_progress')
         .update({
           total_xp: 0,
-          total_points: 0,
+          points: 0,
           level: 1,
           current_node: 0,
           completed_nodes: [],
           earned_badges: [],
           updated_at: new Date().toISOString(),
         })
-        .eq('user_id', user.id);
+        .eq('user_id', user.id)
+        .eq('grade', gradeId);
 
       setProgress(DEFAULT_PROGRESS);
       toast.success('Đã đặt lại tiến độ');
     } catch (err) {
       console.error('Error resetting progress:', err);
     }
-  }, []);
+  }, [gradeId]);
 
   // Get stage history
   const getStageHistory = useCallback(async (stageId?: string, courseId?: string) => {
