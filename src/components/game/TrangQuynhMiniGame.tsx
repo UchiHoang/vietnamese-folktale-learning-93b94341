@@ -26,7 +26,7 @@ export const TrangQuynhMiniGame = () => {
     updateCurrentNode, 
     resetProgress,
     fetchProgress 
-  } = useSupabaseProgress();
+  } = useSupabaseProgress('grade2-trangquynh');
   
   const [gamePhase, setGamePhase] = useState<GamePhase>("prologue");
   const [currentNodeIndex, setCurrentNodeIndex] = useState(0);
