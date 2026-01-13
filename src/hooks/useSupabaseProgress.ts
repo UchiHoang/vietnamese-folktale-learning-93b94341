@@ -68,9 +68,7 @@ export const useSupabaseProgress = (gradeId: string = 'grade2-trangquynh') => {
         return;
       }
 
-      const { data, error: rpcError } = await supabase.rpc('get_user_progress', {
-        p_grade_id: gradeId
-      });
+      const { data, error: rpcError } = await supabase.rpc('get_user_progress');
 
       if (rpcError) {
         console.error('Error fetching progress:', rpcError);
@@ -106,28 +104,25 @@ export const useSupabaseProgress = (gradeId: string = 'grade2-trangquynh') => {
 
   // Complete a stage - atomic operation with retry logic
   const completeStage = useCallback(async (
-    stageId: string,
+    nodeIndex: number,
     courseId: string,
     score: number,
-    maxScore: number,
-    correctAnswers: number,
-    totalQuestions: number,
-    timeSpentSeconds: number,
+    stars: number,
+    xpReward: number,
+    gameSpecificData?: Record<string, unknown>,
     retryCount: number = 0
   ): Promise<StageResult | null> => {
     const MAX_RETRIES = 2;
     
     try {
-      console.log('Submitting stage result:', { stageId, courseId, score, maxScore, correctAnswers, totalQuestions, timeSpentSeconds });
+      console.log('Submitting stage result:', { nodeIndex, courseId, score, stars, xpReward });
       
       const { data, error: rpcError } = await supabase.rpc('complete_stage', {
-        p_stage_id: stageId,
         p_course_id: courseId,
+        p_node_index: nodeIndex,
         p_score: score,
-        p_max_score: maxScore,
-        p_correct_answers: correctAnswers,
-        p_total_questions: totalQuestions,
-        p_time_spent_seconds: timeSpentSeconds,
+        p_stars: stars,
+        p_xp_reward: xpReward,
       });
 
       if (rpcError) {
@@ -137,7 +132,7 @@ export const useSupabaseProgress = (gradeId: string = 'grade2-trangquynh') => {
         if (retryCount < MAX_RETRIES && (rpcError.message.includes('timeout') || rpcError.message.includes('connection'))) {
           console.log(`Retrying... attempt ${retryCount + 1}`);
           await new Promise(resolve => setTimeout(resolve, 1000 * (retryCount + 1)));
-          return completeStage(stageId, courseId, score, maxScore, correctAnswers, totalQuestions, timeSpentSeconds, retryCount + 1);
+          return completeStage(nodeIndex, courseId, score, stars, xpReward, gameSpecificData, retryCount + 1);
         }
         
         toast.error('Không thể lưu tiến độ. Vui lòng thử lại.');
@@ -168,13 +163,14 @@ export const useSupabaseProgress = (gradeId: string = 'grade2-trangquynh') => {
       };
 
       // Update local state
+      const nodeId = `node-${nodeIndex}`;
       setProgress(prev => ({
         ...prev,
         xp: stageResult.totalXp,
         level: stageResult.newLevel,
         points: prev.points + score,
-        completedNodes: stageResult.completed && !prev.completedNodes.includes(stageId)
-          ? [...prev.completedNodes, stageId]
+        completedNodes: stageResult.completed && !prev.completedNodes.includes(nodeId)
+          ? [...prev.completedNodes, nodeId]
           : prev.completedNodes,
       }));
 
@@ -190,7 +186,7 @@ export const useSupabaseProgress = (gradeId: string = 'grade2-trangquynh') => {
       if (retryCount < MAX_RETRIES) {
         console.log(`Retrying after error... attempt ${retryCount + 1}`);
         await new Promise(resolve => setTimeout(resolve, 1000 * (retryCount + 1)));
-        return completeStage(stageId, courseId, score, maxScore, correctAnswers, totalQuestions, timeSpentSeconds, retryCount + 1);
+        return completeStage(nodeIndex, courseId, score, stars, xpReward, gameSpecificData, retryCount + 1);
       }
       
       toast.error('Lỗi kết nối. Vui lòng kiểm tra mạng và thử lại.');
@@ -218,13 +214,21 @@ export const useSupabaseProgress = (gradeId: string = 'grade2-trangquynh') => {
         return null;
       }
 
-      const result = data as Record<string, unknown>;
+      // unlock_badge returns an array with one item
+      const resultArray = data as Array<{ success: boolean; already_earned: boolean; badge_id: string; earned_at: string; message: string }>;
+      const result = resultArray?.[0];
+      
+      if (!result) {
+        console.error('No result from unlock_badge');
+        return null;
+      }
+      
       const badgeResult: BadgeResult = {
-        success: result.success as boolean,
-        alreadyEarned: result.already_earned as boolean,
-        badgeId: result.badge_id as string,
-        earnedAt: result.earned_at as string,
-        message: result.message as string,
+        success: result.success,
+        alreadyEarned: result.already_earned,
+        badgeId: result.badge_id,
+        earnedAt: result.earned_at,
+        message: result.message,
       };
 
       if (badgeResult.success) {
