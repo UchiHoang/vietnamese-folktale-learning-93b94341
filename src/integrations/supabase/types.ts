@@ -14,33 +14,42 @@ export type Database = {
   }
   public: {
     Tables: {
-      curriculumGrade0: {
+      course_progress: {
         Row: {
-          id: number
-          metadata: Json
+          completed_nodes: Json
+          course_id: string
+          created_at: string
+          current_node: number
+          extra_data: Json
+          id: string
+          total_stars: number
+          total_xp: number
+          updated_at: string
+          user_id: string
         }
         Insert: {
-          id?: number
-          metadata: Json
+          completed_nodes?: Json
+          course_id: string
+          created_at?: string
+          current_node?: number
+          extra_data?: Json
+          id?: string
+          total_stars?: number
+          total_xp?: number
+          updated_at?: string
+          user_id: string
         }
         Update: {
-          id?: number
-          metadata?: Json
-        }
-        Relationships: []
-      }
-      curriculumGrade1: {
-        Row: {
-          id: number
-          metadata: Json
-        }
-        Insert: {
-          id?: number
-          metadata: Json
-        }
-        Update: {
-          id?: number
-          metadata?: Json
+          completed_nodes?: Json
+          course_id?: string
+          created_at?: string
+          current_node?: number
+          extra_data?: Json
+          id?: string
+          total_stars?: number
+          total_xp?: number
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -98,6 +107,39 @@ export type Database = {
           grade?: string
           id?: string
           type?: string
+        }
+        Relationships: []
+      }
+      game_globals: {
+        Row: {
+          avatar_config: Json
+          coins: number
+          created_at: string
+          global_level: number
+          total_xp: number
+          unlocked_badges: Json
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          avatar_config?: Json
+          coins?: number
+          created_at?: string
+          global_level?: number
+          total_xp?: number
+          unlocked_badges?: Json
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          avatar_config?: Json
+          coins?: number
+          created_at?: string
+          global_level?: number
+          total_xp?: number
+          unlocked_badges?: Json
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -179,6 +221,45 @@ export type Database = {
         }
         Relationships: []
       }
+      level_history: {
+        Row: {
+          course_id: string
+          created_at: string
+          duration_seconds: number
+          id: string
+          meta: Json
+          node_index: number
+          passed: boolean
+          score: number
+          stars: number
+          user_id: string
+        }
+        Insert: {
+          course_id: string
+          created_at?: string
+          duration_seconds?: number
+          id?: string
+          meta?: Json
+          node_index: number
+          passed?: boolean
+          score?: number
+          stars?: number
+          user_id: string
+        }
+        Update: {
+          course_id?: string
+          created_at?: string
+          duration_seconds?: number
+          id?: string
+          meta?: Json
+          node_index?: number
+          passed?: boolean
+          score?: number
+          stars?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           address: string | null
@@ -233,72 +314,6 @@ export type Database = {
         }
         Relationships: []
       }
-      progressGrade0: {
-        Row: {
-          completedNodes: Json | null
-          correctAnswers: number | null
-          currentNodeIndex: number | null
-          currentQuestionIndex: number | null
-          earnedBadges: Json | null
-          id: number
-          incorrectAnswers: number | null
-          totalXp: number | null
-        }
-        Insert: {
-          completedNodes?: Json | null
-          correctAnswers?: number | null
-          currentNodeIndex?: number | null
-          currentQuestionIndex?: number | null
-          earnedBadges?: Json | null
-          id?: number
-          incorrectAnswers?: number | null
-          totalXp?: number | null
-        }
-        Update: {
-          completedNodes?: Json | null
-          correctAnswers?: number | null
-          currentNodeIndex?: number | null
-          currentQuestionIndex?: number | null
-          earnedBadges?: Json | null
-          id?: number
-          incorrectAnswers?: number | null
-          totalXp?: number | null
-        }
-        Relationships: []
-      }
-      progressGrade1: {
-        Row: {
-          completedNodes: Json | null
-          correctAnswers: number | null
-          currentNodeIndex: number | null
-          currentQuestionIndex: number | null
-          earnedBadges: Json | null
-          id: number
-          incorrectAnswers: number | null
-          totalXp: number | null
-        }
-        Insert: {
-          completedNodes?: Json | null
-          correctAnswers?: number | null
-          currentNodeIndex?: number | null
-          currentQuestionIndex?: number | null
-          earnedBadges?: Json | null
-          id?: number
-          incorrectAnswers?: number | null
-          totalXp?: number | null
-        }
-        Update: {
-          completedNodes?: Json | null
-          correctAnswers?: number | null
-          currentNodeIndex?: number | null
-          currentQuestionIndex?: number | null
-          earnedBadges?: Json | null
-          id?: number
-          incorrectAnswers?: number | null
-          totalXp?: number | null
-        }
-        Relationships: []
-      }
       stage_history: {
         Row: {
           accuracy: number | null
@@ -347,36 +362,6 @@ export type Database = {
           total_questions?: number
           user_id?: string
           xp_earned?: number
-        }
-        Relationships: []
-      }
-      storyGrade0: {
-        Row: {
-          id: number
-          metadata: Json
-        }
-        Insert: {
-          id?: number
-          metadata: Json
-        }
-        Update: {
-          id?: number
-          metadata?: Json
-        }
-        Relationships: []
-      }
-      storyGrade1: {
-        Row: {
-          id: number
-          metadata: Json
-        }
-        Insert: {
-          id?: number
-          metadata: Json
-        }
-        Update: {
-          id?: number
-          metadata?: Json
         }
         Relationships: []
       }
@@ -511,16 +496,28 @@ export type Database = {
       calculate_level_from_xp: { Args: { p_xp: number }; Returns: number }
       complete_stage: {
         Args: {
+          p_course_id: string
+          p_game_specific_data?: Json
+          p_node_index: number
+          p_score: number
+          p_stars: number
+          p_xp_reward: number
+        }
+        Returns: Json
+      }
+      complete_stage_grade5: {
+        Args: {
           p_correct_answers: number
           p_course_id: string
           p_max_score: number
           p_score: number
           p_stage_id: string
-          p_time_spent_seconds?: number
+          p_time_spent_seconds: number
           p_total_questions: number
         }
         Returns: Json
       }
+      get_full_game_state: { Args: { p_course_id: string }; Returns: Json }
       get_leaderboard: {
         Args: { p_grade?: string; p_limit?: number; p_period?: string }
         Returns: {
@@ -544,7 +541,8 @@ export type Database = {
           school: string
         }[]
       }
-      get_user_progress: { Args: { p_grade_id?: string }; Returns: Json }
+      get_user_progress: { Args: never; Returns: Json }
+      get_user_progress_by_grade: { Args: { p_grade: string }; Returns: Json }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -554,12 +552,22 @@ export type Database = {
       }
       unlock_badge: {
         Args: {
-          p_badge_description?: string
-          p_badge_icon?: string
+          p_badge_description: string
+          p_badge_icon: string
           p_badge_id: string
           p_badge_name: string
         }
-        Returns: Json
+        Returns: {
+          already_earned: boolean
+          badge_id: string
+          earned_at: string
+          message: string
+          success: boolean
+        }[]
+      }
+      update_current_node: {
+        Args: { p_grade_id: string; p_node_index: number }
+        Returns: undefined
       }
       update_user_streak: { Args: { p_user_id: string }; Returns: undefined }
     }
