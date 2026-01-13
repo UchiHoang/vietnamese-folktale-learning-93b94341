@@ -125,16 +125,15 @@ export const TrangQuynhMiniGame = () => {
       
       const timeSpent = Math.floor((Date.now() - levelStartTime.current) / 1000);
       const score = newCorrect * xpReward;
-      const maxScore = totalQuestions * xpReward;
+      const accuracy = (newCorrect / totalQuestions) * 100;
+      const stars = accuracy >= 90 ? 3 : accuracy >= 60 ? 2 : accuracy > 0 ? 1 : 0;
       
       const result = await completeStage(
-        currentNode?.id || `stage-${currentNodeIndex}`,
+        currentNodeIndex,
         'grade2-trangquynh',
         score,
-        maxScore,
-        newCorrect,
-        totalQuestions,
-        timeSpent
+        stars,
+        xpReward
       );
       
       setIsSubmitting(false);
