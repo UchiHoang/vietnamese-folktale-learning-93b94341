@@ -1,5 +1,6 @@
 import storyData from "@/data/story.grade2.trangquynh.json";
 import curriculumData from "@/data/curriculum.grade2.json";
+import { getBadgeIconPath } from "@/utils/assetPaths";
 
 export interface Question {
   id: string;
@@ -169,39 +170,39 @@ export const getBadgeInfo = (badgeId: string) => {
   const badges: Record<string, { name: string; icon: string; description: string }> = {
     "addition-master": {
       name: "Huy hiệu Tính nhanh",
-      icon: "/assets/user/icon_badge.png",
+      icon: getBadgeIconPath("addition-master"),
       description: "Hoàn thành thử thách phép cộng"
     },
     "subtraction-master": {
       name: "Huy hiệu Tư duy",
-      icon: "/assets/user/icon_badge.png",
+      icon: getBadgeIconPath("subtraction-master"),
       description: "Hoàn thành thử thách phép trừ"
     },
     "measurement-master": {
       name: "Huy hiệu Đo lường",
-      icon: "/assets/user/icon_badge.png",
+      icon: getBadgeIconPath("measurement-master"),
       description: "Hoàn thành thử thách đo lường"
     },
     "time-master": {
       name: "Huy hiệu Thời gian",
-      icon: "/assets/user/icon_clock.png",
+      icon: getBadgeIconPath("time-master"),
       description: "Hoàn thành thử thách về thời gian"
     },
     "money-master": {
       name: "Huy hiệu Tiền tệ",
-      icon: "/assets/user/icon_money.png",
+      icon: getBadgeIconPath("money-master"),
       description: "Hoàn thành thử thách về tiền"
     },
     "grade2-master": {
       name: "Huy hiệu Giỏi toán lớp 2",
-      icon: "/assets/user/icon_badge.png",
+      icon: getBadgeIconPath("grade2-master"),
       description: "Hoàn thành tất cả thử thách lớp 2"
     }
   };
   
   return badges[badgeId] || {
     name: "Huy hiệu",
-    icon: "/assets/user/icon_badge.png",
+    icon: getBadgeIconPath("default"),
     description: "Hoàn thành thử thách"
   };
 };

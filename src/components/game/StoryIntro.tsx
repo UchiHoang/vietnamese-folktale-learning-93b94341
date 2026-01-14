@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ChevronRight } from "lucide-react";
+import { resolveLegacyAssetPath } from "@/utils/assetPaths";
 
 interface PrologueSlide {
   id: string;
@@ -38,7 +39,7 @@ export const StoryIntro = ({ prologue, onComplete }: StoryIntroProps) => {
             {/* Character Image - Left Side */}
             <div className="bg-primary/10 p-8 flex flex-col items-center justify-center gap-4 min-h-[500px]">
               <img 
-                src={`/${prologue[currentSlide].sprite}`}
+                src={resolveLegacyAssetPath(prologue[currentSlide].sprite)}
                 alt={prologue[currentSlide].speaker}
                 className="w-full max-w-[300px] h-auto object-contain"
               />
