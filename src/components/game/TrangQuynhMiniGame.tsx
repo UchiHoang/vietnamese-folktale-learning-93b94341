@@ -11,6 +11,7 @@ import { loadStory, findActivityByRef, Activity } from "@/utils/storyLoader";
 import { useSupabaseProgress } from "@/hooks/useSupabaseProgress";
 import { ArrowLeft, RotateCcw, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { trangQuynhCharacters } from "@/utils/assetPaths";
 
 type GamePhase = "prologue" | "level-selection" | "cutscene" | "questions" | "complete";
 
@@ -329,10 +330,10 @@ export const TrangQuynhMiniGame = () => {
       if (frame.speaker === "Trạng Quỳnh" || frame.speaker.includes("Quỳnh")) {
         const isExcited = frame.text.includes("!") || frame.text.includes("thích");
         sprite = isExcited 
-          ? (currentNode.assets?.sprite_main_cheer || "assets/user/trang_cheer.png")
-          : (currentNode.assets?.sprite_main_idle || "assets/user/trang_idle.png");
+          ? (currentNode.assets?.sprite_main_cheer || trangQuynhCharacters.trang.cheer)
+          : (currentNode.assets?.sprite_main_idle || trangQuynhCharacters.trang.idle);
       } else if (frame.speaker !== "Người kể chuyện") {
-        sprite = currentNode.assets?.sprite_main_idle || "assets/user/trang_portrait.png";
+        sprite = currentNode.assets?.sprite_main_idle || trangQuynhCharacters.trang.portrait;
       }
       
       return {
