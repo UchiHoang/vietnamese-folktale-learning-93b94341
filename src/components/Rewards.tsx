@@ -114,25 +114,22 @@ const Rewards = () => {
               key={badge.id}
               variants={badgeVariants}
               whileHover={{ 
-                y: -15, 
-                scale: 1.1,
-                rotateY: 15,
-                boxShadow: "0 20px 40px -10px rgba(0, 0, 0, 0.2)"
+                y: -10, 
+                scale: 1.05,
+                boxShadow: "0 20px 40px -10px rgba(0, 0, 0, 0.15)"
               }}
               whileTap={{ scale: 0.95 }}
-              className="bg-card rounded-2xl p-6 card-shadow text-center space-y-3 group cursor-pointer relative overflow-hidden"
+              className="bg-card rounded-2xl p-6 card-shadow text-center space-y-3 group cursor-pointer relative overflow-hidden transition-colors duration-300 hover:bg-highlight/60"
             >
+              {/* Full color background on hover */}
+              <div className="absolute inset-0 bg-gradient-to-br from-highlight/80 to-secondary/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl" />
+              
               {/* Shimmer effect */}
               <motion.div
-                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
+                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent opacity-0 group-hover:opacity-100"
                 initial={{ x: "-100%" }}
                 whileHover={{ x: "100%" }}
                 transition={{ duration: 0.6 }}
-              />
-              
-              {/* Glow effect on hover */}
-              <motion.div
-                className="absolute inset-0 bg-primary/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
               />
               
               <motion.div 
@@ -145,22 +142,14 @@ const Rewards = () => {
                   repeat: Infinity,
                   delay: index * 0.2 
                 }}
-                whileHover={{ 
-                  scale: 1.3,
-                  rotate: [0, -10, 10, 0],
-                  transition: { duration: 0.3 }
-                }}
               >
                 {badge.icon}
               </motion.div>
               <div className="relative z-10">
-                <motion.div 
-                  className="font-heading font-bold text-sm"
-                  whileHover={{ color: "hsl(var(--primary))" }}
-                >
+                <div className="font-heading font-bold text-sm group-hover:text-primary transition-colors duration-300">
                   {badge.name}
-                </motion.div>
-                <div className="text-xs text-muted-foreground mt-1">
+                </div>
+                <div className="text-xs text-muted-foreground mt-1 group-hover:text-foreground/80 transition-colors duration-300">
                   {badge.description}
                 </div>
               </div>
