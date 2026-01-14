@@ -40,6 +40,7 @@ export const TrangQuynhMiniGame = () => {
   const [correctThisLevel, setCorrectThisLevel] = useState(0);
   const [incorrectThisLevel, setIncorrectThisLevel] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [starsEarned, setStarsEarned] = useState(0);
   
   // Track time spent on level
   const levelStartTime = useRef<number>(Date.now());
@@ -127,6 +128,7 @@ export const TrangQuynhMiniGame = () => {
       const score = newCorrect * xpReward;
       const accuracy = (newCorrect / totalQuestions) * 100;
       const stars = accuracy >= 90 ? 3 : accuracy >= 60 ? 2 : accuracy > 0 ? 1 : 0;
+      setStarsEarned(stars);
       
       const result = await completeStage(
         currentNodeIndex,
@@ -415,6 +417,7 @@ export const TrangQuynhMiniGame = () => {
           badgeId={completedBadgeId}
           earnedXp={earnedXpThisLevel}
           performance={levelPerformance}
+          stars={starsEarned}
           onContinue={handleBadgeModalContinue}
           onRetry={levelPerformance === "retry" ? handleRetry : undefined}
         />
