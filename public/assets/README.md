@@ -13,6 +13,10 @@ public/assets/
 │   │   └── icon_star.png
 │   ├── backgrounds/                 # Backgrounds dùng chung
 │   │   └── bg_default.png
+│   ├── questions/                   # Hình câu hỏi dùng chung
+│   │   ├── shapes-basic.png         # Hình học cơ bản
+│   │   ├── number-cards.png         # Thẻ số
+│   │   └── measurement-tools.png    # Dụng cụ đo
 │   └── ui/                          # UI elements (buttons, frames...)
 │       ├── button_primary.png
 │       └── frame_gold.png
@@ -25,6 +29,12 @@ public/assets/
     │       │   ├── bunny_idle.png
     │       │   └── bear_happy.png
     │       ├── icons/
+    │       ├── questions/           # Hình câu hỏi đếm số
+    │       │   ├── counting-apple.png
+    │       │   ├── counting-banana.png
+    │       │   ├── counting-star.png
+    │       │   ├── counting-flower.png
+    │       │   └── counting-dots.png
     │       └── backgrounds/
     │
     ├── grade1/                      # 📚 LỚP 1
@@ -33,6 +43,7 @@ public/assets/
     │       │   ├── hero_idle.png
     │       │   └── guide_point.png
     │       ├── icons/
+    │       ├── questions/
     │       └── backgrounds/
     │
     ├── grade2/                      # 📖 LỚP 2
@@ -45,6 +56,7 @@ public/assets/
     │       │   ├── icon_apple.png
     │       │   ├── icon_bridge.png
     │       │   └── ...
+    │       ├── questions/
     │       └── backgrounds/
     │
     ├── grade3/                      # 📐 LỚP 3
@@ -53,6 +65,7 @@ public/assets/
     │       │   ├── scientist_idle.png
     │       │   └── robot_calculate.png
     │       ├── icons/
+    │       ├── questions/
     │       └── backgrounds/
     │
     ├── grade4/                      # 📏 LỚP 4
@@ -61,6 +74,7 @@ public/assets/
     │       │   ├── architect_idle.png
     │       │   └── architect_draw.png
     │       ├── icons/
+    │       ├── questions/
     │       └── backgrounds/
     │
     └── grade5/                      # 🏆 LỚP 5
@@ -70,6 +84,7 @@ public/assets/
             │   ├── champion_victory.png
             │   └── mentor_proud.png
             ├── icons/
+            ├── questions/
             └── backgrounds/
 ```
 
