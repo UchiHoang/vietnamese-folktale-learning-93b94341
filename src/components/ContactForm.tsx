@@ -248,56 +248,31 @@ const ContactForm = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
-            <div className="bg-card border-4 border-accent rounded-2xl p-6 md:p-8 shadow-lg relative overflow-hidden h-full">
-              {/* Card shimmer effect */}
-              <motion.div
-                className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/5 to-transparent"
-                initial={{ x: "-100%" }}
-                animate={{ x: "200%" }}
-                transition={{ duration: 5, repeat: Infinity, repeatDelay: 4 }}
-              />
-              
-              {/* Decorative corner icons */}
-              <motion.div
-                className="absolute top-4 right-4 text-primary/10"
-                animate={{ rotate: [0, 360] }}
-                transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-              >
-                <Sparkles className="w-6 h-6" />
-              </motion.div>
-              <motion.div
-                className="absolute bottom-4 left-4 text-accent/15"
-                animate={{ scale: [1, 1.2, 1] }}
-                transition={{ duration: 3, repeat: Infinity }}
-              >
-                <Heart className="w-5 h-5" />
-              </motion.div>
+            <div className="relative h-full py-4">
+              <h3 className="text-xl md:text-2xl font-heading font-bold mb-8 flex items-center gap-2">
+                <motion.span
+                  animate={{ rotate: [0, 10, -10, 0] }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                >
+                  📍
+                </motion.span>
+                Thông tin liên hệ
+              </h3>
 
-              <div className="relative z-10">
-                <h3 className="text-xl md:text-2xl font-heading font-bold mb-6 flex items-center gap-2">
-                  <motion.span
-                    animate={{ rotate: [0, 10, -10, 0] }}
-                    transition={{ duration: 2, repeat: Infinity }}
+              <div className="space-y-5">
+                {contactInfo.map((info, index) => (
+                  <motion.a
+                    key={info.title}
+                    href={info.href}
+                    target={info.title === "Địa chỉ" ? "_blank" : undefined}
+                    rel={info.title === "Địa chỉ" ? "noopener noreferrer" : undefined}
+                    className="flex items-start gap-4 p-4 rounded-xl bg-card/50 hover:bg-card border border-border/50 hover:border-primary/30 hover:shadow-md transition-all duration-300 group cursor-pointer"
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: index * 0.1 + 0.3 }}
+                    whileHover={{ scale: 1.02, x: 5 }}
                   >
-                    📍
-                  </motion.span>
-                  Thông tin liên hệ
-                </h3>
-
-                <div className="space-y-6">
-                  {contactInfo.map((info, index) => (
-                    <motion.a
-                      key={info.title}
-                      href={info.href}
-                      target={info.title === "Địa chỉ" ? "_blank" : undefined}
-                      rel={info.title === "Địa chỉ" ? "noopener noreferrer" : undefined}
-                      className="flex items-start gap-4 p-4 rounded-xl bg-secondary/30 hover:bg-secondary/50 transition-all duration-300 group cursor-pointer"
-                      initial={{ opacity: 0, y: 20 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ delay: index * 0.1 + 0.3 }}
-                      whileHover={{ scale: 1.02, x: 5 }}
-                    >
                       <motion.div
                         className={`p-3 rounded-full bg-background shadow-md ${info.color}`}
                         whileHover={{ rotate: [0, -10, 10, 0] }}
@@ -312,28 +287,27 @@ const ContactForm = () => {
                         </p>
                       </div>
                     </motion.a>
-                  ))}
-                </div>
-
-                {/* Social media hint */}
-                <motion.div
-                  className="mt-8 pt-6 border-t border-border"
-                  initial={{ opacity: 0 }}
-                  whileInView={{ opacity: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: 0.6 }}
-                >
-                  <p className="text-sm text-muted-foreground text-center flex items-center justify-center gap-2">
-                    <motion.span
-                      animate={{ scale: [1, 1.2, 1] }}
-                      transition={{ duration: 1.5, repeat: Infinity }}
-                    >
-                      💌
-                    </motion.span>
-                    Chúng mình sẽ phản hồi trong 24h!
-                  </p>
-                </motion.div>
+                ))}
               </div>
+
+              {/* Social media hint */}
+              <motion.div
+                className="mt-8 pt-6 border-t border-border"
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.6 }}
+              >
+                <p className="text-sm text-muted-foreground text-center flex items-center justify-center gap-2">
+                  <motion.span
+                    animate={{ scale: [1, 1.2, 1] }}
+                    transition={{ duration: 1.5, repeat: Infinity }}
+                  >
+                    💌
+                  </motion.span>
+                  Chúng mình sẽ phản hồi trong 24h!
+                </p>
+              </motion.div>
             </div>
           </motion.div>
 
