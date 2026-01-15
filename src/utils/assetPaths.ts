@@ -103,6 +103,14 @@ export class GameAssets {
   }
   
   /**
+   * Get question image path (for counting, matching games, etc.)
+   * @param imageName - e.g., "counting-apple", "shapes", "numbers"
+   */
+  question(imageName: string): string {
+    return `${this.basePath}/questions/${imageName}.png`;
+  }
+  
+  /**
    * Get any custom asset path
    * @param relativePath - relative path from game folder
    */
@@ -125,6 +133,7 @@ export const commonAssets = {
   icon: (iconName: string): string => `${COMMON_BASE}/icons/icon_${iconName}.png`,
   background: (bgName: string): string => `${COMMON_BASE}/backgrounds/bg_${bgName}.png`,
   ui: (elementName: string): string => `${COMMON_BASE}/ui/${elementName}.png`,
+  question: (imageName: string): string => `${COMMON_BASE}/questions/${imageName}.png`,
 };
 
 // ============================================================================
@@ -364,6 +373,19 @@ export const resolveLegacyAssetPath = (legacyPath: string): string => {
     return legacyPath;
   }
   
+  // Handle old src/assets/game paths (question images)
+  if (legacyPath.includes('src/assets/game/') || legacyPath.includes('/src/assets/game/')) {
+    const filename = legacyPath.split('/').pop()?.replace('.png', '') || '';
+    
+    // Counting images go to preschool
+    if (filename.startsWith('counting-')) {
+      return preschoolGames.countingAnimals.question(filename);
+    }
+    
+    // Common question images (shapes, numbers, measurement)
+    return commonAssets.question(filename);
+  }
+  
   // Handle old paths like "assets/user/trang_idle.png"
   if (legacyPath.startsWith('assets/user/')) {
     const filename = legacyPath.replace('assets/user/', '');
@@ -437,9 +459,51 @@ public/assets/grades/${grade}/${gameId}/
 │   ├── icon_{level1}.png
 │   ├── icon_{level2}.png
 │   └── ...
+├── questions/
+│   ├── counting-{item}.png
+│   ├── {question-type}.png
+│   └── ...
 └── backgrounds/
     ├── bg_{scene1}.png
     ├── bg_{scene2}.png
     └── ...
   `.trim();
+};
+
+// ============================================================================
+// QUESTION IMAGE HELPERS
+// ============================================================================
+
+/**
+ * Get question image path - handles both game-specific and common images
+ * @param imagePath - Legacy path or image name
+ * @param grade - Optional grade for game-specific images
+ * @param gameId - Optional game ID for game-specific images
+ */
+export const getQuestionImage = (imagePath: string, grade?: GradeLevel, gameId?: string): string => {
+  // If already a new path, return as is
+  if (imagePath.startsWith('/assets/')) {
+    return imagePath;
+  }
+  
+  // If legacy path, resolve it
+  if (imagePath.includes('src/assets/game/')) {
+    return resolveLegacyAssetPath(imagePath);
+  }
+  
+  // If just an image name, build the path
+  if (!imagePath.includes('/')) {
+    const imgName = imagePath.replace('.png', '');
+    
+    // If grade and game specified, use game-specific path
+    if (grade && gameId) {
+      const game = createGameAssets(grade, gameId);
+      return game.question(imgName);
+    }
+    
+    // Otherwise use common
+    return commonAssets.question(imgName);
+  }
+  
+  return imagePath;
 };
