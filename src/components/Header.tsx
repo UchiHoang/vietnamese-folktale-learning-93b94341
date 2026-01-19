@@ -1,9 +1,10 @@
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Menu, GraduationCap, LogOut, User, Shield } from "lucide-react";
+import { Menu, GraduationCap, LogOut, User, Shield, Moon, Sun } from "lucide-react";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
+import { useTheme } from "next-themes";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -25,6 +26,12 @@ const Header = ({ onRoleChange, currentRole = "student" }: HeaderProps) => {
   const [user, setUser] = useState<any>(null);
   const [profile, setProfile] = useState<any>(null);
   const [userRole, setUserRole] = useState<string | null>(null);
+  const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
@@ -86,6 +93,10 @@ const Header = ({ onRoleChange, currentRole = "student" }: HeaderProps) => {
     }
   };
 
+  const toggleTheme = () => {
+    setTheme(theme === "dark" ? "light" : "dark");
+  };
+
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/60">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
@@ -119,6 +130,23 @@ const Header = ({ onRoleChange, currentRole = "student" }: HeaderProps) => {
         </nav>
 
         <div className="flex items-center gap-3">
+          {/* Theme Toggle Button */}
+          {mounted && (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={toggleTheme}
+              className="rounded-full"
+              aria-label="Toggle theme"
+            >
+              {theme === "dark" ? (
+                <Sun className="h-5 w-5 text-secondary" />
+              ) : (
+                <Moon className="h-5 w-5 text-foreground" />
+              )}
+            </Button>
+          )}
+
           {user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -185,6 +213,26 @@ const Header = ({ onRoleChange, currentRole = "student" }: HeaderProps) => {
           <Link to="#contact" className="block py-2 text-foreground hover:text-primary">
             Liên hệ
           </Link>
+          
+          {/* Mobile Theme Toggle */}
+          {mounted && (
+            <div className="flex items-center justify-between py-2 border-t">
+              <span className="text-foreground">Chế độ tối</span>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={toggleTheme}
+                className="rounded-full"
+              >
+                {theme === "dark" ? (
+                  <Sun className="h-5 w-5 text-secondary" />
+                ) : (
+                  <Moon className="h-5 w-5 text-foreground" />
+                )}
+              </Button>
+            </div>
+          )}
+
           {user ? (
             <>
               <div className="py-2 border-t">

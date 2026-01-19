@@ -14,6 +14,36 @@ export type Database = {
   }
   public: {
     Tables: {
+      classes: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          grade: string
+          id: string
+          name: string
+          teacher_id: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          grade: string
+          id?: string
+          name: string
+          teacher_id?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          grade?: string
+          id?: string
+          name?: string
+          teacher_id?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       contacts: {
         Row: {
           created_at: string | null
@@ -292,6 +322,7 @@ export type Database = {
           address: string | null
           avatar: string | null
           birth_date: string | null
+          class_id: string | null
           class_name: string | null
           created_at: string
           display_name: string
@@ -309,6 +340,7 @@ export type Database = {
           address?: string | null
           avatar?: string | null
           birth_date?: string | null
+          class_id?: string | null
           class_name?: string | null
           created_at?: string
           display_name: string
@@ -326,6 +358,7 @@ export type Database = {
           address?: string | null
           avatar?: string | null
           birth_date?: string | null
+          class_id?: string | null
           class_name?: string | null
           created_at?: string
           display_name?: string
@@ -339,7 +372,15 @@ export type Database = {
           updated_at?: string
           ward?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "profiles_class_id_fkey"
+            columns: ["class_id"]
+            isOneToOne: false
+            referencedRelation: "classes"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       stage_history: {
         Row: {
