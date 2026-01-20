@@ -74,11 +74,11 @@ const Leaderboard = () => {
   // Empty state when no entries
   const EmptyState = () => (
     <div className="text-center py-16">
-      <Trophy className="w-16 h-16 mx-auto text-sky-300 mb-4" />
-      <h3 className="text-xl font-heading font-bold text-white mb-2">
+      <Trophy className="w-16 h-16 mx-auto text-sky-300 dark:text-primary mb-4 transition-colors duration-300" />
+      <h3 className="text-xl font-heading font-bold text-white dark:text-foreground mb-2 transition-colors duration-300">
         Chưa có dữ liệu xếp hạng
       </h3>
-      <p className="text-white/70 mb-4">
+      <p className="text-white/70 dark:text-muted-foreground mb-4 transition-colors duration-300">
         Hãy là người đầu tiên chinh phục bảng xếp hạng!
       </p>
     </div>
@@ -87,29 +87,34 @@ const Leaderboard = () => {
   // Loading state
   const LoadingState = () => (
     <div className="flex items-center justify-center py-16">
-      <Loader2 className="w-8 h-8 animate-spin text-white" />
-      <span className="ml-3 text-white text-lg">Đang tải bảng xếp hạng...</span>
+      <Loader2 className="w-8 h-8 animate-spin text-white dark:text-foreground transition-colors duration-300" />
+      <span className="ml-3 text-white dark:text-foreground text-lg transition-colors duration-300">Đang tải bảng xếp hạng...</span>
     </div>
   );
 
   return (
     <section id="leaderboard" className="py-16 md:py-24 relative overflow-hidden">
-      {/* Sky gradient background */}
-      <div className="absolute inset-0 bg-gradient-to-b from-sky-400 via-sky-300 to-sky-100 -z-10" />
+      {/* Sky gradient background - light/dark mode aware */}
+      <div className="absolute inset-0 bg-gradient-to-b from-sky-400 via-sky-300 to-sky-100 dark:from-slate-800 dark:via-slate-900 dark:to-slate-950 -z-10 transition-colors duration-500" />
       
-      {/* Cloud decorations */}
-      <div className="absolute top-10 left-10 w-32 h-16 bg-white/60 rounded-full blur-sm animate-float" />
-      <div className="absolute top-20 right-20 w-40 h-20 bg-white/50 rounded-full blur-sm animate-float" style={{ animationDelay: "1s" }} />
-      <div className="absolute bottom-32 left-1/4 w-36 h-18 bg-white/40 rounded-full blur-sm animate-float" style={{ animationDelay: "2s" }} />
+      {/* Cloud decorations - light/dark mode aware */}
+      <div className="absolute top-10 left-10 w-32 h-16 bg-white/60 dark:bg-white/10 rounded-full blur-sm animate-float transition-colors duration-500" />
+      <div className="absolute top-20 right-20 w-40 h-20 bg-white/50 dark:bg-white/5 rounded-full blur-sm animate-float transition-colors duration-500" style={{ animationDelay: "1s" }} />
+      <div className="absolute bottom-32 left-1/4 w-36 h-18 bg-white/40 dark:bg-white/5 rounded-full blur-sm animate-float transition-colors duration-500" style={{ animationDelay: "2s" }} />
+
+      {/* Star decorations for dark mode */}
+      <div className="hidden dark:block absolute top-16 right-1/4 w-2 h-2 bg-yellow-300 rounded-full animate-pulse" />
+      <div className="hidden dark:block absolute top-32 left-1/3 w-1.5 h-1.5 bg-blue-300 rounded-full animate-pulse" style={{ animationDelay: "0.5s" }} />
+      <div className="hidden dark:block absolute bottom-40 right-1/3 w-2 h-2 bg-purple-300 rounded-full animate-pulse" style={{ animationDelay: "1s" }} />
 
       <div className="container mx-auto px-4">
         <div className="max-w-6xl mx-auto">
           {/* Header */}
           <div className="text-center mb-8 space-y-4">
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-heading font-bold text-white drop-shadow-lg">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-heading font-bold text-white dark:text-foreground drop-shadow-lg transition-colors duration-300">
               Bảng xếp hạng
             </h2>
-            <p className="text-lg md:text-xl text-white/90 drop-shadow">
+            <p className="text-lg md:text-xl text-white/90 dark:text-muted-foreground drop-shadow transition-colors duration-300">
               Vinh danh những học sinh xuất sắc nhất
             </p>
           </div>
@@ -117,7 +122,7 @@ const Leaderboard = () => {
           {/* Filters */}
           <div className="flex flex-wrap justify-center gap-4 mb-8">
             <Select value={selectedGrade} onValueChange={setSelectedGrade}>
-              <SelectTrigger className="w-[200px] bg-white/90 backdrop-blur">
+              <SelectTrigger className="w-[200px] bg-white/90 dark:bg-card/90 backdrop-blur transition-colors duration-300">
                 <SelectValue placeholder="Chọn khối" />
               </SelectTrigger>
               <SelectContent>
@@ -130,7 +135,7 @@ const Leaderboard = () => {
             </Select>
 
             <Select value={selectedPeriod} onValueChange={setSelectedPeriod}>
-              <SelectTrigger className="w-[180px] bg-white/90 backdrop-blur">
+              <SelectTrigger className="w-[180px] bg-white/90 dark:bg-card/90 backdrop-blur transition-colors duration-300">
                 <SelectValue placeholder="Khoảng thời gian" />
               </SelectTrigger>
               <SelectContent>
@@ -147,7 +152,7 @@ const Leaderboard = () => {
               size="icon"
               onClick={handleRefresh}
               disabled={isLoading}
-              className="bg-white/90 backdrop-blur hover:bg-white"
+              className="bg-white/90 dark:bg-card/90 backdrop-blur hover:bg-white dark:hover:bg-card transition-colors duration-300"
             >
               <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
             </Button>
@@ -155,8 +160,8 @@ const Leaderboard = () => {
 
           {/* Top label */}
           <div className="text-center mb-12">
-            <div className="inline-block bg-lime-300 px-8 py-3 rounded-full shadow-lg">
-              <span className="font-heading font-bold text-lg text-gray-800">
+            <div className="inline-block bg-lime-300 dark:bg-primary/80 px-8 py-3 rounded-full shadow-lg transition-colors duration-300">
+              <span className="font-heading font-bold text-lg text-gray-800 dark:text-primary-foreground transition-colors duration-300">
                 Top 10 - {getGradeLabel()}
               </span>
             </div>
@@ -166,8 +171,8 @@ const Leaderboard = () => {
           {isLoading ? (
             <LoadingState />
           ) : error ? (
-            <div className="text-center py-16 text-white">
-              <p className="text-red-200 mb-4">{error}</p>
+            <div className="text-center py-16 text-white dark:text-foreground transition-colors duration-300">
+              <p className="text-red-200 dark:text-destructive mb-4 transition-colors duration-300">{error}</p>
               <Button onClick={handleRefresh} variant="secondary">
                 Thử lại
               </Button>
@@ -191,28 +196,28 @@ const Leaderboard = () => {
                       >
                         {/* Crown for first place */}
                         {actualRank === 1 && (
-                          <Crown className="h-12 w-12 text-yellow-400 mb-2 drop-shadow-lg animate-pulse" />
+                          <Crown className="h-12 w-12 text-yellow-400 dark:text-yellow-300 mb-2 drop-shadow-lg animate-pulse transition-colors duration-300" />
                         )}
 
                         {/* Avatar with rank badge - with float animation */}
                         <div className="relative mb-4 animate-float" style={{ animationDelay: `${idx * 0.5}s` }}>
-                          <div className={`w-20 h-20 md:w-24 md:h-24 rounded-full ${getRankBadge(actualRank)} flex items-center justify-center border-4 border-white shadow-2xl`}>
+                          <div className={`w-20 h-20 md:w-24 md:h-24 rounded-full ${getRankBadge(actualRank)} flex items-center justify-center border-4 border-white dark:border-card shadow-2xl transition-colors duration-300`}>
                             <span className="text-4xl">{student.avatar}</span>
                           </div>
-                          <div className={`absolute -bottom-2 left-1/2 -translate-x-1/2 w-12 h-12 rounded-full ${getRankBadge(actualRank)} flex items-center justify-center border-3 border-white font-bold text-2xl text-white`}>
+                          <div className={`absolute -bottom-2 left-1/2 -translate-x-1/2 w-12 h-12 rounded-full ${getRankBadge(actualRank)} flex items-center justify-center border-3 border-white dark:border-card font-bold text-2xl text-white transition-colors duration-300`}>
                             {actualRank}
                           </div>
                         </div>
 
                         {/* Student info - with float animation */}
                         <div className="text-center mb-3 px-2 animate-float" style={{ animationDelay: `${idx * 0.5}s` }}>
-                          <h3 className="font-heading font-bold text-base md:text-lg text-white drop-shadow-md mb-1">
+                          <h3 className="font-heading font-bold text-base md:text-lg text-white dark:text-foreground drop-shadow-md mb-1 transition-colors duration-300">
                             {student.displayName}
                           </h3>
-                          <p className="text-xs md:text-sm text-white/80 drop-shadow">
+                          <p className="text-xs md:text-sm text-white/80 dark:text-muted-foreground drop-shadow transition-colors duration-300">
                             {student.school || "Học sinh"}
                           </p>
-                          <p className="text-lg font-bold text-yellow-300 mt-1">
+                          <p className="text-lg font-bold text-yellow-300 dark:text-yellow-400 mt-1 transition-colors duration-300">
                             {student.totalPoints.toLocaleString()} điểm
                           </p>
                         </div>
@@ -222,7 +227,7 @@ const Leaderboard = () => {
                           <img 
                             src="/assets/floating-island.png" 
                             alt="Floating Island" 
-                            className="w-36 h-32 md:w-44 md:h-36 object-contain drop-shadow-2xl"
+                            className="w-36 h-32 md:w-44 md:h-36 object-contain drop-shadow-2xl dark:brightness-90 transition-all duration-300"
                           />
                           <div className="absolute inset-x-0 top-1/3 text-center">
                             <span className="font-bold text-5xl md:text-6xl text-white drop-shadow-[0_4px_8px_rgba(0,0,0,0.6)]">
@@ -242,31 +247,31 @@ const Leaderboard = () => {
                   {remaining.map((student, index) => (
                     <div
                       key={student.userId}
-                      className="bg-white/90 backdrop-blur rounded-2xl p-4 md:p-6 flex items-center gap-4 hover:bg-white transition-all hover:scale-[1.02] shadow-lg animate-fade-in"
+                      className="bg-white/90 dark:bg-card/90 backdrop-blur rounded-2xl p-4 md:p-6 flex items-center gap-4 hover:bg-white dark:hover:bg-card transition-all duration-300 hover:scale-[1.02] shadow-lg animate-fade-in"
                       style={{ animationDelay: `${(index + 3) * 100}ms` }}
                     >
-                      <div className="flex items-center justify-center w-12 h-12 rounded-full bg-muted font-bold text-lg">
+                      <div className="flex items-center justify-center w-12 h-12 rounded-full bg-muted font-bold text-lg text-foreground transition-colors duration-300">
                         {String(student.rank).padStart(2, '0')}
                       </div>
 
-                      <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center text-2xl">
+                      <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center text-2xl transition-colors duration-300">
                         {student.avatar}
                       </div>
 
                       <div className="flex-1">
-                        <h4 className="font-heading font-bold text-base md:text-lg">
+                        <h4 className="font-heading font-bold text-base md:text-lg text-foreground transition-colors duration-300">
                           {student.displayName}
                         </h4>
-                        <p className="text-sm text-muted-foreground">
+                        <p className="text-sm text-muted-foreground transition-colors duration-300">
                           {student.school || "Học sinh"}
                         </p>
                       </div>
 
                       <div className="text-right">
-                        <div className="text-xl md:text-2xl font-bold text-primary">
+                        <div className="text-xl md:text-2xl font-bold text-primary transition-colors duration-300">
                           {student.totalPoints.toLocaleString()}
                         </div>
-                        <div className="text-xs text-muted-foreground">điểm</div>
+                        <div className="text-xs text-muted-foreground transition-colors duration-300">điểm</div>
                       </div>
                     </div>
                   ))}
