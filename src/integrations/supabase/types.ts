@@ -317,6 +317,51 @@ export type Database = {
         }
         Relationships: []
       }
+      library_documents: {
+        Row: {
+          created_at: string
+          description: string | null
+          download_count: number
+          file_name: string
+          file_path: string
+          file_size: number
+          file_type: string
+          grade: string
+          id: string
+          title: string
+          updated_at: string
+          uploaded_by: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          download_count?: number
+          file_name: string
+          file_path: string
+          file_size?: number
+          file_type: string
+          grade: string
+          id?: string
+          title: string
+          updated_at?: string
+          uploaded_by: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          download_count?: number
+          file_name?: string
+          file_path?: string
+          file_size?: number
+          file_type?: string
+          grade?: string
+          id?: string
+          title?: string
+          updated_at?: string
+          uploaded_by?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           address: string | null
