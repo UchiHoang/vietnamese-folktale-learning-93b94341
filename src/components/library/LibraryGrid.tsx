@@ -21,6 +21,7 @@ interface LibraryDocument {
 interface LibraryGridProps {
   selectedGrade: string;
   searchQuery: string;
+  sortBy: string;
   isTeacher: boolean;
   refreshTrigger: number;
   onRefresh: () => void;
@@ -29,6 +30,7 @@ interface LibraryGridProps {
 const LibraryGrid = ({
   selectedGrade,
   searchQuery,
+  sortBy,
   isTeacher,
   refreshTrigger,
   onRefresh,
@@ -41,10 +43,18 @@ const LibraryGrid = ({
     const fetchDocuments = async () => {
       setIsLoading(true);
 
+      // Parse sort option
+      const [sortField, sortDirection] = sortBy.split("_");
+      const ascending = sortDirection === "asc";
+      
+      // Map sort field names
+      const sortColumn = sortField === "created" ? "created_at" : 
+                         sortField === "download" ? "download_count" : sortField;
+
       let query = supabase
         .from("library_documents")
         .select("*")
-        .order("created_at", { ascending: false });
+        .order(sortColumn, { ascending });
 
       if (selectedGrade !== "all") {
         query = query.eq("grade", selectedGrade);
@@ -66,7 +76,7 @@ const LibraryGrid = ({
     };
 
     fetchDocuments();
-  }, [selectedGrade, searchQuery, refreshTrigger]);
+  }, [selectedGrade, searchQuery, sortBy, refreshTrigger]);
 
   const handleDelete = async (docId: string, filePath: string) => {
     // Delete from storage
