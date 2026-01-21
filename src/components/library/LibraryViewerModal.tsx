@@ -111,62 +111,115 @@ const LibraryViewerModal = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl h-[85vh] flex flex-col">
-        <DialogHeader className="flex-shrink-0">
-          <DialogTitle className="pr-8 line-clamp-1">
-            {document?.title}
-          </DialogTitle>
-        </DialogHeader>
+      <DialogContent className="max-w-[95vw] w-[95vw] h-[95vh] max-h-[95vh] flex flex-col p-0 gap-0 bg-background/95 backdrop-blur-sm border-2">
+        {/* Header Bar */}
+        <div className="flex-shrink-0 flex items-center justify-between px-6 py-4 border-b bg-card/80 backdrop-blur-sm">
+          <div className="flex items-center gap-4 flex-1 min-w-0">
+            <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
+              <FileText className="h-5 w-5 text-primary" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <DialogHeader className="p-0 space-y-1">
+                <DialogTitle className="text-lg font-semibold line-clamp-1 text-left">
+                  {document?.title}
+                </DialogTitle>
+                {document?.description && (
+                  <p className="text-sm text-muted-foreground line-clamp-1">
+                    {document.description}
+                  </p>
+                )}
+              </DialogHeader>
+            </div>
+          </div>
+          
+          {/* Action Buttons in Header */}
+          <div className="flex items-center gap-2 flex-shrink-0 ml-4">
+            <Button 
+              variant="outline" 
+              size="sm"
+              className="gap-2 h-9 px-4"
+              onClick={handleOpenInNewTab} 
+              disabled={!fileUrl}
+            >
+              <ExternalLink className="h-4 w-4" />
+              <span className="hidden sm:inline">Mở tab mới</span>
+            </Button>
+            <Button 
+              size="sm"
+              className="gap-2 h-9 px-4 bg-green-600 hover:bg-green-700"
+              onClick={handleDownload}
+            >
+              <Download className="h-4 w-4" />
+              <span className="hidden sm:inline">Tải xuống</span>
+            </Button>
+          </div>
+        </div>
 
-        <div className="flex-1 min-h-0 flex flex-col">
+        {/* Main Content - PDF Viewer */}
+        <div className="flex-1 min-h-0 bg-muted/30">
           {isLoading ? (
-            <div className="flex-1 flex items-center justify-center">
+            <div className="h-full flex items-center justify-center">
               <div className="text-center">
-                <Loader2 className="h-8 w-8 animate-spin text-primary mx-auto mb-2" />
-                <p className="text-muted-foreground">Đang tải tài liệu...</p>
+                <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
+                  <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                </div>
+                <p className="text-muted-foreground font-medium">Đang tải tài liệu...</p>
+                <p className="text-sm text-muted-foreground/70 mt-1">Vui lòng chờ trong giây lát</p>
               </div>
             </div>
           ) : error ? (
-            <div className="flex-1 flex items-center justify-center">
+            <div className="h-full flex items-center justify-center">
               <div className="text-center">
-                <AlertCircle className="h-12 w-12 text-destructive mx-auto mb-2" />
-                <p className="text-destructive">{error}</p>
+                <div className="w-16 h-16 rounded-full bg-destructive/10 flex items-center justify-center mx-auto mb-4">
+                  <AlertCircle className="h-8 w-8 text-destructive" />
+                </div>
+                <p className="text-destructive font-medium">{error}</p>
+                <p className="text-sm text-muted-foreground mt-1">Vui lòng thử lại sau</p>
               </div>
             </div>
           ) : canPreview && fileUrl ? (
             <iframe
-              src={`${fileUrl}#toolbar=1&navpanes=0`}
-              className="flex-1 w-full rounded-lg border bg-muted"
+              src={`${fileUrl}#toolbar=1&navpanes=1&scrollbar=1&view=FitH`}
+              className="w-full h-full border-0"
               title={document?.title}
+              style={{ minHeight: '100%' }}
             />
           ) : (
-            <div className="flex-1 flex items-center justify-center bg-muted rounded-lg">
-              <div className="text-center p-8">
-                <div className="w-20 h-20 rounded-full bg-background flex items-center justify-center mx-auto mb-4">
-                  <FileText className="h-10 w-10 text-muted-foreground" />
+            <div className="h-full flex items-center justify-center">
+              <div className="text-center p-8 max-w-md">
+                <div className="w-24 h-24 rounded-full bg-muted flex items-center justify-center mx-auto mb-6">
+                  <FileText className="h-12 w-12 text-muted-foreground" />
                 </div>
-                <h3 className="text-lg font-semibold text-foreground mb-2">
+                <h3 className="text-xl font-semibold text-foreground mb-3">
                   Không thể xem trực tiếp
                 </h3>
-                <p className="text-muted-foreground mb-4 max-w-sm">
-                  File {document?.file_type.toUpperCase()} không hỗ trợ xem trực tiếp trên trình duyệt. 
-                  Vui lòng tải về hoặc mở trong tab mới.
+                <p className="text-muted-foreground mb-6">
+                  File <span className="font-medium text-foreground">{document?.file_type.toUpperCase()}</span> không hỗ trợ xem trực tiếp trên trình duyệt. 
+                  Vui lòng tải về hoặc mở trong tab mới để xem nội dung.
                 </p>
+                <div className="flex gap-3 justify-center">
+                  <Button 
+                    variant="outline" 
+                    size="lg"
+                    className="gap-2"
+                    onClick={handleOpenInNewTab} 
+                    disabled={!fileUrl}
+                  >
+                    <ExternalLink className="h-5 w-5" />
+                    Mở tab mới
+                  </Button>
+                  <Button 
+                    size="lg"
+                    className="gap-2 bg-green-600 hover:bg-green-700"
+                    onClick={handleDownload}
+                  >
+                    <Download className="h-5 w-5" />
+                    Tải xuống
+                  </Button>
+                </div>
               </div>
             </div>
           )}
-        </div>
-
-        {/* Actions */}
-        <div className="flex-shrink-0 flex gap-2 pt-4 border-t">
-          <Button variant="outline" className="flex-1 gap-2" onClick={handleOpenInNewTab} disabled={!fileUrl}>
-            <ExternalLink className="h-4 w-4" />
-            Mở tab mới
-          </Button>
-          <Button className="flex-1 gap-2" onClick={handleDownload}>
-            <Download className="h-4 w-4" />
-            Tải xuống
-          </Button>
         </div>
       </DialogContent>
     </Dialog>
