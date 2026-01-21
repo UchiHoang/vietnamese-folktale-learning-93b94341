@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Menu, GraduationCap, LogOut, User, Shield, Moon, Sun } from "lucide-react";
+import { Menu, GraduationCap, LogOut, User, Shield, Moon, Sun, Library } from "lucide-react";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
@@ -115,6 +115,10 @@ const Header = ({ onRoleChange, currentRole = "student" }: HeaderProps) => {
           <Link to="/lessons" className="text-foreground hover:text-primary font-medium transition-colors">
             Bài giảng
           </Link>
+          <Link to="/library" className="text-foreground hover:text-primary font-medium transition-colors flex items-center gap-1">
+            <Library className="h-4 w-4" />
+            Thư viện
+          </Link>
           <Link to="#about" className="text-foreground hover:text-primary font-medium transition-colors">
             Giới thiệu
           </Link>
@@ -200,6 +204,10 @@ const Header = ({ onRoleChange, currentRole = "student" }: HeaderProps) => {
           </Link>
           <Link to="/lessons" className="block py-2 text-foreground hover:text-primary">
             Bài giảng
+          </Link>
+          <Link to="/library" className="block py-2 text-foreground hover:text-primary flex items-center gap-2">
+            <Library className="h-4 w-4" />
+            Thư viện
           </Link>
           <Link to="#about" className="block py-2 text-foreground hover:text-primary">
             Giới thiệu
