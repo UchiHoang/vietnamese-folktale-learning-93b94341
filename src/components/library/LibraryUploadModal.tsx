@@ -180,21 +180,23 @@ const LibraryUploadModal = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md bg-card">
         <DialogHeader>
-          <DialogTitle>Tải lên tài liệu</DialogTitle>
+          <DialogTitle className="text-xl font-semibold">Tải lên tài liệu</DialogTitle>
           <DialogDescription>
             Thêm tài liệu mới vào thư viện cho học sinh tham khảo.
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-5">
           {/* File Drop Zone */}
           <div
-            className={`relative border-2 border-dashed rounded-lg p-6 text-center transition-colors ${
+            className={`relative border-2 border-dashed rounded-xl p-6 text-center transition-all ${
               dragActive
-                ? "border-primary bg-primary/5"
-                : "border-muted-foreground/25 hover:border-primary/50"
+                ? "border-primary bg-primary/10"
+                : file 
+                  ? "border-primary/50 bg-primary/5"
+                  : "border-border hover:border-primary/50 hover:bg-muted/50"
             }`}
             onDragEnter={handleDrag}
             onDragLeave={handleDrag}
@@ -203,11 +205,11 @@ const LibraryUploadModal = ({
           >
             {file ? (
               <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-muted">
+                <div className="p-3 rounded-xl bg-primary/10">
                   <FileText className="h-6 w-6 text-primary" />
                 </div>
                 <div className="flex-1 text-left min-w-0">
-                  <p className="font-medium text-sm truncate">{file.name}</p>
+                  <p className="font-medium text-sm truncate text-foreground">{file.name}</p>
                   <p className="text-xs text-muted-foreground">
                     {(file.size / 1024 / 1024).toFixed(2)} MB
                   </p>
@@ -216,6 +218,7 @@ const LibraryUploadModal = ({
                   type="button"
                   variant="ghost"
                   size="icon"
+                  className="h-8 w-8 hover:bg-destructive/10 hover:text-destructive"
                   onClick={() => setFile(null)}
                 >
                   <X className="h-4 w-4" />
@@ -223,8 +226,10 @@ const LibraryUploadModal = ({
               </div>
             ) : (
               <div>
-                <Upload className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
-                <p className="text-sm text-muted-foreground mb-1">
+                <div className="w-14 h-14 rounded-full bg-muted flex items-center justify-center mx-auto mb-3">
+                  <Upload className="h-6 w-6 text-muted-foreground" />
+                </div>
+                <p className="text-sm font-medium text-foreground mb-1">
                   Kéo thả file hoặc click để chọn
                 </p>
                 <p className="text-xs text-muted-foreground">
@@ -242,38 +247,40 @@ const LibraryUploadModal = ({
 
           {/* Title */}
           <div className="space-y-2">
-            <Label htmlFor="title">Tiêu đề *</Label>
+            <Label htmlFor="title" className="text-sm font-medium">Tiêu đề *</Label>
             <Input
               id="title"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Nhập tiêu đề tài liệu"
               required
+              className="border-border bg-background focus:ring-2 focus:ring-primary/20"
             />
           </div>
 
           {/* Description */}
           <div className="space-y-2">
-            <Label htmlFor="description">Mô tả</Label>
+            <Label htmlFor="description" className="text-sm font-medium">Mô tả</Label>
             <Textarea
               id="description"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Mô tả ngắn về tài liệu (không bắt buộc)"
-              rows={2}
+              rows={3}
+              className="border-border bg-background focus:ring-2 focus:ring-primary/20 resize-none"
             />
           </div>
 
           {/* Grade Select */}
           <div className="space-y-2">
-            <Label>Lớp học *</Label>
+            <Label className="text-sm font-medium">Lớp học *</Label>
             <Select value={grade} onValueChange={setGrade} required>
-              <SelectTrigger>
+              <SelectTrigger className="border-border bg-background focus:ring-2 focus:ring-primary/20">
                 <SelectValue placeholder="Chọn lớp học" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-popover border-border">
                 {grades.map((g) => (
-                  <SelectItem key={g.id} value={g.id}>
+                  <SelectItem key={g.id} value={g.id} className="focus:bg-accent">
                     {g.label}
                   </SelectItem>
                 ))}
@@ -282,17 +289,21 @@ const LibraryUploadModal = ({
           </div>
 
           {/* Submit Button */}
-          <div className="flex gap-2 pt-2">
+          <div className="flex gap-3 pt-2">
             <Button
               type="button"
               variant="outline"
-              className="flex-1"
+              className="flex-1 border-border"
               onClick={() => onOpenChange(false)}
               disabled={isUploading}
             >
               Hủy
             </Button>
-            <Button type="submit" className="flex-1 gap-2" disabled={isUploading || !file}>
+            <Button 
+              type="submit" 
+              className="flex-1 gap-2 bg-primary hover:bg-primary/90" 
+              disabled={isUploading || !file}
+            >
               {isUploading ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
               ) : (
