@@ -111,7 +111,7 @@ const LibraryViewerModal = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-[95vw] w-[95vw] h-[95vh] max-h-[95vh] flex flex-col p-0 gap-0 bg-background/95 backdrop-blur-sm border-2">
+      <DialogContent className="max-w-[90vw] w-[90vw] h-[90vh] max-h-[90vh] flex flex-col p-0 gap-0 bg-background/95 backdrop-blur-sm border-2">
         {/* Header Bar */}
         <div className="flex-shrink-0 flex items-center justify-between px-6 py-4 border-b bg-card/80 backdrop-blur-sm">
           <div className="flex items-center gap-4 flex-1 min-w-0">
