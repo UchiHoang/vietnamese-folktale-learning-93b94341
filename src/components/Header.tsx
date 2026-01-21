@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Menu, GraduationCap, LogOut, User, Shield, Moon, Sun, Library } from "lucide-react";
+import { Menu, GraduationCap, LogOut, User, Shield, Moon, Sun, Library, Home, BookOpen, Info, Users, Trophy, Phone } from "lucide-react";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
@@ -108,27 +108,33 @@ const Header = ({ onRoleChange, currentRole = "student" }: HeaderProps) => {
         </Link>
 
         {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center gap-6">
-          <Link to="/" className="text-foreground hover:text-primary font-medium transition-colors">
+        <nav className="hidden md:flex items-center gap-5">
+          <Link to="/" className="text-foreground hover:text-primary font-medium transition-colors flex items-center gap-1.5">
+            <Home className="h-4 w-4" />
             Trang chủ
           </Link>
-          <Link to="/lessons" className="text-foreground hover:text-primary font-medium transition-colors">
+          <Link to="/lessons" className="text-foreground hover:text-primary font-medium transition-colors flex items-center gap-1.5">
+            <BookOpen className="h-4 w-4" />
             Bài giảng
           </Link>
-          <Link to="/library" className="text-foreground hover:text-primary font-medium transition-colors flex items-center gap-1">
+          <Link to="/library" className="text-foreground hover:text-primary font-medium transition-colors flex items-center gap-1.5">
             <Library className="h-4 w-4" />
             Thư viện
           </Link>
-          <Link to="#about" className="text-foreground hover:text-primary font-medium transition-colors">
+          <Link to="#about" className="text-foreground hover:text-primary font-medium transition-colors flex items-center gap-1.5">
+            <Info className="h-4 w-4" />
             Giới thiệu
           </Link>
-          <Link to="#classes" className="text-foreground hover:text-primary font-medium transition-colors">
+          <Link to="#classes" className="text-foreground hover:text-primary font-medium transition-colors flex items-center gap-1.5">
+            <Users className="h-4 w-4" />
             Lớp học
           </Link>
-          <Link to="#leaderboard" className="text-foreground hover:text-primary font-medium transition-colors">
+          <Link to="#leaderboard" className="text-foreground hover:text-primary font-medium transition-colors flex items-center gap-1.5">
+            <Trophy className="h-4 w-4" />
             Xếp hạng
           </Link>
-          <Link to="#contact" className="text-foreground hover:text-primary font-medium transition-colors">
+          <Link to="#contact" className="text-foreground hover:text-primary font-medium transition-colors flex items-center gap-1.5">
+            <Phone className="h-4 w-4" />
             Liên hệ
           </Link>
         </nav>
@@ -199,26 +205,32 @@ const Header = ({ onRoleChange, currentRole = "student" }: HeaderProps) => {
       {/* Mobile Menu */}
       {mobileMenuOpen && (
         <div className="md:hidden border-t bg-card p-4 space-y-3">
-          <Link to="/" className="block py-2 text-foreground hover:text-primary">
+          <Link to="/" className="flex items-center gap-2 py-2 text-foreground hover:text-primary">
+            <Home className="h-4 w-4" />
             Trang chủ
           </Link>
-          <Link to="/lessons" className="block py-2 text-foreground hover:text-primary">
+          <Link to="/lessons" className="flex items-center gap-2 py-2 text-foreground hover:text-primary">
+            <BookOpen className="h-4 w-4" />
             Bài giảng
           </Link>
-          <Link to="/library" className="block py-2 text-foreground hover:text-primary flex items-center gap-2">
+          <Link to="/library" className="flex items-center gap-2 py-2 text-foreground hover:text-primary">
             <Library className="h-4 w-4" />
             Thư viện
           </Link>
-          <Link to="#about" className="block py-2 text-foreground hover:text-primary">
+          <Link to="#about" className="flex items-center gap-2 py-2 text-foreground hover:text-primary">
+            <Info className="h-4 w-4" />
             Giới thiệu
           </Link>
-          <Link to="#classes" className="block py-2 text-foreground hover:text-primary">
+          <Link to="#classes" className="flex items-center gap-2 py-2 text-foreground hover:text-primary">
+            <Users className="h-4 w-4" />
             Lớp học
           </Link>
-          <Link to="#leaderboard" className="block py-2 text-foreground hover:text-primary">
+          <Link to="#leaderboard" className="flex items-center gap-2 py-2 text-foreground hover:text-primary">
+            <Trophy className="h-4 w-4" />
             Xếp hạng
           </Link>
-          <Link to="#contact" className="block py-2 text-foreground hover:text-primary">
+          <Link to="#contact" className="flex items-center gap-2 py-2 text-foreground hover:text-primary">
+            <Phone className="h-4 w-4" />
             Liên hệ
           </Link>
           
