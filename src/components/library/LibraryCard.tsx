@@ -168,17 +168,19 @@ const LibraryCard = ({ document, isTeacher, onView, onDelete }: LibraryCardProps
           </div>
 
           {/* Title & Description */}
-          <h3 className="font-semibold text-foreground line-clamp-2 mb-1">
-            {document.title}
-          </h3>
-          {document.description && (
-            <p className="text-sm text-muted-foreground line-clamp-2 mb-3">
-              {document.description}
-            </p>
-          )}
+          <div className="min-h-[72px]">
+            <h3 className="font-semibold text-foreground line-clamp-2 mb-1">
+              {document.title}
+            </h3>
+            {document.description && (
+              <p className="text-sm text-muted-foreground line-clamp-2">
+                {document.description}
+              </p>
+            )}
+          </div>
 
           {/* Meta Info */}
-          <div className="flex items-center gap-2 text-xs text-muted-foreground mb-4">
+          <div className="flex items-center gap-2 text-xs text-muted-foreground mb-4 mt-2">
             <span className="uppercase">{document.file_type}</span>
             <span>•</span>
             <span>{formatFileSize(document.file_size)}</span>

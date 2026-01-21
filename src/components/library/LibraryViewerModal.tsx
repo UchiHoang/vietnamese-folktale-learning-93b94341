@@ -111,10 +111,10 @@ const LibraryViewerModal = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-5xl w-[70vw] h-[80vh] max-h-[80vh] flex flex-col p-0 gap-0 bg-background/95 backdrop-blur-sm border-2">
+      <DialogContent className="max-w-5xl w-[70vw] h-[80vh] max-h-[80vh] flex flex-col p-0 gap-0 bg-background/95 backdrop-blur-sm border-2 overflow-hidden">
         {/* Header Bar */}
-        <div className="flex-shrink-0 flex items-center justify-between px-6 py-4 border-b bg-card/80 backdrop-blur-sm">
-          <div className="flex items-center gap-4 flex-1 min-w-0">
+        <div className="flex-shrink-0 flex items-center justify-between px-6 py-4 border-b bg-card/80 backdrop-blur-sm rounded-t-lg">
+          <div className="flex items-center gap-4 flex-1 min-w-0 pr-12">
             <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
               <FileText className="h-5 w-5 text-primary" />
             </div>
@@ -133,7 +133,7 @@ const LibraryViewerModal = ({
           </div>
           
           {/* Action Buttons in Header */}
-          <div className="flex items-center gap-2 flex-shrink-0 ml-4">
+          <div className="flex items-center gap-3 flex-shrink-0 mr-8">
             <Button 
               variant="outline" 
               size="sm"
@@ -156,7 +156,7 @@ const LibraryViewerModal = ({
         </div>
 
         {/* Main Content - PDF Viewer */}
-        <div className="flex-1 min-h-0 bg-muted/30">
+        <div className="flex-1 min-h-0 bg-muted/30 overflow-hidden rounded-b-lg">
           {isLoading ? (
             <div className="h-full flex items-center justify-center">
               <div className="text-center">
@@ -180,7 +180,7 @@ const LibraryViewerModal = ({
           ) : canPreview && fileUrl ? (
             <iframe
               src={`${fileUrl}#toolbar=1&navpanes=1&scrollbar=1&view=FitH`}
-              className="w-full h-full border-0"
+              className="w-full h-full border-0 rounded-b-lg"
               title={document?.title}
               style={{ minHeight: '100%' }}
             />
