@@ -133,8 +133,8 @@ const LibraryCard = ({ document, isTeacher, onView, onDelete }: LibraryCardProps
 
   return (
     <>
-      <Card className="group hover:shadow-lg transition-all duration-300 bg-card border-border">
-        <CardContent className="p-4">
+      <Card className="group hover:shadow-lg transition-all duration-300 bg-card border-border h-full flex flex-col">
+        <CardContent className="p-4 flex flex-col h-full">
           {/* Header */}
           <div className="flex items-start justify-between mb-3">
             <div className="flex items-center gap-3">
@@ -167,8 +167,8 @@ const LibraryCard = ({ document, isTeacher, onView, onDelete }: LibraryCardProps
             )}
           </div>
 
-          {/* Title & Description */}
-          <div className="min-h-[72px]">
+          {/* Title & Description - flex-grow to push buttons to bottom */}
+          <div className="flex-grow">
             <h3 className="font-semibold text-foreground line-clamp-2 mb-1">
               {document.title}
             </h3>
@@ -188,8 +188,8 @@ const LibraryCard = ({ document, isTeacher, onView, onDelete }: LibraryCardProps
             <span>{document.download_count} lượt tải</span>
           </div>
 
-          {/* Actions */}
-          <div className="flex gap-2">
+          {/* Actions - fixed at bottom */}
+          <div className="flex gap-2 mt-auto">
             <Button
               variant="outline"
               size="sm"
