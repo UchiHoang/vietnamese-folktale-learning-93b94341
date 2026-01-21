@@ -43,13 +43,35 @@ const LibraryGrid = ({
     const fetchDocuments = async () => {
       setIsLoading(true);
 
-      // Parse sort option
-      const [sortField, sortDirection] = sortBy.split("_");
-      const ascending = sortDirection === "asc";
+      // Parse sort option and set correct column and direction
+      let sortColumn = "created_at";
+      let ascending = false;
       
-      // Map sort field names
-      const sortColumn = sortField === "created" ? "created_at" : 
-                         sortField === "download" ? "download_count" : sortField;
+      switch (sortBy) {
+        case "created_desc":
+          sortColumn = "created_at";
+          ascending = false;
+          break;
+        case "created_asc":
+          sortColumn = "created_at";
+          ascending = true;
+          break;
+        case "download_desc":
+          sortColumn = "download_count";
+          ascending = false;
+          break;
+        case "title_asc":
+          sortColumn = "title";
+          ascending = true;
+          break;
+        case "title_desc":
+          sortColumn = "title";
+          ascending = false;
+          break;
+        default:
+          sortColumn = "created_at";
+          ascending = false;
+      }
 
       let query = supabase
         .from("library_documents")
