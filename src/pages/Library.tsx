@@ -6,9 +6,16 @@ import Footer from "@/components/Footer";
 import LibraryGrid from "@/components/library/LibraryGrid";
 import LibraryUploadModal from "@/components/library/LibraryUploadModal";
 import { Button } from "@/components/ui/button";
-import { Loader2, Upload, BookOpen, Search, Sparkles } from "lucide-react";
+import { Loader2, Upload, BookOpen, Search, Sparkles, ArrowUpDown } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { motion } from "framer-motion";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const GRADES = [
   { id: "all", label: "Tất cả", icon: "📚" },
@@ -20,6 +27,14 @@ const GRADES = [
   { id: "lop-5", label: "Lớp 5", icon: "🏆" },
 ];
 
+const SORT_OPTIONS = [
+  { id: "created_at_desc", label: "Mới nhất" },
+  { id: "created_at_asc", label: "Cũ nhất" },
+  { id: "download_count_desc", label: "Tải nhiều nhất" },
+  { id: "title_asc", label: "Tên A-Z" },
+  { id: "title_desc", label: "Tên Z-A" },
+];
+
 const Library = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
@@ -27,6 +42,7 @@ const Library = () => {
   const [isTeacher, setIsTeacher] = useState(false);
   const [selectedGrade, setSelectedGrade] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
+  const [sortBy, setSortBy] = useState("created_at_desc");
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
 
@@ -136,7 +152,7 @@ const Library = () => {
           </div>
         </motion.div>
 
-        {/* Grade Buttons + Upload - Row 2 */}
+        {/* Grade Buttons + Sort + Upload - Row 2 */}
         <motion.div 
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -165,16 +181,34 @@ const Library = () => {
             ))}
           </div>
 
-          {/* Upload Button - Right */}
-          {isTeacher && (
-            <Button 
-              onClick={() => setShowUploadModal(true)} 
-              className="gap-2 rounded-full px-6 py-5 bg-gradient-to-r from-secondary to-secondary/80 hover:from-secondary/90 hover:to-secondary/70 text-secondary-foreground shadow-lg shadow-secondary/25 transition-all duration-300 hover:scale-105"
-            >
-              <Upload className="h-5 w-5" />
-              <span className="font-semibold">Tải lên tài liệu</span>
-            </Button>
-          )}
+          {/* Sort + Upload - Right */}
+          <div className="flex items-center gap-3">
+            {/* Sort Dropdown */}
+            <Select value={sortBy} onValueChange={setSortBy}>
+              <SelectTrigger className="w-[160px] gap-2 rounded-full border-2 bg-card/80 hover:bg-muted/50 transition-colors">
+                <ArrowUpDown className="h-4 w-4 text-muted-foreground" />
+                <SelectValue placeholder="Sắp xếp" />
+              </SelectTrigger>
+              <SelectContent>
+                {SORT_OPTIONS.map((option) => (
+                  <SelectItem key={option.id} value={option.id}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            {/* Upload Button */}
+            {isTeacher && (
+              <Button 
+                onClick={() => setShowUploadModal(true)} 
+                className="gap-2 rounded-full px-6 py-5 bg-gradient-to-r from-secondary to-secondary/80 hover:from-secondary/90 hover:to-secondary/70 text-secondary-foreground shadow-lg shadow-secondary/25 transition-all duration-300 hover:scale-105"
+              >
+                <Upload className="h-5 w-5" />
+                <span className="font-semibold">Tải lên tài liệu</span>
+              </Button>
+            )}
+          </div>
         </motion.div>
 
         {/* Documents Grid */}
@@ -186,6 +220,7 @@ const Library = () => {
           <LibraryGrid
             selectedGrade={selectedGrade}
             searchQuery={searchQuery}
+            sortBy={sortBy}
             isTeacher={isTeacher}
             refreshTrigger={refreshTrigger}
             onRefresh={() => setRefreshTrigger(prev => prev + 1)}
