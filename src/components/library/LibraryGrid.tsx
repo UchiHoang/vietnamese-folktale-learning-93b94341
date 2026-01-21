@@ -48,15 +48,15 @@ const LibraryGrid = ({
       let ascending = false;
       
       switch (sortBy) {
-        case "created_desc":
+        case "created_at_desc":
           sortColumn = "created_at";
           ascending = false;
           break;
-        case "created_asc":
+        case "created_at_asc":
           sortColumn = "created_at";
           ascending = true;
           break;
-        case "download_desc":
+        case "download_count_desc":
           sortColumn = "download_count";
           ascending = false;
           break;
