@@ -1811,9 +1811,9 @@ const Lessons = () => {
               </Badge>
             </div>
 
-            {/* Container scroll với chiều cao cố định */}
-            <div className="flex-1 overflow-y-auto overflow-x-hidden lesson-list-scroll min-h-[400px] rounded-br-2xl">
-              <div className="p-3 space-y-3 pb-4">
+            {/* Container scroll với chiều cao tăng lên */}
+            <div className="flex-1 overflow-y-auto overflow-x-hidden lesson-list-scroll min-h-[500px] rounded-br-2xl">
+              <div className="p-3 space-y-3 pb-6">
                 {filteredTopics.length > 0 ? (
                   filteredTopics.map((topic, index) => (
                     <button
@@ -1832,7 +1832,7 @@ const Lessons = () => {
                             <PlayCircle className="h-5 w-5" />
                           </div>
                         ) : topic.completed ? (
-                          <div className="h-8 w-8 rounded-full bg-green-500 flex items-center justify-center text-white shadow-lg">
+                          <div className="h-8 w-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground shadow-lg">
                             <CheckCircle className="h-5 w-5" />
                           </div>
                         ) : (
@@ -1857,7 +1857,7 @@ const Lessons = () => {
                         {/* Badge trạng thái - larger */}
                         <div className="flex items-center gap-2">
                           {topic.completed ? (
-                            <span className="text-xs px-2.5 py-1 bg-green-100 text-green-700 rounded-lg font-bold inline-flex items-center gap-1.5">
+                            <span className="text-xs px-2.5 py-1 bg-primary/15 text-primary rounded-lg font-bold inline-flex items-center gap-1.5">
                               <CheckCircle className="h-3 w-3" /> Hoàn thành
                             </span>
                           ) : (
@@ -1878,8 +1878,8 @@ const Lessons = () => {
               </div>
             </div>
 
-            {/* Viền xanh lá ở đuôi khung */}
-            <div className="absolute bottom-0 left-0 right-0 h-3 bg-gradient-to-r from-green-500 to-green-400 rounded-b-2xl" />
+            {/* Viền xanh lá ở đuôi khung - dùng màu primary */}
+            <div className="absolute bottom-0 left-0 right-0 h-3 bg-primary rounded-b-2xl" />
           </div>
         </div>
 
