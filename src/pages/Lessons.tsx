@@ -1799,7 +1799,7 @@ const Lessons = () => {
           <Separator className="flex-shrink-0" />
 
           {/* Danh sách chủ điểm (Topics) */}
-          <div className="flex-1 overflow-hidden flex flex-col bg-gradient-to-b from-muted/20 to-muted/5 min-h-0 rounded-b-2xl relative">
+          <div className="flex-1 flex flex-col bg-gradient-to-b from-muted/20 to-muted/5 rounded-b-2xl overflow-hidden">
             {/* Header danh sách */}
             <div className="px-4 py-3 bg-gradient-to-r from-primary/10 to-primary/5 text-sm font-black text-foreground uppercase tracking-wider border-b-2 border-primary/30 flex justify-between items-center flex-shrink-0">
               <span className="text-base">DANH SÁCH BÀI HỌC</span>
@@ -1811,9 +1811,9 @@ const Lessons = () => {
               </Badge>
             </div>
 
-            {/* Container scroll với chiều cao lớn hơn - kéo dài ngang phần description */}
-            <div className="flex-1 overflow-y-auto overflow-x-hidden lesson-list-scroll min-h-[650px]">
-              <div className="p-3 space-y-3 pb-16">
+            {/* Container scroll - chiều cao tự động theo nội dung bên phải */}
+            <div className="flex-1 overflow-y-auto overflow-x-hidden lesson-list-scroll" style={{ minHeight: '750px' }}>
+              <div className="p-3 space-y-3">
                 {filteredTopics.length > 0 ? (
                   filteredTopics.map((topic, index) => (
                     <button
@@ -1879,7 +1879,7 @@ const Lessons = () => {
             </div>
 
             {/* Viền xanh lá ở đuôi khung - dùng màu primary */}
-            <div className="flex-shrink-0 h-3 bg-primary rounded-b-2xl" />
+            <div className="h-3 bg-primary rounded-b-2xl flex-shrink-0" />
           </div>
         </div>
 
