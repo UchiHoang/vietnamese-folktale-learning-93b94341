@@ -1728,7 +1728,7 @@ const Lessons = () => {
       {/* KHU VỰC NỘI DUNG */}
       <div className="flex flex-1 overflow-hidden min-h-0">
         {/* --- SIDEBAR TRÁI (320px) --- */}
-        <div className="w-[320px] border-r flex flex-col bg-card shadow-sm z-10 flex-shrink-0 h-[calc(100vh-64px)] max-h-[calc(100vh-64px)] rounded-br-2xl overflow-hidden">
+        <div className="w-[320px] border-r flex flex-col bg-card shadow-sm z-10 flex-shrink-0 relative">
           {/* Phần điều khiển trên cùng */}
           <div className="p-4 space-y-4 flex-shrink-0">
             {/* 1. Chọn Lớp */}
@@ -1799,7 +1799,7 @@ const Lessons = () => {
           <Separator className="flex-shrink-0" />
 
           {/* Danh sách chủ điểm (Topics) */}
-          <div className="flex-1 flex flex-col bg-gradient-to-b from-muted/20 to-muted/5 rounded-b-2xl overflow-hidden">
+          <div className="flex-1 flex flex-col bg-gradient-to-b from-muted/20 to-muted/5 min-h-0 relative">
             {/* Header danh sách */}
             <div className="px-4 py-3 bg-gradient-to-r from-primary/10 to-primary/5 text-sm font-black text-foreground uppercase tracking-wider border-b-2 border-primary/30 flex justify-between items-center flex-shrink-0">
               <span className="text-base">DANH SÁCH BÀI HỌC</span>
@@ -1811,9 +1811,9 @@ const Lessons = () => {
               </Badge>
             </div>
 
-            {/* Container scroll - chiều cao đủ dài để ngang phần nội dung bài học */}
-            <div className="flex-1 overflow-y-auto overflow-x-hidden lesson-list-scroll" style={{ minHeight: '820px' }}>
-              <div className="p-3 space-y-3 pb-6">
+            {/* Container scroll */}
+            <div className="flex-1 overflow-y-auto overflow-x-hidden lesson-list-scroll min-h-0 pb-3">
+              <div className="p-3 space-y-3">
                 {filteredTopics.length > 0 ? (
                   filteredTopics.map((topic, index) => (
                     <button
@@ -1878,9 +1878,10 @@ const Lessons = () => {
               </div>
             </div>
 
-            {/* Viền xanh lá ở đuôi khung - dùng màu primary */}
-            <div className="h-3 bg-primary rounded-b-2xl flex-shrink-0" />
           </div>
+          
+          {/* Viền xanh lá ở đuôi sidebar - absolute bottom */}
+          <div className="absolute bottom-0 left-0 right-0 h-3 bg-primary rounded-br-2xl z-10" />
         </div>
 
         {/* --- KHUNG CHÍNH (MAIN CONTENT) --- */}
