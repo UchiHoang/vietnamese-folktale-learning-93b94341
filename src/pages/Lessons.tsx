@@ -1812,8 +1812,8 @@ const Lessons = () => {
             </div>
 
             {/* Container scroll với chiều cao lớn hơn - kéo dài ngang phần description */}
-            <div className="flex-1 overflow-y-auto overflow-x-hidden lesson-list-scroll min-h-[650px] pb-4">
-              <div className="p-3 space-y-3 pb-8">
+            <div className="flex-1 overflow-y-auto overflow-x-hidden lesson-list-scroll min-h-[650px]">
+              <div className="p-3 space-y-3 pb-16">
                 {filteredTopics.length > 0 ? (
                   filteredTopics.map((topic, index) => (
                     <button
