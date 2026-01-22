@@ -1811,9 +1811,9 @@ const Lessons = () => {
               </Badge>
             </div>
 
-            {/* Container scroll - chiều cao tự động theo nội dung bên phải */}
-            <div className="flex-1 overflow-y-auto overflow-x-hidden lesson-list-scroll" style={{ minHeight: '750px' }}>
-              <div className="p-3 space-y-3">
+            {/* Container scroll - chiều cao đủ dài để ngang phần nội dung bài học */}
+            <div className="flex-1 overflow-y-auto overflow-x-hidden lesson-list-scroll" style={{ minHeight: '820px' }}>
+              <div className="p-3 space-y-3 pb-6">
                 {filteredTopics.length > 0 ? (
                   filteredTopics.map((topic, index) => (
                     <button
