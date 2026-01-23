@@ -13,6 +13,7 @@ import ClassroomComingSoon from "./pages/ClassroomComingSoon";
 import Profile from "./pages/Profile";
 import AdminDashboard from "./pages/AdminDashboard";
 import NotFound from "./pages/NotFound";
+import { ProtectedClassroom } from "./components/ProtectedClassroom";
 
 const queryClient = new QueryClient();
 
@@ -25,7 +26,7 @@ const App = () => (
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Index />} />
-            <Route path="/lessons" element={<Lessons />} />
+            <Route path="/lessons" element={<ProtectedClassroom><Lessons /></ProtectedClassroom>} />
             <Route path="/library" element={<Library />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/profile" element={<Profile />} />
