@@ -68,7 +68,7 @@ const CommentItem = ({
 
   return (
     <div className={cn("space-y-3", isReply && "ml-10 md:ml-14")}>
-      <div className="bg-white rounded-xl border border-border/50 p-4 md:p-5 hover:shadow-md transition-all">
+      <div className="bg-[#FFF5E6] rounded-xl border border-[#F5DEB3] p-4 md:p-5 hover:shadow-md transition-all">
         {/* Comment Header */}
         <div className="flex items-start gap-3 mb-3">
           <Avatar className="h-10 w-10 md:h-12 md:w-12 border-2 border-primary/20">
@@ -273,7 +273,7 @@ export const CommentsTab = ({ topicId, topicTitle }: CommentsTabProps) => {
   return (
     <div className="space-y-6">
       {/* New Comment Input - Prominent at top with emoji picker */}
-      <div className="flex items-center gap-3 bg-white rounded-full border-2 border-primary/30 p-2 pl-4 shadow-sm">
+      <div className="flex items-center gap-3 bg-[#FFF5E6] rounded-full border-2 border-[#F5DEB3] p-2 pl-4 shadow-sm">
         <Input
           placeholder="Nhập bình luận ..."
           value={newComment}
