@@ -27,44 +27,50 @@ export const NotesTab = ({ topicId, topicTitle }: NotesTabProps) => {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <FileText className="h-4 w-4" />
-          <span>Ghi chú cho: <strong className="text-foreground">{topicTitle}</strong></span>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="flex items-center gap-2 text-muted-foreground">
+          <FileText className="h-5 w-5 text-primary" />
+          <span className="text-sm">
+            Ghi chú bài học: <strong className="text-foreground">{topicTitle}</strong>
+          </span>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
           {isSaving && (
-            <span className="text-xs text-muted-foreground flex items-center gap-1">
-              <Loader2 className="h-3 w-3 animate-spin" />
+            <span className="text-sm text-muted-foreground flex items-center gap-2">
+              <Loader2 className="h-4 w-4 animate-spin" />
               Đang lưu...
             </span>
           )}
           <Button
-            size="sm"
             onClick={handleManualSave}
             disabled={isSaving}
-            className="h-8"
+            className="bg-primary hover:bg-primary/90"
           >
-            <Save className="h-4 w-4 mr-1" />
-            Lưu
+            <Save className="h-4 w-4 mr-2" />
+            Lưu ghi chú
           </Button>
         </div>
       </div>
 
-      {/* Textarea */}
+      {/* Textarea - Larger and more prominent */}
       <Textarea
-        placeholder="Viết ghi chú của bạn tại đây... (Tự động lưu sau 2 giây)"
+        placeholder="Viết ghi chú của bạn tại đây... &#10;&#10;Ví dụ:&#10;• Công thức quan trọng&#10;• Các bước giải bài&#10;• Những điểm cần nhớ"
         value={content}
         onChange={(e) => handleContentChange(e.target.value)}
-        className="min-h-[200px] resize-none text-base leading-relaxed"
+        className="min-h-[350px] resize-none text-base leading-relaxed bg-background border-2 focus:border-primary/50 p-4 rounded-xl"
       />
 
       {/* Hint */}
-      <p className="text-xs text-muted-foreground">
-        💡 Ghi chú sẽ tự động lưu sau 2 giây khi bạn ngừng gõ. Bạn cũng có thể nhấn nút "Lưu" để lưu ngay.
-      </p>
+      <div className="flex items-center justify-between text-sm text-muted-foreground bg-muted/30 rounded-lg p-3">
+        <p>
+          💡 Ghi chú sẽ tự động lưu sau 2 giây khi bạn ngừng gõ.
+        </p>
+        <p className="text-xs">
+          Chỉ bạn mới xem được ghi chú này
+        </p>
+      </div>
     </div>
   );
 };
