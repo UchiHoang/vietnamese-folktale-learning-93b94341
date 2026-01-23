@@ -1998,42 +1998,59 @@ const Lessons = () => {
                   isCompleted={isTopicCompleted(selectedTopic.id)}
                 />
 
-                {/* Phần nội dung bài học */}
-                <div className="bg-card rounded-xl border shadow-sm p-4 md:p-6">
-                  <h3 className="font-semibold text-xl md:text-2xl flex items-center gap-3 border-b border-primary/20 pb-3 text-foreground mb-4">
-                    <BookOpen className="h-6 w-6 text-primary" />
-                    Nội dung bài học
-                  </h3>
-                  <div className="text-foreground/90 leading-relaxed text-base md:text-lg">
-                    <p className="mb-3 font-semibold text-primary">{selectedTopic.description}</p>
-                    <p className="mt-2">
-                      Hãy xem kỹ video và ghi chép lại các công thức quan trọng. Sau khi xem xong, bạn có thể ghi chú bên dưới hoặc đặt câu hỏi trong phần Hỏi đáp.
+                {/* Phần nội dung bài học + XP - Layout 2 cột */}
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
+                  {/* Cột trái: Nội dung bài học */}
+                  <div className="lg:col-span-2 bg-muted/30 rounded-xl border border-border/50 p-4 md:p-6">
+                    <h3 className="font-semibold text-xl md:text-2xl flex items-center gap-3 text-foreground mb-4">
+                      <BookOpen className="h-6 w-6 text-primary" />
+                      Nội dung bài học
+                    </h3>
+                    <div className="text-foreground/90 leading-relaxed text-base md:text-lg">
+                      <p className="mb-3 font-semibold text-primary">{selectedTopic.description}</p>
+                      <p className="mt-2">
+                        Hãy xem kỹ video và ghi chép lại các công thức quan trọng. Sau khi xem xong, bạn có thể nhấn nút "Làm bài tập" bên cạnh để củng cố kiến thức.
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Cột phải: XP Info */}
+                  <div className="lg:col-span-1 bg-gradient-to-br from-primary/10 to-primary/5 rounded-xl p-4 md:p-6 border border-primary/20 flex flex-col items-center justify-center text-center gap-3">
+                    <div className="text-4xl">🎯</div>
+                    <div className="text-lg md:text-xl font-bold text-primary">
+                      Hoàn thành bài học
+                    </div>
+                    <div className="text-2xl md:text-3xl font-black text-primary">
+                      +20 XP
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      Xem video và hoàn thành để nhận điểm kinh nghiệm
                     </p>
                   </div>
                 </div>
 
-                {/* Phần Ghi chú & Hỏi đáp - Nằm dưới video, full width */}
+                {/* Phần Ghi chú & Hỏi đáp - Nằm dưới, full width */}
                 <div className="bg-card rounded-2xl border shadow-lg overflow-hidden">
                   <Tabs defaultValue="qa" className="w-full">
-                    {/* Header với gradient xanh lá */}
-                    <div className="bg-gradient-to-r from-primary to-primary/80 px-4 md:px-6 py-4">
-                      <TabsList className="bg-primary-foreground/20 backdrop-blur-sm border-none h-12 p-1">
+                    {/* Header với gradient xanh lá - buttons căn giữa */}
+                    <div className="bg-gradient-to-r from-primary to-primary/80 px-4 md:px-6 py-5 flex justify-center">
+                      <TabsList className="bg-primary-foreground/20 backdrop-blur-sm border-none h-14 p-1.5 rounded-full">
                         <TabsTrigger 
                           value="notes" 
-                          className="text-sm md:text-base font-bold px-6 py-2.5 data-[state=active]:bg-background data-[state=active]:text-primary data-[state=inactive]:text-primary-foreground/90 transition-all"
+                          className="text-base md:text-lg font-bold px-6 md:px-8 py-3 rounded-full data-[state=active]:bg-background data-[state=active]:text-primary data-[state=inactive]:text-primary-foreground/90 transition-all"
                         >
                           📝 Ghi chú cá nhân
                         </TabsTrigger>
                         <TabsTrigger 
                           value="qa" 
-                          className="text-sm md:text-base font-bold px-6 py-2.5 data-[state=active]:bg-background data-[state=active]:text-primary data-[state=inactive]:text-primary-foreground/90 transition-all"
+                          className="text-base md:text-lg font-bold px-6 md:px-8 py-3 rounded-full data-[state=active]:bg-background data-[state=active]:text-primary data-[state=inactive]:text-primary-foreground/90 transition-all"
                         >
-                          💬 Bình luận và nhận xét
+                          💬 Bình luận và hỏi đáp
                         </TabsTrigger>
                       </TabsList>
                     </div>
                     
-                    <div className="p-4 md:p-6">
+                    <div className="p-4 md:p-6 bg-background">
                       <TabsContent value="notes" className="mt-0">
                         <NotesTab 
                           topicId={selectedTopic.id} 
@@ -2049,13 +2066,6 @@ const Lessons = () => {
                       </TabsContent>
                     </div>
                   </Tabs>
-                </div>
-
-                {/* XP info */}
-                <div className="bg-gradient-to-r from-primary/10 to-primary/5 rounded-xl p-4 text-center border border-primary/20">
-                  <div className="text-sm font-semibold text-primary">
-                    🎯 Hoàn thành bài học để nhận 20 XP
-                  </div>
                 </div>
               </div>
             </ScrollArea>

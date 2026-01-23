@@ -106,8 +106,8 @@ const CommentItem = ({
           )}
         </div>
 
-        {/* Comment Content - styled as quote box */}
-        <div className="bg-muted/40 rounded-lg p-3 md:p-4 ml-0 md:ml-14 mb-3">
+        {/* Comment Content - styled as quote box with white background */}
+        <div className="bg-background border border-border/30 rounded-lg p-3 md:p-4 ml-0 md:ml-14 mb-3 shadow-sm">
           <p className="text-sm md:text-base text-foreground leading-relaxed whitespace-pre-wrap">
             {comment.content}
           </p>
