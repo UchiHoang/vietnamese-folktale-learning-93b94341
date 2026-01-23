@@ -1765,8 +1765,7 @@ const Lessons = () => {
   const currentLessonProgress = getLessonProgressById(selectedLessonId);
 
   return (
-    <div className="min-h-screen flex flex-col bg-background">
-      <Header />
+    <div className="flex-1 flex flex-col bg-background">
 
       {/* KHU VỰC NỘI DUNG */}
       <div className="flex flex-1 min-h-0">
