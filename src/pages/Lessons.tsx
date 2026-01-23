@@ -1998,59 +1998,63 @@ const Lessons = () => {
                   isCompleted={isTopicCompleted(selectedTopic.id)}
                 />
 
-                {/* Phần thông tin và nút bấm */}
-                <div className="grid lg:grid-cols-3 gap-6 lg:gap-10">
-                  {/* Cột trái: Nội dung mô tả */}
-                  <div className="lg:col-span-2 space-y-6">
-                    <div className="space-y-4">
-                      <h3 className="font-semibold text-xl md:text-2xl flex items-center gap-3 border-b border-primary/20 pb-2 text-foreground">
-                        <BookOpen className="h-6 w-6 text-primary" />
-                        Nội dung bài học
-                      </h3>
-                      <div className="text-foreground/90 leading-relaxed text-base md:text-lg">
-                        <p className="mb-3 font-semibold text-primary">{selectedTopic.description}</p>
-                        <p className="mt-2">
-                          Hãy xem kỹ video và ghi chép lại các công thức quan trọng. Sau khi xem xong, bạn có thể nhấn
-                          nút "Làm bài tập" bên cạnh để củng cố kiến thức.
-                        </p>
-                      </div>
-                    </div>
+                {/* Phần nội dung bài học */}
+                <div className="bg-card rounded-xl border shadow-sm p-4 md:p-6">
+                  <h3 className="font-semibold text-xl md:text-2xl flex items-center gap-3 border-b border-primary/20 pb-3 text-foreground mb-4">
+                    <BookOpen className="h-6 w-6 text-primary" />
+                    Nội dung bài học
+                  </h3>
+                  <div className="text-foreground/90 leading-relaxed text-base md:text-lg">
+                    <p className="mb-3 font-semibold text-primary">{selectedTopic.description}</p>
+                    <p className="mt-2">
+                      Hãy xem kỹ video và ghi chép lại các công thức quan trọng. Sau khi xem xong, bạn có thể ghi chú bên dưới hoặc đặt câu hỏi trong phần Hỏi đáp.
+                    </p>
                   </div>
+                </div>
 
-                  {/* Cột phải: Notes & Q&A Tabs */}
-                  <div className="space-y-4">
-                    <div className="bg-gradient-to-br from-card to-card/95 p-4 rounded-xl border border-primary/10 shadow-md sticky top-4 backdrop-blur-sm">
-                      <Tabs defaultValue="notes" className="w-full">
-                        <TabsList className="grid w-full grid-cols-2 mb-4">
-                          <TabsTrigger value="notes" className="text-sm font-semibold">
-                            📝 Ghi chú
-                          </TabsTrigger>
-                          <TabsTrigger value="qa" className="text-sm font-semibold">
-                            💬 Hỏi đáp
-                          </TabsTrigger>
-                        </TabsList>
-                        
-                        <TabsContent value="notes" className="mt-0">
-                          <NotesTab 
-                            topicId={selectedTopic.id} 
-                            topicTitle={selectedTopic.title} 
-                          />
-                        </TabsContent>
-                        
-                        <TabsContent value="qa" className="mt-0">
-                          <CommentsTab 
-                            topicId={selectedTopic.id} 
-                            topicTitle={selectedTopic.title} 
-                          />
-                        </TabsContent>
-                      </Tabs>
-
-                      <div className="pt-4 border-t-2 border-primary/20 mt-4">
-                        <div className="text-xs font-medium text-center text-primary">
-                          Hoàn thành bài học để nhận 20 XP
-                        </div>
-                      </div>
+                {/* Phần Ghi chú & Hỏi đáp - Nằm dưới video, full width */}
+                <div className="bg-card rounded-2xl border shadow-lg overflow-hidden">
+                  <Tabs defaultValue="qa" className="w-full">
+                    {/* Header với gradient xanh lá */}
+                    <div className="bg-gradient-to-r from-primary to-primary/80 px-4 md:px-6 py-4">
+                      <TabsList className="bg-primary-foreground/20 backdrop-blur-sm border-none h-12 p-1">
+                        <TabsTrigger 
+                          value="notes" 
+                          className="text-sm md:text-base font-bold px-6 py-2.5 data-[state=active]:bg-background data-[state=active]:text-primary data-[state=inactive]:text-primary-foreground/90 transition-all"
+                        >
+                          📝 Ghi chú cá nhân
+                        </TabsTrigger>
+                        <TabsTrigger 
+                          value="qa" 
+                          className="text-sm md:text-base font-bold px-6 py-2.5 data-[state=active]:bg-background data-[state=active]:text-primary data-[state=inactive]:text-primary-foreground/90 transition-all"
+                        >
+                          💬 Bình luận và nhận xét
+                        </TabsTrigger>
+                      </TabsList>
                     </div>
+                    
+                    <div className="p-4 md:p-6">
+                      <TabsContent value="notes" className="mt-0">
+                        <NotesTab 
+                          topicId={selectedTopic.id} 
+                          topicTitle={selectedTopic.title} 
+                        />
+                      </TabsContent>
+                      
+                      <TabsContent value="qa" className="mt-0">
+                        <CommentsTab 
+                          topicId={selectedTopic.id} 
+                          topicTitle={selectedTopic.title} 
+                        />
+                      </TabsContent>
+                    </div>
+                  </Tabs>
+                </div>
+
+                {/* XP info */}
+                <div className="bg-gradient-to-r from-primary/10 to-primary/5 rounded-xl p-4 text-center border border-primary/20">
+                  <div className="text-sm font-semibold text-primary">
+                    🎯 Hoàn thành bài học để nhận 20 XP
                   </div>
                 </div>
               </div>
