@@ -4,14 +4,14 @@ import { CheckCircle, Play } from "lucide-react";
 import { toast } from "sonner";
 
 interface VideoPlayerProps {
-  url: string;
+  videoUrl: string;
   title: string;
   topicId: string;
   isCompleted?: boolean;
-  onComplete?: (topicId: string) => Promise<void>;
+  onComplete?: () => Promise<void>;
 }
 
-export const VideoPlayer = ({ url, title, topicId, isCompleted = false, onComplete }: VideoPlayerProps) => {
+export const VideoPlayer = ({ videoUrl, title, topicId, isCompleted = false, onComplete }: VideoPlayerProps) => {
   const [hasMarkedComplete, setHasMarkedComplete] = useState(isCompleted);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -27,7 +27,7 @@ export const VideoPlayer = ({ url, title, topicId, isCompleted = false, onComple
     
     if (onComplete) {
       try {
-        await onComplete(topicId);
+        await onComplete();
         setHasMarkedComplete(true);
       } catch (error) {
         console.error("Error completing topic:", error);
@@ -46,7 +46,7 @@ export const VideoPlayer = ({ url, title, topicId, isCompleted = false, onComple
       <div className="w-full bg-gradient-to-br from-black via-black to-gray-900 rounded-2xl overflow-hidden shadow-2xl ring-2 ring-primary/20 hover:ring-primary/40 transition-all duration-300">
         <div className="aspect-video w-full relative">
           <iframe
-            src={url}
+            src={videoUrl}
             title={title}
             className="w-full h-full"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"

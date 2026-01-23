@@ -1,14 +1,17 @@
 import { useState, useMemo, useEffect } from "react";
-import { PlayCircle, BookOpen, CheckCircle, Search, Video, FileText } from "lucide-react";
+import { PlayCircle, BookOpen, CheckCircle, Search, FileText, Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Progress } from "@/components/ui/progress";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { useLessonProgress } from "@/hooks/useLessonProgress";
+import { VideoPlayer } from "@/components/lesson/VideoPlayer";
+import { LessonProgressBadge } from "@/components/lesson/LessonProgressBadge";
 
 /* ==================================================================================
    KHU VỰC ĐỊNH NGHĨA KIỂU DỮ LIỆU
@@ -1684,6 +1687,36 @@ const topicsData: Topic[] = [
    LOGIC GIAO DIỆN
    ================================================================================== */
 const Lessons = () => {
+  // Hook lấy dữ liệu từ Supabase
+  const {
+    lessons: dbLessons,
+    topics: dbTopics,
+    lessonProgress,
+    isLoading,
+    markTopicCompleted,
+    getLessonProgressById,
+    isTopicCompleted,
+  } = useLessonProgress();
+
+  // Fallback: Sử dụng dữ liệu cứng nếu chưa có dữ liệu từ DB
+  const activeLessons = dbLessons.length > 0 ? dbLessons : lessonsData.map(l => ({
+    id: l.id,
+    title: l.title,
+    topic_count: l.topicCount,
+    quiz_count: l.quizCount,
+  }));
+
+  const activeTopics = dbTopics.length > 0 ? dbTopics : topicsData.map(t => ({
+    id: t.id,
+    lesson_id: t.lessonId,
+    semester: t.semester,
+    title: t.title,
+    video_url: t.videoUrl,
+    description: t.description,
+    order_index: 0,
+    duration_minutes: 15,
+  }));
+
   // State chọn Lớp
   const [selectedLessonId, setSelectedLessonId] = useState<string>("L5");
 
@@ -1698,13 +1731,13 @@ const Lessons = () => {
 
   // LỌC DỮ LIỆU: Lớp + Học kì + Tìm kiếm
   const filteredTopics = useMemo(() => {
-    return topicsData.filter(
+    return activeTopics.filter(
       (t) =>
-        t.lessonId === selectedLessonId &&
-        t.semester === selectedSemester && // Thêm điều kiện học kì
+        t.lesson_id === selectedLessonId &&
+        t.semester === selectedSemester &&
         t.title.toLowerCase().includes(searchQuery.toLowerCase()),
     );
-  }, [selectedLessonId, selectedSemester, searchQuery]);
+  }, [activeTopics, selectedLessonId, selectedSemester, searchQuery]);
 
   // Tự động chọn bài đầu tiên
   useEffect(() => {
@@ -1718,8 +1751,18 @@ const Lessons = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filteredTopics]);
 
-  const selectedLesson = lessonsData.find((l) => l.id === selectedLessonId);
-  const selectedTopic = topicsData.find((t) => t.id === selectedTopicId);
+  const selectedLesson = activeLessons.find((l) => l.id === selectedLessonId);
+  const selectedTopic = activeTopics.find((t) => t.id === selectedTopicId);
+
+  // Xử lý khi video kết thúc
+  const handleVideoComplete = async () => {
+    if (selectedTopicId) {
+      await markTopicCompleted(selectedTopicId);
+    }
+  };
+
+  // Lấy tiến độ của lesson hiện tại
+  const currentLessonProgress = getLessonProgressById(selectedLessonId);
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -1749,13 +1792,39 @@ const Lessons = () => {
                   <SelectValue placeholder="Chọn lớp..." />
                 </SelectTrigger>
                 <SelectContent>
-                  {lessonsData.map((lesson) => (
-                    <SelectItem key={lesson.id} value={lesson.id}>
-                      {lesson.title}
-                    </SelectItem>
-                  ))}
+                  {activeLessons.map((lesson) => {
+                    const progress = getLessonProgressById(lesson.id);
+                    return (
+                      <SelectItem key={lesson.id} value={lesson.id}>
+                        <div className="flex items-center justify-between w-full gap-3">
+                          <span>{lesson.title}</span>
+                          {progress && progress.completion_percentage > 0 && (
+                            <span className="text-xs text-primary font-bold">
+                              {Math.round(progress.completion_percentage)}%
+                            </span>
+                          )}
+                        </div>
+                      </SelectItem>
+                    );
+                  })}
                 </SelectContent>
               </Select>
+              
+              {/* Progress bar cho lesson hiện tại */}
+              {currentLessonProgress && currentLessonProgress.total_topics > 0 && (
+                <div className="mt-2 space-y-1">
+                  <div className="flex justify-between text-xs">
+                    <span className="text-muted-foreground font-medium">Tiến độ</span>
+                    <span className="text-primary font-bold">
+                      {currentLessonProgress.completed_topics}/{currentLessonProgress.total_topics} bài
+                    </span>
+                  </div>
+                  <Progress 
+                    value={currentLessonProgress.completion_percentage} 
+                    className="h-2"
+                  />
+                </div>
+              )}
             </div>
 
             {/* 2. Chọn Học Kì (Tabs) */}
@@ -1814,61 +1883,68 @@ const Lessons = () => {
             {/* Container scroll với chiều cao cố định */}
             <div className="flex-1 overflow-y-auto overflow-x-hidden lesson-list-scroll min-h-0 pb-4">
               <div className="p-3 space-y-3">
-                {filteredTopics.length > 0 ? (
-                  filteredTopics.map((topic, index) => (
-                    <button
-                      key={topic.id}
-                      onClick={() => setSelectedTopicId(topic.id)}
-                      className={`w-full text-left p-4 rounded-2xl transition-all duration-200 border-2 flex gap-3.5 group items-start ${
-                        selectedTopicId === topic.id
-                          ? "bg-gradient-to-r from-primary/20 to-primary/15 border-primary shadow-lg ring-2 ring-primary/30"
-                          : "bg-white hover:bg-muted/50 border-border/60 hover:border-primary/50 shadow-sm hover:shadow-lg"
-                      }`}
-                    >
-                      {/* Icon số thứ tự - larger */}
-                      <div className="flex-shrink-0 pt-0.5">
-                        {selectedTopicId === topic.id ? (
-                          <div className="h-8 w-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground shadow-lg">
-                            <PlayCircle className="h-5 w-5" />
-                          </div>
-                        ) : topic.completed ? (
-                          <div className="h-8 w-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground shadow-lg">
-                            <CheckCircle className="h-5 w-5" />
-                          </div>
-                        ) : (
-                          <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center text-xs font-black text-foreground/70 group-hover:bg-primary/20 group-hover:text-primary transition-all border-2 border-border">
-                            {index + 1}
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Nội dung bài học - larger font */}
-                      <div className="flex-1 min-w-0">
-                        <h3
-                          className={`text-base font-bold leading-snug mb-2 line-clamp-2 ${
-                            selectedTopicId === topic.id
-                              ? "text-primary"
-                              : "text-foreground group-hover:text-primary/90"
-                          }`}
-                        >
-                          {topic.title}
-                        </h3>
-
-                        {/* Badge trạng thái - larger */}
-                        <div className="flex items-center gap-2">
-                          {topic.completed ? (
-                            <span className="text-xs px-2.5 py-1 bg-primary/15 text-primary rounded-lg font-bold inline-flex items-center gap-1.5">
-                              <CheckCircle className="h-3 w-3" /> Hoàn thành
-                            </span>
+                {isLoading ? (
+                  <div className="flex items-center justify-center py-12">
+                    <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                  </div>
+                ) : filteredTopics.length > 0 ? (
+                  filteredTopics.map((topic, index) => {
+                    const completed = isTopicCompleted(topic.id);
+                    return (
+                      <button
+                        key={topic.id}
+                        onClick={() => setSelectedTopicId(topic.id)}
+                        className={`w-full text-left p-4 rounded-2xl transition-all duration-200 border-2 flex gap-3.5 group items-start ${
+                          selectedTopicId === topic.id
+                            ? "bg-gradient-to-r from-primary/20 to-primary/15 border-primary shadow-lg ring-2 ring-primary/30"
+                            : "bg-white hover:bg-muted/50 border-border/60 hover:border-primary/50 shadow-sm hover:shadow-lg"
+                        }`}
+                      >
+                        {/* Icon số thứ tự */}
+                        <div className="flex-shrink-0 pt-0.5">
+                          {selectedTopicId === topic.id ? (
+                            <div className="h-8 w-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground shadow-lg">
+                              <PlayCircle className="h-5 w-5" />
+                            </div>
+                          ) : completed ? (
+                            <div className="h-8 w-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground shadow-lg">
+                              <CheckCircle className="h-5 w-5" />
+                            </div>
                           ) : (
-                            <span className="text-xs text-muted-foreground inline-flex items-center gap-1.5 px-2.5 py-1 bg-muted/60 rounded-lg font-bold">
-                              <PlayCircle className="h-3 w-3" /> 15p
-                            </span>
+                            <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center text-xs font-black text-foreground/70 group-hover:bg-primary/20 group-hover:text-primary transition-all border-2 border-border">
+                              {index + 1}
+                            </div>
                           )}
                         </div>
-                      </div>
-                    </button>
-                  ))
+
+                        {/* Nội dung bài học */}
+                        <div className="flex-1 min-w-0">
+                          <h3
+                            className={`text-base font-bold leading-snug mb-2 line-clamp-2 ${
+                              selectedTopicId === topic.id
+                                ? "text-primary"
+                                : "text-foreground group-hover:text-primary/90"
+                            }`}
+                          >
+                            {topic.title}
+                          </h3>
+
+                          {/* Badge trạng thái */}
+                          <div className="flex items-center gap-2">
+                            {completed ? (
+                              <span className="text-xs px-2.5 py-1 bg-primary/15 text-primary rounded-lg font-bold inline-flex items-center gap-1.5">
+                                <CheckCircle className="h-3 w-3" /> Hoàn thành
+                              </span>
+                            ) : (
+                              <span className="text-xs text-muted-foreground inline-flex items-center gap-1.5 px-2.5 py-1 bg-muted/60 rounded-lg font-bold">
+                                <PlayCircle className="h-3 w-3" /> {topic.duration_minutes || 15}p
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      </button>
+                    );
+                  })
                 ) : (
                   <div className="text-center py-12 px-4 text-muted-foreground">
                     <FileText className="h-10 w-10 mx-auto mb-2 opacity-20" />
@@ -1912,21 +1988,14 @@ const Lessons = () => {
                   </h1>
                 </div>
 
-                {/* Video Player*/}
-                <div className="w-full bg-gradient-to-br from-black via-black to-gray-900 rounded-2xl overflow-hidden shadow-2xl ring-2 ring-primary/20 hover:ring-primary/40 transition-all duration-300">
-                  {/* Aspect ratio giữ nguyên để video không bị méo, nhưng width sẽ full container */}
-                  <div className="aspect-video w-full relative">
-                    <iframe
-                      src={selectedTopic.videoUrl}
-                      title={selectedTopic.title}
-                      className="w-full h-full"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                      allowFullScreen
-                    />
-                    {/* Overlay gradient effect */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent pointer-events-none"></div>
-                  </div>
-                </div>
+                {/* Video Player với nút hoàn thành */}
+                <VideoPlayer
+                  videoUrl={selectedTopic.video_url}
+                  title={selectedTopic.title}
+                  topicId={selectedTopic.id}
+                  onComplete={handleVideoComplete}
+                  isCompleted={isTopicCompleted(selectedTopic.id)}
+                />
 
                 {/* Phần thông tin và nút bấm */}
                 <div className="grid lg:grid-cols-3 gap-6 lg:gap-10">
