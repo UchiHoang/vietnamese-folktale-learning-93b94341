@@ -283,27 +283,21 @@ export type Database = {
           created_at: string
           description: string | null
           id: string
-          quiz_count: number
           title: string
-          topic_count: number
           updated_at: string
         }
         Insert: {
           created_at?: string
           description?: string | null
           id: string
-          quiz_count?: number
           title: string
-          topic_count?: number
           updated_at?: string
         }
         Update: {
           created_at?: string
           description?: string | null
           id?: string
-          quiz_count?: number
           title?: string
-          topic_count?: number
           updated_at?: string
         }
         Relationships: []

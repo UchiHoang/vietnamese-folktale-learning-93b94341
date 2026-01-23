@@ -6,8 +6,6 @@ export interface LessonData {
   id: string;
   title: string;
   description?: string;
-  topic_count: number;
-  quiz_count: number;
 }
 
 export interface TopicData {
@@ -60,8 +58,6 @@ export const useLessonProgress = () => {
         id: l.id,
         title: l.title,
         description: l.description || undefined,
-        topic_count: l.topic_count,
-        quiz_count: l.quiz_count,
       }));
     } catch (err) {
       console.error("Unexpected error fetching lessons:", err);
