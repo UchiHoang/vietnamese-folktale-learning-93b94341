@@ -273,7 +273,7 @@ export const CommentsTab = ({ topicId, topicTitle }: CommentsTabProps) => {
   return (
     <div className="space-y-6">
       {/* New Comment Input - Prominent at top with emoji picker */}
-      <div className="flex items-center gap-3 bg-[#FFF5E6] rounded-full border-2 border-[#F5DEB3] p-2 pl-4 shadow-sm">
+      <div className="flex items-center gap-3 bg-white rounded-full border-2 border-primary/30 p-2 pl-4 shadow-sm">
         <Input
           placeholder="Nhập bình luận ..."
           value={newComment}
