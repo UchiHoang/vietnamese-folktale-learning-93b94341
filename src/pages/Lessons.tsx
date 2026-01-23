@@ -2001,15 +2001,15 @@ const Lessons = () => {
                 {/* Phần nội dung bài học + XP - Layout 2 cột */}
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
                   {/* Cột trái: Nội dung bài học */}
-                  <div className="lg:col-span-2 bg-muted/30 rounded-xl border border-border/50 p-4 md:p-6">
+                  <div className="lg:col-span-2 p-4 md:p-6">
                     <h3 className="font-semibold text-xl md:text-2xl flex items-center gap-3 text-foreground mb-4">
                       <BookOpen className="h-6 w-6 text-primary" />
                       Nội dung bài học
                     </h3>
                     <div className="text-foreground/90 leading-relaxed text-base md:text-lg">
                       <p className="mb-3 font-semibold text-primary">{selectedTopic.description}</p>
-                      <p className="mt-2">
-                        Hãy xem kỹ video và ghi chép lại các công thức quan trọng. Sau khi xem xong, bạn có thể nhấn nút "Làm bài tập" bên cạnh để củng cố kiến thức.
+                      <p className="mt-2 text-muted-foreground">
+                        Xem video, ghi chú và thảo luận cùng bạn bè.
                       </p>
                     </div>
                   </div>
