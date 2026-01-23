@@ -1,17 +1,19 @@
 import { useState, useMemo, useEffect } from "react";
 import { PlayCircle, BookOpen, CheckCircle, Search, FileText, Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Progress } from "@/components/ui/progress";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { useLessonProgress } from "@/hooks/useLessonProgress";
 import { VideoPlayer } from "@/components/lesson/VideoPlayer";
 import { LessonProgressBadge } from "@/components/lesson/LessonProgressBadge";
+import { NotesTab } from "@/components/lesson/NotesTab";
+import { CommentsTab } from "@/components/lesson/CommentsTab";
 
 /* ==================================================================================
    KHU VỰC ĐỊNH NGHĨA KIỂU DỮ LIỆU
@@ -2015,32 +2017,33 @@ const Lessons = () => {
                     </div>
                   </div>
 
-                  {/* Cột phải: Actions Panel */}
+                  {/* Cột phải: Notes & Q&A Tabs */}
                   <div className="space-y-4">
-                    <div className="bg-gradient-to-br from-card to-card/95 p-5 rounded-xl border border-primary/10 shadow-md space-y-4 sticky top-4 backdrop-blur-sm">
-                      <h4 className="font-semibold text-lg md:text-xl text-foreground mb-3 tracking-tight">
-                        Hoạt động học tập
-                      </h4>
-
-                      <Button
-                        className="w-full justify-start h-12 text-base font-semibold shadow hover:shadow-md transition-all duration-300"
-                        size="lg"
-                      >
-                        <div className="bg-white/20 p-1.5 rounded-lg mr-3">
-                          <BookOpen className="h-6 w-6" />
-                        </div>
-                        Làm bài tập ngay
-                      </Button>
-
-                      <Button
-                        variant="outline"
-                        className="w-full justify-start h-12 text-base font-medium border border-primary/30 hover:bg-primary/10 hover:text-primary hover:border-primary/50 transition-all duration-300"
-                      >
-                        <div className="bg-primary/10 p-1.5 rounded-lg mr-3 text-primary">
-                          <FileText className="h-6 w-6" />
-                        </div>
-                        Tải tài liệu PDF
-                      </Button>
+                    <div className="bg-gradient-to-br from-card to-card/95 p-4 rounded-xl border border-primary/10 shadow-md sticky top-4 backdrop-blur-sm">
+                      <Tabs defaultValue="notes" className="w-full">
+                        <TabsList className="grid w-full grid-cols-2 mb-4">
+                          <TabsTrigger value="notes" className="text-sm font-semibold">
+                            📝 Ghi chú
+                          </TabsTrigger>
+                          <TabsTrigger value="qa" className="text-sm font-semibold">
+                            💬 Hỏi đáp
+                          </TabsTrigger>
+                        </TabsList>
+                        
+                        <TabsContent value="notes" className="mt-0">
+                          <NotesTab 
+                            topicId={selectedTopic.id} 
+                            topicTitle={selectedTopic.title} 
+                          />
+                        </TabsContent>
+                        
+                        <TabsContent value="qa" className="mt-0">
+                          <CommentsTab 
+                            topicId={selectedTopic.id} 
+                            topicTitle={selectedTopic.title} 
+                          />
+                        </TabsContent>
+                      </Tabs>
 
                       <div className="pt-4 border-t-2 border-primary/20 mt-4">
                         <div className="text-xs font-medium text-center text-primary">
