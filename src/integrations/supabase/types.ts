@@ -278,6 +278,36 @@ export type Database = {
         }
         Relationships: []
       }
+      lessons: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          quiz_count: number
+          title: string
+          topic_count: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id: string
+          quiz_count?: number
+          title: string
+          topic_count?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          quiz_count?: number
+          title?: string
+          topic_count?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       level_history: {
         Row: {
           course_id: string
@@ -478,6 +508,53 @@ export type Database = {
         }
         Relationships: []
       }
+      topics: {
+        Row: {
+          created_at: string
+          description: string | null
+          duration_minutes: number | null
+          id: string
+          lesson_id: string
+          order_index: number
+          semester: number
+          title: string
+          updated_at: string
+          video_url: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          duration_minutes?: number | null
+          id: string
+          lesson_id: string
+          order_index?: number
+          semester: number
+          title: string
+          updated_at?: string
+          video_url: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          duration_minutes?: number | null
+          id?: string
+          lesson_id?: string
+          order_index?: number
+          semester?: number
+          title?: string
+          updated_at?: string
+          video_url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "topics_lesson_id_fkey"
+            columns: ["lesson_id"]
+            isOneToOne: false
+            referencedRelation: "lessons"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_achievements: {
         Row: {
           achievement_description: string | null
@@ -549,6 +626,50 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      user_lesson_progress: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          id: string
+          is_completed: boolean
+          last_position_seconds: number
+          topic_id: string
+          updated_at: string
+          user_id: string
+          watch_time_seconds: number
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          is_completed?: boolean
+          last_position_seconds?: number
+          topic_id: string
+          updated_at?: string
+          user_id: string
+          watch_time_seconds?: number
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          is_completed?: boolean
+          last_position_seconds?: number
+          topic_id?: string
+          updated_at?: string
+          user_id?: string
+          watch_time_seconds?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_lesson_progress_topic_id_fkey"
+            columns: ["topic_id"]
+            isOneToOne: false
+            referencedRelation: "topics"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_roles: {
         Row: {
@@ -644,6 +765,15 @@ export type Database = {
           user_id: string
         }[]
       }
+      get_lesson_progress: {
+        Args: { p_lesson_id?: string }
+        Returns: {
+          completed_topics: number
+          completion_percentage: number
+          lesson_id: string
+          total_topics: number
+        }[]
+      }
       get_public_profile: {
         Args: { profile_id: string }
         Returns: {
@@ -663,6 +793,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      mark_topic_completed: { Args: { p_topic_id: string }; Returns: Json }
       unlock_badge: {
         Args: {
           p_badge_description: string
