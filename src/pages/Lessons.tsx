@@ -2009,7 +2009,7 @@ const Lessons = () => {
                     <div className="text-foreground/90 leading-relaxed text-base md:text-lg">
                       <p className="mb-3 font-semibold text-primary">{selectedTopic.description}</p>
                       <p className="mt-2 text-muted-foreground">
-                        Xem video, ghi chú và thảo luận cùng bạn bè.
+                        Hãy xem kỹ video bài giảng, ghi chép lại những điểm quan trọng vào phần ghi chú cá nhân, và tham gia thảo luận cùng các bạn để hiểu sâu hơn về bài học nhé!
                       </p>
                     </div>
                   </div>

@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Loader2, Send, MessageCircle, Trash2, Heart, Reply, ChevronDown, ChevronUp } from 'lucide-react';
+import { useState, useRef } from 'react';
+import { Loader2, Send, MessageCircle, Trash2, Heart, Reply, ChevronDown, ChevronUp, Smile } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
@@ -7,7 +7,13 @@ import { useTopicComments, CommentWithProfile } from '@/hooks/useTopicComments';
 import { formatDistanceToNow } from 'date-fns';
 import { vi } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
+const EMOJI_LIST = ['😊', '😂', '❤️', '👍', '👏', '🎉', '🔥', '💯', '🤔', '😍', '🙏', '✨', '💪', '😢', '😮', '🥳'];
 interface CommentsTabProps {
   topicId: string;
   topicTitle: string;
@@ -62,7 +68,7 @@ const CommentItem = ({
 
   return (
     <div className={cn("space-y-3", isReply && "ml-10 md:ml-14")}>
-      <div className="bg-background rounded-xl border border-border/50 p-4 md:p-5 hover:shadow-md transition-all">
+      <div className="bg-white rounded-xl border border-border/50 p-4 md:p-5 hover:shadow-md transition-all">
         {/* Comment Header */}
         <div className="flex items-start gap-3 mb-3">
           <Avatar className="h-10 w-10 md:h-12 md:w-12 border-2 border-primary/20">
@@ -266,8 +272,8 @@ export const CommentsTab = ({ topicId, topicTitle }: CommentsTabProps) => {
 
   return (
     <div className="space-y-6">
-      {/* New Comment Input - Prominent at top */}
-      <div className="flex items-center gap-3 bg-background rounded-full border-2 border-border p-2 pl-4 shadow-sm">
+      {/* New Comment Input - Prominent at top with emoji picker */}
+      <div className="flex items-center gap-3 bg-[#FFF5E6] rounded-full border-2 border-[#F5DEB3] p-2 pl-4 shadow-sm">
         <Input
           placeholder="Nhập bình luận ..."
           value={newComment}
@@ -288,7 +294,32 @@ export const CommentsTab = ({ topicId, topicTitle }: CommentsTabProps) => {
             <Send className="h-5 w-5" />
           )}
         </Button>
-        <span className="text-2xl cursor-pointer hover:scale-110 transition-transform">😊</span>
+        
+        {/* Emoji Picker */}
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-10 w-10 rounded-full bg-amber-400 hover:bg-amber-500 text-white shrink-0"
+            >
+              <Smile className="h-5 w-5" />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-3" align="end">
+            <div className="grid grid-cols-8 gap-2">
+              {EMOJI_LIST.map((emoji) => (
+                <button
+                  key={emoji}
+                  onClick={() => setNewComment(prev => prev + emoji)}
+                  className="text-2xl hover:scale-125 transition-transform p-1 rounded hover:bg-muted"
+                >
+                  {emoji}
+                </button>
+              ))}
+            </div>
+          </PopoverContent>
+        </Popover>
       </div>
 
       {/* Total comments count */}
