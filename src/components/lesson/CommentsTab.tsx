@@ -68,7 +68,7 @@ const CommentItem = ({
 
   return (
     <div className={cn("space-y-3", isReply && "ml-10 md:ml-14")}>
-      <div className="bg-[#FFF8F0] rounded-xl border border-[#F5DEB3] p-4 md:p-5 hover:shadow-md transition-all">
+      <div className="bg-white rounded-xl border border-border/50 p-4 md:p-5 hover:shadow-md transition-all">
         {/* Comment Header */}
         <div className="flex items-start gap-3 mb-3">
           <Avatar className="h-10 w-10 md:h-12 md:w-12 border-2 border-primary/20">
