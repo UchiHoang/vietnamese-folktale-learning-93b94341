@@ -2058,7 +2058,7 @@ const Lessons = () => {
                         />
                       </TabsContent>
                       
-                      <TabsContent value="qa" className="mt-0">
+                      <TabsContent value="qa" className="mt-0 bg-[#FFF5E6] rounded-xl p-4 md:p-6">
                         <CommentsTab 
                           topicId={selectedTopic.id} 
                           topicTitle={selectedTopic.title} 
