@@ -10,7 +10,8 @@ declare global {
   }
 }
 
-const RECAPTCHA_SITE_KEY = import.meta.env.VITE_RECAPTCHA_SITE_KEY || '';
+// Site Key is a publishable key, safe to include in frontend code
+const RECAPTCHA_SITE_KEY = '6Lec4lQsAAAAALc2PnDdGGbTbBazhczfwVMfUR0v';
 
 export const useRecaptcha = () => {
   const [isReady, setIsReady] = useState(false);
