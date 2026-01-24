@@ -1,4 +1,4 @@
-import { Users, BookOpen, BarChart3, Settings, LogOut, User } from "lucide-react";
+import { Users, BookOpen, BarChart3, Settings, LogOut, User, FolderOpen } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
@@ -16,6 +16,7 @@ const AdminSidebar = ({ activeTab, onTabChange, profile, onLogout }: AdminSideba
   const menuItems = [
     { id: "students", label: "Quản lý học sinh", icon: Users },
     { id: "classes", label: "Quản lý lớp học", icon: BookOpen },
+    { id: "library", label: "Quản lý thư viện", icon: FolderOpen },
     { id: "reports", label: "Báo cáo & Thống kê", icon: BarChart3 },
     { id: "profile", label: "Hồ sơ cá nhân", icon: User },
     { id: "settings", label: "Cài đặt", icon: Settings },
