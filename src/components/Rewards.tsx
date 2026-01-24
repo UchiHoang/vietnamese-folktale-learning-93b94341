@@ -1,6 +1,8 @@
 import { ALL_ACHIEVEMENTS } from "@/data/achievements";
 import { motion } from "framer-motion";
-import { Award, Trophy, Star, Target } from "lucide-react";
+import { Award, Trophy, Star, Target, ArrowRight } from "lucide-react";
+import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 
 // Lấy 6 thành tựu nổi bật nhất để giới thiệu
 const FEATURED_ACHIEVEMENTS = [
@@ -198,6 +200,22 @@ const Rewards = () => {
               </motion.div>
             </motion.div>
           ))}
+        </motion.div>
+
+        {/* CTA Button */}
+        <motion.div 
+          className="text-center mt-10"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.5 }}
+        >
+          <Button asChild size="lg" className="group">
+            <Link to="/profile?tab=stats">
+              Xem tất cả thành tựu
+              <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+            </Link>
+          </Button>
         </motion.div>
       </div>
     </section>
