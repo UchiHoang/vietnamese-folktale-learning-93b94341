@@ -78,28 +78,28 @@ const StatsTab = ({ gameProgress, streak, achievements }: StatsTabProps) => {
       </Card>
 
       {/* Streak Section */}
-      <Card className="p-6 bg-gradient-to-r from-accent/10 to-accent/5 border-accent/20">
+      <Card className="p-6 bg-gradient-to-r from-orange-50 to-red-50 dark:from-orange-950/30 dark:to-red-950/30 border-orange-200 dark:border-orange-800/30">
         <div className="flex items-center gap-3 mb-4">
-          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
-            <Flame className="h-6 w-6 text-primary-foreground" />
+          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-orange-100 to-red-100 dark:from-orange-900/50 dark:to-red-900/50 flex items-center justify-center shadow-sm">
+            <Flame className="h-6 w-6 text-orange-500" />
           </div>
           <div>
-            <h3 className="font-bold text-lg">Giữ chuỗi học tập</h3>
-            <p className="text-sm text-muted-foreground">Học mỗi ngày để giữ chuỗi!</p>
+            <h3 className="font-bold text-lg text-orange-600 dark:text-orange-400">Giữ chuỗi học tập</h3>
+            <p className="text-sm text-orange-500 dark:text-orange-300">Học mỗi ngày để giữ chuỗi!</p>
           </div>
         </div>
         
         <div className="grid grid-cols-3 gap-4 mt-4">
-          <div className="text-center p-3 bg-background/60 rounded-xl">
-            <div className="text-2xl font-bold text-primary">{streak?.current_streak || 0}</div>
+          <div className="text-center p-4 bg-card/80 dark:bg-card/60 rounded-xl shadow-sm border border-orange-100 dark:border-orange-900/30">
+            <div className="text-2xl font-bold text-orange-600 dark:text-orange-400">{streak?.current_streak || 0}</div>
             <div className="text-xs text-muted-foreground">Chuỗi hiện tại</div>
           </div>
-          <div className="text-center p-3 bg-background/60 rounded-xl">
-            <div className="text-2xl font-bold text-primary">{streak?.longest_streak || 0}</div>
+          <div className="text-center p-4 bg-card/80 dark:bg-card/60 rounded-xl shadow-sm border border-orange-100 dark:border-orange-900/30">
+            <div className="text-2xl font-bold text-orange-600 dark:text-orange-400">{streak?.longest_streak || 0}</div>
             <div className="text-xs text-muted-foreground">Kỷ lục</div>
           </div>
-          <div className="text-center p-3 bg-background/60 rounded-xl">
-            <div className="text-2xl font-bold text-primary">{streak?.total_learning_days || 0}</div>
+          <div className="text-center p-4 bg-card/80 dark:bg-card/60 rounded-xl shadow-sm border border-orange-100 dark:border-orange-900/30">
+            <div className="text-2xl font-bold text-orange-600 dark:text-orange-400">{streak?.total_learning_days || 0}</div>
             <div className="text-xs text-muted-foreground">Tổng ngày học</div>
           </div>
         </div>
