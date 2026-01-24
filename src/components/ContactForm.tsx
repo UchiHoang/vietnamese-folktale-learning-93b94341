@@ -6,6 +6,7 @@ import { useToast } from "@/hooks/use-toast";
 import { z } from "zod";
 import { motion } from "framer-motion";
 import { Send, MessageCircle, Mail, User, FileText, Phone, MapPin, Star, Heart, Sparkles, BookOpen, Pencil } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 const contactSchema = z.object({
   name: z.string().trim().min(1, { message: "Vui lòng nhập họ tên" }).max(100, { message: "Họ tên không được quá 100 ký tự" }),
@@ -54,11 +55,22 @@ const ContactForm = () => {
     setIsSubmitting(true);
     
     try {
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
+      const { data, error } = await supabase.functions.invoke('send-contact-email', {
+        body: {
+          name: result.data.name,
+          email: result.data.email,
+          subject: result.data.subject,
+          message: result.data.message,
+        },
+      });
+
+      if (error) {
+        throw error;
+      }
+
       toast({
-        title: "Gửi thành công!",
-        description: "Chúng mình sẽ liên hệ với bạn sớm nhất có thể.",
+        title: "Gửi thành công! 🎉",
+        description: "Chúng mình sẽ liên hệ với bạn sớm nhất có thể. Bạn cũng sẽ nhận được email xác nhận.",
       });
       
       setFormData({
