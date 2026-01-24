@@ -1,6 +1,8 @@
 import { Award, Flame, Star, Trophy, Target, Zap } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+import { AchievementGrid } from "@/components/achievements/AchievementGrid";
+import { EarnedAchievement } from "@/data/achievements";
 
 interface GameProgress {
   total_xp: number;
@@ -15,39 +17,13 @@ interface StreakData {
   total_learning_days: number;
 }
 
-interface Achievement {
-  id: string;
-  achievement_id: string;
-  achievement_name: string;
-  achievement_icon: string;
-  achievement_description: string;
-  earned_at: string;
-}
-
 interface StatsTabProps {
   gameProgress: GameProgress | null;
   streak: StreakData | null;
-  achievements: Achievement[];
+  achievements: EarnedAchievement[];
 }
 
-const AVAILABLE_ACHIEVEMENTS = [
-  { id: "first-lesson", name: "Bài học đầu tiên", icon: "🎯", description: "Hoàn thành bài học đầu tiên" },
-  { id: "streak-3", name: "Kiên trì 3 ngày", icon: "🔥", description: "Học liên tục 3 ngày" },
-  { id: "streak-7", name: "Kiên trì 7 ngày", icon: "💪", description: "Học liên tục 7 ngày" },
-  { id: "streak-30", name: "Bậc thầy kiên trì", icon: "👑", description: "Học liên tục 30 ngày" },
-  { id: "xp-100", name: "Tích lũy XP", icon: "⭐", description: "Đạt 100 XP" },
-  { id: "xp-500", name: "Ngôi sao XP", icon: "🌟", description: "Đạt 500 XP" },
-  { id: "xp-1000", name: "Siêu sao XP", icon: "✨", description: "Đạt 1000 XP" },
-  { id: "perfect-lesson", name: "Hoàn hảo", icon: "💯", description: "Hoàn thành bài học không sai" },
-  { id: "speed-demon", name: "Thần tốc", icon: "⚡", description: "Hoàn thành trong thời gian kỷ lục" },
-  { id: "math-master", name: "Bậc thầy toán học", icon: "🧮", description: "Hoàn thành 10 bài toán" },
-  { id: "explorer", name: "Nhà thám hiểm", icon: "🔍", description: "Khám phá 5 chủ đề mới" },
-  { id: "helper", name: "Người giúp đỡ", icon: "🤝", description: "Giúp đỡ bạn bè học tập" },
-];
-
 const StatsTab = ({ gameProgress, streak, achievements }: StatsTabProps) => {
-  const earnedAchievementIds = achievements.map(a => a.achievement_id);
-  const xpForNextLevel = (gameProgress?.level || 1) * 200;
   const xpProgress = ((gameProgress?.total_xp || 0) % 200) / 2;
 
   return (
@@ -70,19 +46,19 @@ const StatsTab = ({ gameProgress, streak, achievements }: StatsTabProps) => {
           <div className="text-sm text-muted-foreground">Điểm</div>
         </Card>
         
-        <Card className="p-5 text-center bg-gradient-to-br from-orange-500/10 to-orange-500/5 border-orange-500/20">
-          <div className="w-12 h-12 rounded-full bg-orange-500/20 flex items-center justify-center mx-auto mb-3">
-            <Flame className="h-6 w-6 text-orange-500" />
+        <Card className="p-5 text-center bg-gradient-to-br from-accent/20 to-accent/10 border-accent/30">
+          <div className="w-12 h-12 rounded-full bg-accent/30 flex items-center justify-center mx-auto mb-3">
+            <Flame className="h-6 w-6 text-accent-foreground" />
           </div>
-          <div className="text-3xl font-bold text-orange-500">{streak?.current_streak || 0}</div>
+          <div className="text-3xl font-bold text-accent-foreground">{streak?.current_streak || 0}</div>
           <div className="text-sm text-muted-foreground">Chuỗi ngày</div>
         </Card>
         
-        <Card className="p-5 text-center bg-gradient-to-br from-purple-500/10 to-purple-500/5 border-purple-500/20">
-          <div className="w-12 h-12 rounded-full bg-purple-500/20 flex items-center justify-center mx-auto mb-3">
-            <Trophy className="h-6 w-6 text-purple-500" />
+        <Card className="p-5 text-center bg-gradient-to-br from-muted to-muted/50 border-muted-foreground/20">
+          <div className="w-12 h-12 rounded-full bg-muted-foreground/20 flex items-center justify-center mx-auto mb-3">
+            <Trophy className="h-6 w-6 text-foreground" />
           </div>
-          <div className="text-3xl font-bold text-purple-500">{gameProgress?.level || 1}</div>
+          <div className="text-3xl font-bold text-foreground">{gameProgress?.level || 1}</div>
           <div className="text-sm text-muted-foreground">Cấp độ</div>
         </Card>
       </div>
@@ -102,70 +78,35 @@ const StatsTab = ({ gameProgress, streak, achievements }: StatsTabProps) => {
       </Card>
 
       {/* Streak Section */}
-      <Card className="p-6 bg-gradient-to-r from-orange-50 to-red-50 dark:from-orange-950/30 dark:to-red-950/30 border-orange-200 dark:border-orange-800">
+      <Card className="p-6 bg-gradient-to-r from-accent/10 to-accent/5 border-accent/20">
         <div className="flex items-center gap-3 mb-4">
-          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-orange-400 to-red-500 flex items-center justify-center">
-            <Flame className="h-6 w-6 text-white" />
+          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
+            <Flame className="h-6 w-6 text-primary-foreground" />
           </div>
           <div>
-            <h3 className="font-bold text-lg text-orange-700 dark:text-orange-300">Giữ chuỗi học tập</h3>
-            <p className="text-sm text-orange-600/70 dark:text-orange-400/70">Học mỗi ngày để giữ chuỗi!</p>
+            <h3 className="font-bold text-lg">Giữ chuỗi học tập</h3>
+            <p className="text-sm text-muted-foreground">Học mỗi ngày để giữ chuỗi!</p>
           </div>
         </div>
         
         <div className="grid grid-cols-3 gap-4 mt-4">
-          <div className="text-center p-3 bg-white/60 dark:bg-black/20 rounded-xl">
-            <div className="text-2xl font-bold text-orange-600">{streak?.current_streak || 0}</div>
+          <div className="text-center p-3 bg-background/60 rounded-xl">
+            <div className="text-2xl font-bold text-primary">{streak?.current_streak || 0}</div>
             <div className="text-xs text-muted-foreground">Chuỗi hiện tại</div>
           </div>
-          <div className="text-center p-3 bg-white/60 dark:bg-black/20 rounded-xl">
-            <div className="text-2xl font-bold text-orange-600">{streak?.longest_streak || 0}</div>
+          <div className="text-center p-3 bg-background/60 rounded-xl">
+            <div className="text-2xl font-bold text-primary">{streak?.longest_streak || 0}</div>
             <div className="text-xs text-muted-foreground">Kỷ lục</div>
           </div>
-          <div className="text-center p-3 bg-white/60 dark:bg-black/20 rounded-xl">
-            <div className="text-2xl font-bold text-orange-600">{streak?.total_learning_days || 0}</div>
+          <div className="text-center p-3 bg-background/60 rounded-xl">
+            <div className="text-2xl font-bold text-primary">{streak?.total_learning_days || 0}</div>
             <div className="text-xs text-muted-foreground">Tổng ngày học</div>
           </div>
         </div>
       </Card>
 
-      {/* Achievements Section */}
-      <Card className="p-6">
-        <div className="flex items-center gap-2 mb-6">
-          <Award className="h-6 w-6 text-primary" />
-          <h3 className="font-bold text-xl">Thành tựu & Huy hiệu</h3>
-          <span className="ml-auto text-sm text-muted-foreground">
-            {achievements.length}/{AVAILABLE_ACHIEVEMENTS.length} đã mở
-          </span>
-        </div>
-        
-        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-4">
-          {AVAILABLE_ACHIEVEMENTS.map((achievement) => {
-            const isEarned = earnedAchievementIds.includes(achievement.id);
-            return (
-              <div
-                key={achievement.id}
-                className={`relative flex flex-col items-center p-3 rounded-xl transition-all ${
-                  isEarned 
-                    ? "bg-primary/10 hover:bg-primary/20" 
-                    : "bg-muted/50 opacity-50 grayscale"
-                }`}
-                title={achievement.description}
-              >
-                <span className="text-3xl mb-2">{achievement.icon}</span>
-                <span className="text-xs text-center font-medium line-clamp-2">
-                  {achievement.name}
-                </span>
-                {!isEarned && (
-                  <div className="absolute inset-0 flex items-center justify-center bg-background/50 rounded-xl">
-                    <span className="text-2xl">🔒</span>
-                  </div>
-                )}
-              </div>
-            );
-          })}
-        </div>
-      </Card>
+      {/* Achievement Grid - New comprehensive component */}
+      <AchievementGrid earnedAchievements={achievements} />
 
       {/* Game Badges */}
       {gameProgress?.earned_badges && gameProgress.earned_badges.length > 0 && (
