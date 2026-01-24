@@ -29,6 +29,15 @@ const Auth = () => {
   // Check if redirected from game requiring login
   const redirectTo = searchParams.get("redirect");
 
+  // Load remembered email on mount
+  useEffect(() => {
+    const rememberedEmail = localStorage.getItem("rememberedEmail");
+    if (rememberedEmail) {
+      setFormData(prev => ({ ...prev, email: rememberedEmail }));
+      setRememberMe(true);
+    }
+  }, []);
+
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (session) {
@@ -64,6 +73,13 @@ const Auth = () => {
         setIsForgotPassword(false);
         setIsLogin(true);
       } else if (isLogin) {
+        // Lưu email nếu chọn "Ghi nhớ đăng nhập"
+        if (rememberMe) {
+          localStorage.setItem("rememberedEmail", formData.email);
+        } else {
+          localStorage.removeItem("rememberedEmail");
+        }
+
         const { error } = await supabase.auth.signInWithPassword({
           email: formData.email,
           password: formData.password,
