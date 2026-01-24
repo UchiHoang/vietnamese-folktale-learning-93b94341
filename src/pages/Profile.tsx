@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import Header from "@/components/Header";
@@ -11,6 +11,9 @@ import PasswordTab from "@/components/profile/PasswordTab";
 import CoursesTab from "@/components/profile/CoursesTab";
 import AnalyticsTab from "@/components/profile/AnalyticsTab";
 import AvatarUploadModal from "@/components/profile/AvatarUploadModal";
+import { AchievementNotification } from "@/components/achievements/AchievementNotification";
+import { useAchievements, UserStats } from "@/hooks/useAchievements";
+import { EarnedAchievement } from "@/data/achievements";
 import { toast } from "@/hooks/use-toast";
 
 interface Profile {
@@ -45,14 +48,7 @@ interface StreakData {
   last_activity_date: string | null;
 }
 
-interface Achievement {
-  id: string;
-  achievement_id: string;
-  achievement_name: string;
-  achievement_icon: string;
-  achievement_description: string;
-  earned_at: string;
-}
+// Achievement interface is now imported from @/data/achievements
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -62,12 +58,51 @@ const Profile = () => {
   const [gameProgress, setGameProgress] = useState<GameProgress | null>(null);
   const [userRole, setUserRole] = useState<string>("student");
   const [streak, setStreak] = useState<StreakData | null>(null);
-  const [achievements, setAchievements] = useState<Achievement[]>([]);
   const [avatarModalOpen, setAvatarModalOpen] = useState(false);
+
+  // Achievement system hook
+  const {
+    earnedAchievements,
+    newlyUnlocked,
+    checkAndUnlockAchievements,
+    dismissNewAchievement,
+  } = useAchievements();
+
+  // Check achievements when data is loaded
+  const checkAchievements = useCallback(async (
+    gp: GameProgress | null,
+    sk: StreakData | null
+  ) => {
+    if (!gp && !sk) return;
+
+    // Build user stats from loaded data
+    const stats: UserStats = {
+      lessonsCompleted: gp?.completed_nodes?.length || 0,
+      streakDays: sk?.current_streak || 0,
+      totalXp: gp?.total_xp || 0,
+      totalPoints: gp?.total_points || 0,
+      levelReached: gp?.level || 1,
+      perfectLessons: 0, // Would need separate tracking
+      totalLearningDays: sk?.total_learning_days || 0,
+      levelsCompleted: gp?.completed_nodes?.length || 0,
+      starsEarned: 0, // Would need to aggregate from level_history
+      badgesEarned: gp?.earned_badges?.length || 0,
+      timeSpentMinutes: 0, // Would need to aggregate from daily_activity
+    };
+
+    await checkAndUnlockAchievements(stats);
+  }, [checkAndUnlockAchievements]);
 
   useEffect(() => {
     checkUser();
   }, []);
+
+  // Check achievements when gameProgress or streak changes
+  useEffect(() => {
+    if (!loading && (gameProgress || streak)) {
+      checkAchievements(gameProgress, streak);
+    }
+  }, [loading, gameProgress, streak, checkAchievements]);
 
   const checkUser = async () => {
     try {
@@ -78,16 +113,18 @@ const Profile = () => {
         return;
       }
 
-      await Promise.all([
+      const results = await Promise.all([
         loadProfile(session.user.id),
         loadGameProgress(session.user.id),
         loadUserRole(session.user.id),
         loadStreak(session.user.id),
-        loadAchievements(session.user.id),
       ]);
 
       // Update streak on login
       await updateStreak(session.user.id);
+
+      // Check achievements after data is loaded
+      // Note: We'll trigger this after state updates via useEffect
     } catch (error) {
       console.error("Error checking user:", error);
       toast({
@@ -174,19 +211,7 @@ const Profile = () => {
     setStreak(data as StreakData);
   };
 
-  const loadAchievements = async (userId: string) => {
-    const { data, error } = await supabase
-      .from("user_achievements")
-      .select("*")
-      .eq("user_id", userId);
-
-    if (error) {
-      console.error("Error loading achievements:", error);
-      return;
-    }
-
-    setAchievements((data as Achievement[]) || []);
-  };
+  // loadAchievements is now handled by useAchievements hook
 
   const updateStreak = async (userId: string) => {
     try {
@@ -280,7 +305,7 @@ const Profile = () => {
           <StatsTab
             gameProgress={gameProgress}
             streak={streak}
-            achievements={achievements}
+            achievements={earnedAchievements as EarnedAchievement[]}
           />
         );
       case "analytics":
@@ -334,6 +359,12 @@ const Profile = () => {
         onClose={() => setAvatarModalOpen(false)}
         currentAvatar={profile?.avatar || "👤"}
         onSave={handleAvatarSave}
+      />
+
+      {/* Achievement Notification */}
+      <AchievementNotification
+        achievement={newlyUnlocked}
+        onDismiss={dismissNewAchievement}
       />
     </div>
   );
