@@ -1,6 +1,16 @@
-import { badges } from "@/data/mockData";
+import { ALL_ACHIEVEMENTS } from "@/data/achievements";
 import { motion } from "framer-motion";
-import { Award } from "lucide-react";
+import { Award, Trophy, Star, Target } from "lucide-react";
+
+// Lấy 6 thành tựu nổi bật nhất để giới thiệu
+const FEATURED_ACHIEVEMENTS = [
+  ALL_ACHIEVEMENTS.find(a => a.id === "first-lesson")!,
+  ALL_ACHIEVEMENTS.find(a => a.id === "streak-7")!,
+  ALL_ACHIEVEMENTS.find(a => a.id === "xp-500")!,
+  ALL_ACHIEVEMENTS.find(a => a.id === "perfect-lesson")!,
+  ALL_ACHIEVEMENTS.find(a => a.id === "level-10")!,
+  ALL_ACHIEVEMENTS.find(a => a.id === "badges-10")!,
+];
 
 const Rewards = () => {
   const containerVariants = {
@@ -89,17 +99,41 @@ const Rewards = () => {
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
           >
-            Huy hiệu & phần thưởng
+            Huy hiệu và thành tựu
           </motion.h2>
           <motion.p 
-            className="text-lg text-muted-foreground max-w-2xl mx-auto"
+            className="text-lg text-muted-foreground max-w-3xl mx-auto leading-relaxed"
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
             transition={{ delay: 0.2 }}
           >
-            Hoàn thành nhiệm vụ và thu thập các huy hiệu đặc biệt
+            Khám phá hành trình học tập đầy thú vị với hơn <span className="text-primary font-semibold">27+ thành tựu</span> độc đáo! 
+            Từ những bước đầu tiên đến bậc thầy kiến thức, mỗi cột mốc đều được ghi nhận bằng huy hiệu đặc biệt. 
+            Duy trì streak học tập, chinh phục các level, tích lũy XP và trở thành huyền thoại trong cộng đồng học sinh!
           </motion.p>
+          
+          {/* Stats highlights */}
+          <motion.div 
+            className="flex flex-wrap justify-center gap-6 mt-6"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.3 }}
+          >
+            <div className="flex items-center gap-2 text-sm">
+              <Trophy className="h-5 w-5 text-yellow-500" />
+              <span className="text-muted-foreground">27+ thành tựu</span>
+            </div>
+            <div className="flex items-center gap-2 text-sm">
+              <Star className="h-5 w-5 text-orange-500" />
+              <span className="text-muted-foreground">3 danh mục</span>
+            </div>
+            <div className="flex items-center gap-2 text-sm">
+              <Target className="h-5 w-5 text-green-500" />
+              <span className="text-muted-foreground">Tự động mở khóa</span>
+            </div>
+          </motion.div>
         </motion.div>
 
         <motion.div 
@@ -109,9 +143,9 @@ const Rewards = () => {
           whileInView="visible"
           viewport={{ once: true, margin: "-50px" }}
         >
-          {badges.map((badge, index) => (
+          {FEATURED_ACHIEVEMENTS.map((achievement, index) => (
             <motion.div
-              key={badge.id}
+              key={achievement.id}
               variants={badgeVariants}
               whileHover={{ 
                 y: -10, 
@@ -143,14 +177,14 @@ const Rewards = () => {
                   delay: index * 0.2 
                 }}
               >
-                {badge.icon}
+                {achievement.icon}
               </motion.div>
               <div className="relative z-10">
                 <div className="font-heading font-bold text-sm group-hover:text-primary transition-colors duration-300">
-                  {badge.name}
+                  {achievement.name}
                 </div>
                 <div className="text-xs text-muted-foreground mt-1 group-hover:text-foreground/80 transition-colors duration-300">
-                  {badge.description}
+                  {achievement.description}
                 </div>
               </div>
               
