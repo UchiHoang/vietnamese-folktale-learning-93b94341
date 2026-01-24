@@ -109,8 +109,8 @@ const CommentsManagementTab = () => {
     }
   }, []);
 
-  // Update filtered topics when grade/semester changes
-  useEffect(() => {
+  // Get filtered topics based on current grade/semester selection
+  const getFilteredTopicIds = useCallback(() => {
     let filtered = [...topics];
     
     if (selectedGrade !== "all") {
@@ -121,25 +121,50 @@ const CommentsManagementTab = () => {
       filtered = filtered.filter(t => t.semester === parseInt(selectedSemester));
     }
     
+    return filtered;
+  }, [topics, selectedGrade, selectedSemester]);
+
+  // Update filtered topics when grade/semester changes
+  useEffect(() => {
+    const filtered = getFilteredTopicIds();
     setFilteredTopics(filtered);
     
     // Reset topic selection if current selection is not in filtered list
     if (selectedTopic !== "all" && !filtered.find(t => t.id === selectedTopic)) {
       setSelectedTopic("all");
     }
-  }, [topics, selectedGrade, selectedSemester, selectedTopic]);
+  }, [getFilteredTopicIds, selectedTopic]);
 
   // Fetch comments with filters
   const fetchComments = useCallback(async () => {
     setIsLoading(true);
     try {
-      // Build topic IDs to filter
+      // Build topic IDs to filter - compute directly from topics to avoid stale state
       let topicIds: string[] = [];
       
       if (selectedTopic !== "all") {
         topicIds = [selectedTopic];
       } else if (selectedGrade !== "all" || selectedSemester !== "all") {
-        topicIds = filteredTopics.map(t => t.id);
+        // Filter topics directly here to ensure we have the latest data
+        let filtered = [...topics];
+        
+        if (selectedGrade !== "all") {
+          filtered = filtered.filter(t => t.lesson_id === selectedGrade);
+        }
+        
+        if (selectedSemester !== "all") {
+          filtered = filtered.filter(t => t.semester === parseInt(selectedSemester));
+        }
+        
+        topicIds = filtered.map(t => t.id);
+        
+        // If no topics match the filter, return empty results
+        if (topicIds.length === 0) {
+          setComments([]);
+          setStats({ totalComments: 0, pendingReplies: 0, repliedToday: 0 });
+          setIsLoading(false);
+          return;
+        }
       }
 
       // Fetch comments (parent comments only - no parent_id)
@@ -240,7 +265,7 @@ const CommentsManagementTab = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [selectedGrade, selectedSemester, selectedTopic, filteredTopics, toast]);
+  }, [selectedGrade, selectedSemester, selectedTopic, topics, toast]);
 
   // Handle admin reply
   const handleReply = async (commentId: string) => {
@@ -430,7 +455,7 @@ const CommentsManagementTab = () => {
         <CardContent className="p-4">
           <div className="flex items-center gap-2 mb-4">
             <Filter className="h-4 w-4 text-muted-foreground" />
-            <span className="text-sm font-medium">Bộ lọc</span>
+            <span className="text-sm font-medium">Phân loại</span>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {/* Grade Filter */}
