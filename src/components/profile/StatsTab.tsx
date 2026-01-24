@@ -80,8 +80,8 @@ const StatsTab = ({ gameProgress, streak, achievements }: StatsTabProps) => {
       {/* Streak Section */}
       <Card className="p-6 bg-gradient-to-r from-orange-50 to-red-50 dark:from-orange-950/30 dark:to-red-950/30 border-orange-200 dark:border-orange-800/30">
         <div className="flex items-center gap-3 mb-4">
-          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-orange-100 to-red-100 dark:from-orange-900/50 dark:to-red-900/50 flex items-center justify-center shadow-sm">
-            <Flame className="h-6 w-6 text-orange-500" />
+          <div className="w-12 h-12 rounded-full bg-orange-100 dark:bg-orange-900/40 flex items-center justify-center shadow-sm">
+            <Flame className="h-6 w-6 text-orange-500 fill-orange-400" />
           </div>
           <div>
             <h3 className="font-bold text-lg text-orange-600 dark:text-orange-400">Giữ chuỗi học tập</h3>
