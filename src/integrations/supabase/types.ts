@@ -78,6 +78,7 @@ export type Database = {
           content: string
           created_at: string
           id: string
+          is_admin_reply: boolean
           parent_id: string | null
           topic_id: string
           user_id: string
@@ -86,6 +87,7 @@ export type Database = {
           content: string
           created_at?: string
           id?: string
+          is_admin_reply?: boolean
           parent_id?: string | null
           topic_id: string
           user_id: string
@@ -94,6 +96,7 @@ export type Database = {
           content?: string
           created_at?: string
           id?: string
+          is_admin_reply?: boolean
           parent_id?: string | null
           topic_id?: string
           user_id?: string

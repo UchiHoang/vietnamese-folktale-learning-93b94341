@@ -49,7 +49,8 @@ All colors MUST be HSL.
     /* Custom tokens */
     --highlight: 32 100% 85%;
     --success: 142 71% 45%;
-    
+    --warning: 38 92% 50%;
+    --admin-reply: 142 50% 95%;
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
     --sidebar-primary: 240 5.9% 10%;
@@ -88,6 +89,8 @@ All colors MUST be HSL.
     --border: 220 15% 25%;
     --input: 220 15% 25%;
     --ring: 92 64% 46%;
+    
+    --admin-reply: 142 40% 20%;
     
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
