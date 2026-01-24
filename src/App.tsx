@@ -8,6 +8,7 @@ import Index from "./pages/Index";
 import Lessons from "./pages/Lessons";
 import Library from "./pages/Library";
 import Auth from "./pages/Auth";
+import ResetPassword from "./pages/ResetPassword";
 import TrangQuynhGame from "./pages/TrangQuynhGame";
 import ClassroomComingSoon from "./pages/ClassroomComingSoon";
 import Profile from "./pages/Profile";
@@ -29,6 +30,7 @@ const App = () => (
             <Route path="/lessons" element={<ProtectedClassroom><Lessons /></ProtectedClassroom>} />
             <Route path="/library" element={<Library />} />
             <Route path="/auth" element={<Auth />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/classroom/trangquynh" element={<TrangQuynhGame />} />
