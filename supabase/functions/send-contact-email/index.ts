@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
+const RECAPTCHA_SECRET_KEY = Deno.env.get("RECAPTCHA_SECRET_KEY");
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -12,6 +13,41 @@ interface ContactFormData {
   email: string;
   subject: string;
   message: string;
+  recaptchaToken: string;
+}
+
+interface RecaptchaResponse {
+  success: boolean;
+  score: number;
+  action: string;
+  challenge_ts: string;
+  hostname: string;
+  "error-codes"?: string[];
+}
+
+async function verifyRecaptcha(token: string): Promise<{ success: boolean; score: number }> {
+  if (!RECAPTCHA_SECRET_KEY) {
+    console.error("RECAPTCHA_SECRET_KEY is not set");
+    return { success: false, score: 0 };
+  }
+
+  try {
+    const response = await fetch("https://www.google.com/recaptcha/api/siteverify", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: `secret=${RECAPTCHA_SECRET_KEY}&response=${token}`,
+    });
+
+    const data: RecaptchaResponse = await response.json();
+    console.log("reCAPTCHA verification result:", { success: data.success, score: data.score, action: data.action });
+    
+    return { success: data.success, score: data.score || 0 };
+  } catch (error) {
+    console.error("reCAPTCHA verification failed:", error);
+    return { success: false, score: 0 };
+  }
 }
 
 const handler = async (req: Request): Promise<Response> => {
@@ -32,7 +68,7 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
-    const { name, email, subject, message }: ContactFormData = await req.json();
+    const { name, email, subject, message, recaptchaToken }: ContactFormData = await req.json();
 
     // Validate required fields
     if (!name || !email || !subject || !message) {
@@ -45,6 +81,46 @@ const handler = async (req: Request): Promise<Response> => {
         }
       );
     }
+
+    // Verify reCAPTCHA token
+    if (!recaptchaToken) {
+      console.error("Missing reCAPTCHA token");
+      return new Response(
+        JSON.stringify({ error: "Missing reCAPTCHA token" }),
+        {
+          status: 400,
+          headers: { "Content-Type": "application/json", ...corsHeaders },
+        }
+      );
+    }
+
+    const recaptchaResult = await verifyRecaptcha(recaptchaToken);
+    
+    if (!recaptchaResult.success) {
+      console.error("reCAPTCHA verification failed");
+      return new Response(
+        JSON.stringify({ error: "reCAPTCHA verification failed" }),
+        {
+          status: 400,
+          headers: { "Content-Type": "application/json", ...corsHeaders },
+        }
+      );
+    }
+
+    // Check reCAPTCHA score (0.0 - 1.0, higher is more likely human)
+    // Score below 0.5 is likely a bot
+    if (recaptchaResult.score < 0.5) {
+      console.warn("Low reCAPTCHA score:", recaptchaResult.score);
+      return new Response(
+        JSON.stringify({ error: "Suspicious activity detected" }),
+        {
+          status: 400,
+          headers: { "Content-Type": "application/json", ...corsHeaders },
+        }
+      );
+    }
+
+    console.log("reCAPTCHA passed with score:", recaptchaResult.score);
 
     // Validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
