@@ -207,30 +207,6 @@ export type Database = {
         }
         Relationships: []
       }
-      game_content: {
-        Row: {
-          content: Json
-          created_at: string | null
-          grade: string
-          id: string
-          type: string
-        }
-        Insert: {
-          content: Json
-          created_at?: string | null
-          grade: string
-          id: string
-          type: string
-        }
-        Update: {
-          content?: Json
-          created_at?: string | null
-          grade?: string
-          id?: string
-          type?: string
-        }
-        Relationships: []
-      }
       game_globals: {
         Row: {
           avatar_config: Json
