@@ -9,6 +9,7 @@ interface Comment {
   content: string;
   created_at: string;
   parent_id: string | null;
+  is_admin_reply: boolean;
 }
 
 export interface CommentWithProfile extends Comment {

@@ -68,12 +68,23 @@ const CommentItem = ({
 
   return (
     <div className={cn("space-y-3", isReply && "ml-10 md:ml-14")}>
-      <div className="bg-[#FFF5E6] rounded-xl border border-[#F5DEB3] p-4 md:p-5 hover:shadow-md transition-all">
+      <div className={cn(
+        "rounded-xl border p-4 md:p-5 hover:shadow-md transition-all",
+        comment.is_admin_reply 
+          ? "bg-admin-reply border-success/30" 
+          : "bg-[#FFF5E6] border-[#F5DEB3]"
+      )}>
         {/* Comment Header */}
         <div className="flex items-start gap-3 mb-3">
-          <Avatar className="h-10 w-10 md:h-12 md:w-12 border-2 border-primary/20">
-            <AvatarFallback className="bg-primary/10 text-primary font-bold text-lg">
-              {comment.avatar}
+          <Avatar className={cn(
+            "h-10 w-10 md:h-12 md:w-12 border-2",
+            comment.is_admin_reply ? "border-success/40" : "border-primary/20"
+          )}>
+            <AvatarFallback className={cn(
+              "font-bold text-lg",
+              comment.is_admin_reply ? "bg-success/20 text-success" : "bg-primary/10 text-primary"
+            )}>
+              {comment.is_admin_reply ? "👨‍🏫" : comment.avatar}
             </AvatarFallback>
           </Avatar>
           
@@ -82,6 +93,11 @@ const CommentItem = ({
               <span className="font-bold text-foreground text-sm md:text-base">
                 {comment.display_name}
               </span>
+              {comment.is_admin_reply && (
+                <span className="px-2 py-0.5 bg-success/20 text-success text-xs font-semibold rounded-full">
+                  Giáo viên
+                </span>
+              )}
               <span className="text-xs text-muted-foreground">
                 gửi bình luận lúc {formattedDate}
               </span>
@@ -95,7 +111,7 @@ const CommentItem = ({
             
             {/* User info subtitle */}
             <p className="text-xs text-muted-foreground mt-0.5">
-              Học sinh • Trường Tiểu học
+              {comment.is_admin_reply ? "Giáo viên • Hỗ trợ học tập" : "Học sinh • Trường Tiểu học"}
             </p>
           </div>
 
@@ -301,7 +317,7 @@ export const CommentsTab = ({ topicId, topicTitle }: CommentsTabProps) => {
             <Button
               variant="ghost"
               size="icon"
-              className="h-10 w-10 rounded-full bg-amber-400 hover:bg-amber-500 text-white shrink-0"
+              className="h-10 w-10 rounded-full bg-warning hover:bg-warning/90 text-white shrink-0"
             >
               <Smile className="h-5 w-5" />
             </Button>

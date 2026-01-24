@@ -53,6 +53,8 @@ export default {
         },
         highlight: "hsl(var(--highlight))",
         success: "hsl(var(--success))",
+        warning: "hsl(var(--warning))",
+        "admin-reply": "hsl(var(--admin-reply))",
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",
