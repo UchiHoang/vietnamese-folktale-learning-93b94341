@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -52,8 +52,14 @@ interface StreakData {
 
 const Profile = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState("info");
+  const [activeTab, setActiveTab] = useState(() => {
+    const tabFromUrl = searchParams.get("tab");
+    return tabFromUrl && ["info", "stats", "analytics", "settings", "password", "courses"].includes(tabFromUrl)
+      ? tabFromUrl
+      : "info";
+  });
   const [profile, setProfile] = useState<Profile | null>(null);
   const [gameProgress, setGameProgress] = useState<GameProgress | null>(null);
   const [userRole, setUserRole] = useState<string>("student");
