@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,7 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { FolderOpen, Upload, Search, FileText, Download, Eye } from "lucide-react";
+import { FolderOpen, Upload, Search, FileText, Download } from "lucide-react";
 import LibraryGrid from "@/components/library/LibraryGrid";
 import LibraryUploadModal from "@/components/library/LibraryUploadModal";
 
@@ -31,12 +32,34 @@ const SORT_OPTIONS = [
   { id: "title_desc", label: "Z → A" },
 ];
 
+interface LibraryStats {
+  totalDocuments: number;
+  totalDownloads: number;
+}
+
 const LibraryTab = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedGrade, setSelectedGrade] = useState("all");
   const [sortBy, setSortBy] = useState("created_at_desc");
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [showUploadModal, setShowUploadModal] = useState(false);
+  const [stats, setStats] = useState<LibraryStats>({ totalDocuments: 0, totalDownloads: 0 });
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      const { data, error } = await supabase
+        .from("library_documents")
+        .select("id, download_count");
+
+      if (!error && data) {
+        const totalDocuments = data.length;
+        const totalDownloads = data.reduce((sum, doc) => sum + (doc.download_count || 0), 0);
+        setStats({ totalDocuments, totalDownloads });
+      }
+    };
+
+    fetchStats();
+  }, [refreshTrigger]);
 
   const handleRefresh = () => {
     setRefreshTrigger((prev) => prev + 1);
@@ -73,7 +96,7 @@ const LibraryTab = () => {
       </Card>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <Card className="bg-card">
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
@@ -82,7 +105,7 @@ const LibraryTab = () => {
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Tổng tài liệu</p>
-                <p className="text-2xl font-bold text-foreground">--</p>
+                <p className="text-2xl font-bold text-foreground">{stats.totalDocuments}</p>
               </div>
             </div>
           </CardContent>
@@ -95,20 +118,7 @@ const LibraryTab = () => {
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Tổng lượt tải</p>
-                <p className="text-2xl font-bold text-foreground">--</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="bg-card">
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-accent">
-                <Eye className="h-5 w-5 text-accent-foreground" />
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Xem tuần này</p>
-                <p className="text-2xl font-bold text-foreground">--</p>
+                <p className="text-2xl font-bold text-foreground">{stats.totalDownloads}</p>
               </div>
             </div>
           </CardContent>
