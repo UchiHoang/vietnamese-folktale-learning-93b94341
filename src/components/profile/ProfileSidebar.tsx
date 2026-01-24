@@ -25,7 +25,7 @@ const ProfileSidebar = ({
 }: ProfileSidebarProps) => {
   const menuItems = [
     { id: "info", label: "Thông tin cá nhân", icon: User },
-    { id: "stats", label: "Thống kê", icon: TrendingUp },
+    { id: "stats", label: "Thống kê và thành tựu", icon: TrendingUp },
     { id: "analytics", label: "Phân tích học tập", icon: BarChart3 },
     { id: "settings", label: "Cài đặt", icon: Settings },
     { id: "password", label: "Đổi mật khẩu", icon: Lock },
