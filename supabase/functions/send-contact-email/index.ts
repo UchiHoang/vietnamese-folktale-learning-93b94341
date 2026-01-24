@@ -25,13 +25,17 @@ interface RecaptchaResponse {
   "error-codes"?: string[];
 }
 
-async function verifyRecaptcha(token: string): Promise<{ success: boolean; score: number }> {
+async function verifyRecaptcha(token: string): Promise<{ success: boolean; score: number; errorCodes?: string[] }> {
   if (!RECAPTCHA_SECRET_KEY) {
     console.error("RECAPTCHA_SECRET_KEY is not set");
-    return { success: false, score: 0 };
+    return { success: false, score: 0, errorCodes: ["missing-secret-key"] };
   }
 
   try {
+    console.log("Verifying reCAPTCHA token...");
+    console.log("Secret key length:", RECAPTCHA_SECRET_KEY.length);
+    console.log("Token length:", token.length);
+    
     const response = await fetch("https://www.google.com/recaptcha/api/siteverify", {
       method: "POST",
       headers: {
@@ -41,12 +45,20 @@ async function verifyRecaptcha(token: string): Promise<{ success: boolean; score
     });
 
     const data: RecaptchaResponse = await response.json();
-    console.log("reCAPTCHA verification result:", { success: data.success, score: data.score, action: data.action });
+    console.log("reCAPTCHA full response:", JSON.stringify(data));
     
-    return { success: data.success, score: data.score || 0 };
+    if (!data.success && data["error-codes"]) {
+      console.error("reCAPTCHA error codes:", data["error-codes"]);
+    }
+    
+    return { 
+      success: data.success, 
+      score: data.score || 0,
+      errorCodes: data["error-codes"]
+    };
   } catch (error) {
     console.error("reCAPTCHA verification failed:", error);
-    return { success: false, score: 0 };
+    return { success: false, score: 0, errorCodes: ["verification-exception"] };
   }
 }
 
