@@ -59,7 +59,7 @@ export const NotesTab = ({ topicId, topicTitle }: NotesTabProps) => {
         placeholder="Viết ghi chú của bạn tại đây... &#10;&#10;Ví dụ:&#10;• Công thức quan trọng&#10;• Các bước giải bài&#10;• Những điểm cần nhớ"
         value={content}
         onChange={(e) => handleContentChange(e.target.value)}
-        className="min-h-[350px] resize-none text-base leading-relaxed bg-background border-2 focus:border-primary/50 p-4 rounded-xl"
+        className="min-h-[350px] resize-none text-base leading-relaxed bg-card border-2 focus:border-primary/50 p-4 rounded-xl"
       />
 
       {/* Hint */}
