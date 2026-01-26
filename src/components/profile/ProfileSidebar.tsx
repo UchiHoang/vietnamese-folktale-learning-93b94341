@@ -1,4 +1,4 @@
-import { User, TrendingUp, Settings, Lock, BookOpen, LogOut, Flame, BarChart3, Camera } from "lucide-react";
+import { User, TrendingUp, Settings, Lock, BookOpen, LogOut, Flame, BarChart3, Camera, History } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
@@ -27,6 +27,7 @@ const ProfileSidebar = ({
     { id: "info", label: "Thông tin cá nhân", icon: User },
     { id: "stats", label: "Thống kê và thành tựu", icon: TrendingUp },
     { id: "analytics", label: "Phân tích học tập", icon: BarChart3 },
+    { id: "activity", label: "Hoạt động của bạn", icon: History },
     { id: "settings", label: "Cài đặt", icon: Settings },
     { id: "password", label: "Đổi mật khẩu", icon: Lock },
     { id: "courses", label: "Khóa học của bạn", icon: BookOpen },
