@@ -27,7 +27,7 @@ export const NotesTab = ({ topicId, topicTitle }: NotesTabProps) => {
   }
 
   return (
-    <div className="space-y-6 bg-background p-4 md:p-6 -m-4 md:-m-6 rounded-lg">
+    <div className="space-y-6 bg-background p-4 md:p-6 -m-4 md:-m-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div className="flex items-center gap-2 text-muted-foreground">
@@ -63,7 +63,7 @@ export const NotesTab = ({ topicId, topicTitle }: NotesTabProps) => {
       />
 
       {/* Hint */}
-      <div className="flex items-center justify-between text-sm text-muted-foreground bg-muted/30 rounded-lg p-3">
+      <div className="flex items-center justify-between text-sm text-muted-foreground bg-muted rounded-lg p-3">
         <p>
           💡 Ghi chú sẽ tự động lưu sau 2 giây khi bạn ngừng gõ.
         </p>
