@@ -2037,17 +2037,17 @@ const Lessons = () => {
                 {/* Phần nội dung bài học + XP - Layout 2 cột */}
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
                   {/* Cột trái: Nội dung bài học - Thiết kế mới theo mẫu */}
-                  <div className="lg:col-span-2 bg-[hsl(40,60%,96%)] dark:bg-muted/30 rounded-xl border border-[hsl(35,60%,85%)] dark:border-border overflow-hidden">
-                    {/* Header với nền beige */}
-                    <div className="px-5 py-4 border-b border-[hsl(35,60%,85%)] dark:border-border">
+                  <div className="lg:col-span-2 bg-[hsl(40,60%,96%)] dark:bg-muted/30 rounded-xl border border-[hsl(35,60%,85%)] dark:border-border">
+                    {/* Header */}
+                    <div className="px-5 pt-5 pb-3">
                       <h3 className="font-bold text-xl flex items-center gap-3 text-foreground">
                         <BookOpen className="h-5 w-5 text-primary" />
                         Nội dung bài học
                       </h3>
                     </div>
                     
-                    {/* Nội dung */}
-                    <div className="p-5 bg-card">
+                    {/* Nội dung - cùng nền beige */}
+                    <div className="px-5 pb-5">
                       <h4 className="font-bold text-lg text-primary mb-3">
                         {selectedTopic.title}
                       </h4>
