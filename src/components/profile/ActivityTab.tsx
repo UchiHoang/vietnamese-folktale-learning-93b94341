@@ -1,15 +1,18 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Loader2, MessageSquare, FileText, ExternalLink, Calendar, Clock, Trash2 } from "lucide-react";
-import { format } from "date-fns";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Loader2, MessageSquare, FileText, ExternalLink, Calendar, Clock, Trash2, Filter } from "lucide-react";
+import { format, startOfWeek, startOfMonth, isAfter } from "date-fns";
 import { vi } from "date-fns/locale";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
+
+type TimeFilter = "all" | "week" | "month";
 
 interface Comment {
   id: string;
@@ -49,8 +52,39 @@ export const ActivityTab = () => {
   const [topics, setTopics] = useState<Topic[]>([]);
   const [isLoadingComments, setIsLoadingComments] = useState(true);
   const [isLoadingNotes, setIsLoadingNotes] = useState(true);
+  const [timeFilter, setTimeFilter] = useState<TimeFilter>("all");
   const navigate = useNavigate();
   const { toast } = useToast();
+
+  // Filter items by time
+  const filterByTime = useCallback((date: string, filter: TimeFilter): boolean => {
+    if (filter === "all") return true;
+    
+    const itemDate = new Date(date);
+    const now = new Date();
+    
+    if (filter === "week") {
+      const weekStart = startOfWeek(now, { weekStartsOn: 1 }); // Monday
+      return isAfter(itemDate, weekStart);
+    }
+    
+    if (filter === "month") {
+      const monthStart = startOfMonth(now);
+      return isAfter(itemDate, monthStart);
+    }
+    
+    return true;
+  }, []);
+
+  // Filtered comments
+  const filteredComments = useMemo(() => {
+    return comments.filter(c => filterByTime(c.created_at, timeFilter));
+  }, [comments, timeFilter, filterByTime]);
+
+  // Filtered notes
+  const filteredNotes = useMemo(() => {
+    return notes.filter(n => filterByTime(n.updated_at, timeFilter));
+  }, [notes, timeFilter, filterByTime]);
 
   // Fetch topics with lesson info
   const fetchTopics = useCallback(async () => {
@@ -214,35 +248,54 @@ export const ActivityTab = () => {
         </CardTitle>
       </CardHeader>
       <CardContent>
+        {/* Time Filter */}
+        <div className="flex items-center gap-3 mb-6 p-3 bg-muted/50 rounded-lg">
+          <Filter className="h-4 w-4 text-muted-foreground" />
+          <span className="text-sm font-medium">Lọc theo thời gian:</span>
+          <Select value={timeFilter} onValueChange={(value: TimeFilter) => setTimeFilter(value)}>
+            <SelectTrigger className="w-[160px] h-9">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Tất cả</SelectItem>
+              <SelectItem value="week">Tuần này</SelectItem>
+              <SelectItem value="month">Tháng này</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
         <Tabs defaultValue="comments" className="w-full">
           <TabsList className="grid w-full grid-cols-2 mb-6">
             <TabsTrigger value="comments" className="flex items-center gap-2">
               <MessageSquare className="h-4 w-4" />
-              Bình luận ({comments.length})
+              Bình luận ({filteredComments.length})
             </TabsTrigger>
             <TabsTrigger value="notes" className="flex items-center gap-2">
               <FileText className="h-4 w-4" />
-              Ghi chú ({notes.length})
+              Ghi chú ({filteredNotes.length})
             </TabsTrigger>
           </TabsList>
 
-          {/* Comments Tab */}
           <TabsContent value="comments">
             {isLoadingComments ? (
               <div className="flex items-center justify-center py-12">
                 <Loader2 className="h-6 w-6 animate-spin text-primary" />
                 <span className="ml-2 text-muted-foreground">Đang tải bình luận...</span>
               </div>
-            ) : comments.length === 0 ? (
+            ) : filteredComments.length === 0 ? (
               <div className="text-center py-12 text-muted-foreground">
                 <MessageSquare className="h-12 w-12 mx-auto mb-4 opacity-30" />
-                <p>Bạn chưa có bình luận nào</p>
-                <p className="text-sm mt-2">Hãy tham gia thảo luận trong các bài học!</p>
+                <p>{comments.length === 0 ? "Bạn chưa có bình luận nào" : "Không có bình luận trong khoảng thời gian này"}</p>
+                <p className="text-sm mt-2">
+                  {comments.length === 0 
+                    ? "Hãy tham gia thảo luận trong các bài học!" 
+                    : "Thử chọn khoảng thời gian khác"}
+                </p>
               </div>
             ) : (
               <ScrollArea className="h-[500px] pr-4">
                 <div className="space-y-4">
-                  {comments.map((comment) => (
+                  {filteredComments.map((comment) => (
                     <div
                       key={comment.id}
                       className="p-4 rounded-xl border bg-card hover:shadow-md transition-shadow"
@@ -307,23 +360,26 @@ export const ActivityTab = () => {
             )}
           </TabsContent>
 
-          {/* Notes Tab */}
           <TabsContent value="notes">
             {isLoadingNotes ? (
               <div className="flex items-center justify-center py-12">
                 <Loader2 className="h-6 w-6 animate-spin text-primary" />
                 <span className="ml-2 text-muted-foreground">Đang tải ghi chú...</span>
               </div>
-            ) : notes.length === 0 ? (
+            ) : filteredNotes.length === 0 ? (
               <div className="text-center py-12 text-muted-foreground">
                 <FileText className="h-12 w-12 mx-auto mb-4 opacity-30" />
-                <p>Bạn chưa có ghi chú nào</p>
-                <p className="text-sm mt-2">Hãy ghi chú lại những điểm quan trọng trong bài học!</p>
+                <p>{notes.length === 0 ? "Bạn chưa có ghi chú nào" : "Không có ghi chú trong khoảng thời gian này"}</p>
+                <p className="text-sm mt-2">
+                  {notes.length === 0 
+                    ? "Hãy ghi chú lại những điểm quan trọng trong bài học!" 
+                    : "Thử chọn khoảng thời gian khác"}
+                </p>
               </div>
             ) : (
               <ScrollArea className="h-[500px] pr-4">
                 <div className="space-y-4">
-                  {notes.map((note) => (
+                  {filteredNotes.map((note) => (
                     <div
                       key={note.id}
                       className="p-4 rounded-xl border bg-card hover:shadow-md transition-shadow"
