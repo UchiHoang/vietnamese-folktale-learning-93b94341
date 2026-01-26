@@ -2037,7 +2037,7 @@ const Lessons = () => {
                 {/* Phần nội dung bài học + XP - Layout 2 cột */}
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
                   {/* Cột trái: Nội dung bài học - Thiết kế mới theo mẫu */}
-                  <div className="lg:col-span-2 bg-[hsl(40,60%,96%)] dark:bg-muted/30 rounded-xl border border-[hsl(35,60%,85%)] dark:border-border">
+                  <div className="lg:col-span-2 bg-card dark:bg-card rounded-xl border border-border">
                     {/* Header */}
                     <div className="px-5 pt-5 pb-3">
                       <h3 className="font-bold text-xl flex items-center gap-3 text-foreground">
@@ -2046,7 +2046,7 @@ const Lessons = () => {
                       </h3>
                     </div>
                     
-                    {/* Nội dung - cùng nền beige */}
+                    {/* Nội dung */}
                     <div className="px-5 pb-5">
                       <h4 className="font-bold text-lg text-primary mb-3">
                         {selectedTopic.title}
