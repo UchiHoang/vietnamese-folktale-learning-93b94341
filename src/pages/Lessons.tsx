@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import { PlayCircle, BookOpen, CheckCircle, Search, FileText, Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -1719,17 +1720,47 @@ const Lessons = () => {
     duration_minutes: 15,
   }));
 
+  // Read URL search params for deep linking
+  const [searchParams] = useSearchParams();
+  const urlGrade = searchParams.get("grade");
+  const urlTopic = searchParams.get("topic");
+  const urlTab = searchParams.get("tab");
+
   // State chọn Lớp
-  const [selectedLessonId, setSelectedLessonId] = useState<string>("L5");
+  const [selectedLessonId, setSelectedLessonId] = useState<string>(() => {
+    // Initialize from URL if available
+    if (urlGrade && activeLessons.find(l => l.id === urlGrade)) {
+      return urlGrade;
+    }
+    return "L5";
+  });
 
   // State chọn Học kì (Mặc định là 1)
-  const [selectedSemester, setSelectedSemester] = useState<number>(1);
+  const [selectedSemester, setSelectedSemester] = useState<number>(() => {
+    // If we have a topic from URL, find its semester
+    if (urlTopic) {
+      const topic = activeTopics.find(t => t.id === urlTopic);
+      if (topic) return topic.semester;
+    }
+    return 1;
+  });
 
   // State tìm kiếm
   const [searchQuery, setSearchQuery] = useState("");
 
   // State chọn Bài giảng (Video)
-  const [selectedTopicId, setSelectedTopicId] = useState<string>("");
+  const [selectedTopicId, setSelectedTopicId] = useState<string>(() => {
+    // Initialize from URL if available
+    if (urlTopic && activeTopics.find(t => t.id === urlTopic)) {
+      return urlTopic;
+    }
+    return "";
+  });
+
+  // State cho active tab (notes/qa)
+  const [activeToolTab, setActiveToolTab] = useState<string>(() => {
+    return urlTab === "notes" ? "notes" : "qa";
+  });
 
   // LỌC DỮ LIỆU: Lớp + Học kì + Tìm kiếm
   const filteredTopics = useMemo(() => {
@@ -1741,8 +1772,13 @@ const Lessons = () => {
     );
   }, [activeTopics, selectedLessonId, selectedSemester, searchQuery]);
 
-  // Tự động chọn bài đầu tiên
+  // Tự động chọn bài đầu tiên (chỉ khi không có URL topic)
   useEffect(() => {
+    // Skip if we have a valid topic from URL on initial load
+    if (urlTopic && activeTopics.find(t => t.id === urlTopic)) {
+      return;
+    }
+    
     if (filteredTopics.length > 0) {
       if (!selectedTopicId || !filteredTopics.find((t) => t.id === selectedTopicId)) {
         setSelectedTopicId(filteredTopics[0].id);
@@ -2031,7 +2067,7 @@ const Lessons = () => {
 
                 {/* Phần Ghi chú & Hỏi đáp - Nằm dưới, full width */}
                 <div className="bg-card rounded-2xl border shadow-lg overflow-hidden">
-                  <Tabs defaultValue="qa" className="w-full">
+                  <Tabs value={activeToolTab} onValueChange={setActiveToolTab} className="w-full">
                     {/* Header với gradient xanh lá - buttons căn giữa */}
                     <div className="bg-gradient-to-r from-primary to-primary/80 px-4 md:px-6 py-5 flex justify-center">
                       <TabsList className="bg-primary-foreground/20 backdrop-blur-sm border-none h-14 p-1.5 rounded-full">
