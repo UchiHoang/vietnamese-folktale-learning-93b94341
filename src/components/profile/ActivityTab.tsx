@@ -178,9 +178,10 @@ export const ActivityTab = () => {
     loadData();
   }, [fetchTopics, fetchComments, fetchNotes]);
 
-  // Navigate to lesson
-  const handleViewLesson = (lessonId: string, topicId: string) => {
-    navigate(`/lessons?grade=${lessonId}&topic=${topicId}`);
+  // Navigate to lesson - with optional tab parameter
+  const handleViewLesson = (lessonId: string, topicId: string, tab?: string) => {
+    const tabParam = tab ? `&tab=${tab}` : "";
+    navigate(`/lessons?grade=${lessonId}&topic=${topicId}${tabParam}`);
   };
 
   // Delete comment
@@ -423,7 +424,7 @@ export const ActivityTab = () => {
                             variant="ghost"
                             size="sm"
                             className="h-8 text-xs"
-                            onClick={() => handleViewLesson(note.lesson_id || "", note.topic_id)}
+                            onClick={() => handleViewLesson(note.lesson_id || "", note.topic_id, "notes")}
                           >
                             <ExternalLink className="h-3.5 w-3.5 mr-1" />
                             Xem & Sửa
