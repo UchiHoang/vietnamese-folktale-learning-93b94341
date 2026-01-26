@@ -10,6 +10,7 @@ import SettingsTab from "@/components/profile/SettingsTab";
 import PasswordTab from "@/components/profile/PasswordTab";
 import CoursesTab from "@/components/profile/CoursesTab";
 import AnalyticsTab from "@/components/profile/AnalyticsTab";
+import ActivityTab from "@/components/profile/ActivityTab";
 import AvatarUploadModal from "@/components/profile/AvatarUploadModal";
 import { AchievementNotification } from "@/components/achievements/AchievementNotification";
 import { useAchievements, UserStats } from "@/hooks/useAchievements";
@@ -56,7 +57,7 @@ const Profile = () => {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState(() => {
     const tabFromUrl = searchParams.get("tab");
-    return tabFromUrl && ["info", "stats", "analytics", "settings", "password", "courses"].includes(tabFromUrl)
+    return tabFromUrl && ["info", "stats", "analytics", "activity", "settings", "password", "courses"].includes(tabFromUrl)
       ? tabFromUrl
       : "info";
   });
@@ -321,6 +322,8 @@ const Profile = () => {
             streak={streak}
           />
         );
+      case "activity":
+        return <ActivityTab />;
       case "settings":
         return <SettingsTab />;
       case "password":
