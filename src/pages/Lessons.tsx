@@ -2037,7 +2037,7 @@ const Lessons = () => {
                 {/* Phần nội dung bài học + XP - Layout 2 cột */}
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
                   {/* Cột trái: Nội dung bài học - Thiết kế mới theo mẫu */}
-                  <div className="lg:col-span-2 bg-card dark:bg-card rounded-xl border border-border">
+                  <div className="lg:col-span-2 bg-card dark:bg-card rounded-xl border border-border shadow-sm hover:shadow-md transition-shadow duration-300">
                     {/* Header */}
                     <div className="px-5 pt-5 pb-3">
                       <h3 className="font-bold text-xl flex items-center gap-3 text-foreground">
