@@ -2094,7 +2094,7 @@ const Lessons = () => {
                       </TabsList>
                     </div>
                     
-                    <div className="p-4 md:p-6 bg-background">
+                    <div className="p-4 md:p-6 bg-card">
                       <TabsContent value="notes" className="mt-0">
                         <NotesTab 
                           topicId={selectedTopic.id} 
