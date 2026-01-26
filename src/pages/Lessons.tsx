@@ -2034,24 +2034,41 @@ const Lessons = () => {
                   isCompleted={isTopicCompleted(selectedTopic.id)}
                 />
 
-                {/* Phần nội dung bài học - Thiết kế mới theo mẫu */}
-                <div className="bg-[hsl(40,60%,96%)] dark:bg-muted/30 rounded-xl border border-[hsl(35,60%,85%)] dark:border-border overflow-hidden">
-                  {/* Header với nền beige */}
-                  <div className="px-5 py-4 border-b border-[hsl(35,60%,85%)] dark:border-border">
-                    <h3 className="font-bold text-xl flex items-center gap-3 text-foreground">
-                      <BookOpen className="h-5 w-5 text-primary" />
-                      Nội dung bài học
-                    </h3>
+                {/* Phần nội dung bài học + XP - Layout 2 cột */}
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
+                  {/* Cột trái: Nội dung bài học - Thiết kế mới theo mẫu */}
+                  <div className="lg:col-span-2 bg-[hsl(40,60%,96%)] dark:bg-muted/30 rounded-xl border border-[hsl(35,60%,85%)] dark:border-border overflow-hidden">
+                    {/* Header với nền beige */}
+                    <div className="px-5 py-4 border-b border-[hsl(35,60%,85%)] dark:border-border">
+                      <h3 className="font-bold text-xl flex items-center gap-3 text-foreground">
+                        <BookOpen className="h-5 w-5 text-primary" />
+                        Nội dung bài học
+                      </h3>
+                    </div>
+                    
+                    {/* Nội dung */}
+                    <div className="p-5 bg-card">
+                      <h4 className="font-bold text-lg text-primary mb-3">
+                        {selectedTopic.title}
+                      </h4>
+                      <p className="text-muted-foreground leading-relaxed">
+                        Hãy xem kỹ video và ghi chép lại các công thức quan trọng. 
+                        Sau khi xem xong, bạn có thể ghi chú bên dưới hoặc đặt câu hỏi trong phần Hỏi đáp.
+                      </p>
+                    </div>
                   </div>
-                  
-                  {/* Nội dung */}
-                  <div className="p-5 bg-card">
-                    <h4 className="font-bold text-lg text-primary mb-3">
-                      {selectedTopic.title}
-                    </h4>
-                    <p className="text-muted-foreground leading-relaxed">
-                      Hãy xem kỹ video và ghi chép lại các công thức quan trọng. 
-                      Sau khi xem xong, bạn có thể ghi chú bên dưới hoặc đặt câu hỏi trong phần Hỏi đáp.
+
+                  {/* Cột phải: XP Info */}
+                  <div className="lg:col-span-1 bg-gradient-to-br from-primary/10 to-primary/5 rounded-xl p-4 md:p-6 border border-primary/20 flex flex-col items-center justify-center text-center gap-3">
+                    <div className="text-4xl">🎯</div>
+                    <div className="text-lg md:text-xl font-bold text-primary">
+                      Hoàn thành bài học
+                    </div>
+                    <div className="text-2xl md:text-3xl font-black text-primary">
+                      +20 XP
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      Xem video và hoàn thành để nhận điểm kinh nghiệm
                     </p>
                   </div>
                 </div>
