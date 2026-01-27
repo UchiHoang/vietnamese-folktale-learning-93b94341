@@ -1,6 +1,7 @@
 import { useState, useMemo, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { PlayCircle, BookOpen, CheckCircle, Search, FileText, Loader2, Menu, X, ChevronRight } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -1938,14 +1939,21 @@ const Lessons = () => {
               filteredTopics.map((topic, index) => {
                 const completed = isTopicCompleted(topic.id);
                 return (
-                  <button
+                  <motion.button
                     key={topic.id}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ 
+                      delay: isMobile && isMobileSidebarOpen ? index * 0.05 : 0,
+                      duration: 0.2 
+                    }}
                     onClick={() => handleTopicSelect(topic.id)}
                     className={`w-full text-left p-4 rounded-2xl transition-all duration-200 border-2 flex gap-3.5 group items-start ${
                       selectedTopicId === topic.id
                         ? "bg-gradient-to-r from-primary/20 to-primary/15 border-primary shadow-lg ring-2 ring-primary/30"
                         : "bg-white hover:bg-muted/50 border-border/60 hover:border-primary/50 shadow-sm hover:shadow-lg"
                     }`}
+                    whileTap={{ scale: 0.98 }}
                   >
                     {/* Icon số thứ tự */}
                     <div className="flex-shrink-0 pt-0.5">
@@ -1989,7 +1997,7 @@ const Lessons = () => {
                         )}
                       </div>
                     </div>
-                  </button>
+                  </motion.button>
                 );
               })
             ) : (
@@ -2013,22 +2021,43 @@ const Lessons = () => {
       {/* KHU VỰC NỘI DUNG */}
       <div className="flex flex-1 min-h-0 relative">
         
-        {/* Mobile: Button mở sidebar */}
-        <Sheet open={isMobileSidebarOpen} onOpenChange={setIsMobileSidebarOpen}>
-          <SheetTrigger asChild>
-            <Button 
-              variant="default" 
-              size="sm" 
-              className="lg:hidden fixed bottom-20 left-4 z-50 shadow-xl rounded-full h-14 w-14 p-0"
+        {/* Mobile: Floating button với animation */}
+        <AnimatePresence>
+          {!isMobileSidebarOpen && (
+            <motion.div
+              initial={{ scale: 0, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0, opacity: 0 }}
+              transition={{ type: "spring", stiffness: 300, damping: 25 }}
+              className="lg:hidden fixed bottom-20 left-4 z-50"
             >
-              <Menu className="h-6 w-6" />
-            </Button>
-          </SheetTrigger>
-          <SheetContent side="left" className="w-[320px] sm:w-[360px] p-0 flex flex-col">
+              <Button 
+                variant="default" 
+                size="sm" 
+                onClick={() => setIsMobileSidebarOpen(true)}
+                className="shadow-xl rounded-full h-14 w-14 p-0 hover:scale-110 transition-transform"
+              >
+                <Menu className="h-6 w-6" />
+              </Button>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Mobile: Sheet sidebar với animation mượt */}
+        <Sheet open={isMobileSidebarOpen} onOpenChange={setIsMobileSidebarOpen}>
+          <SheetContent 
+            side="left" 
+            className="w-[320px] sm:w-[360px] p-0 flex flex-col border-r-2 border-primary/20"
+          >
             <SheetTitle className="sr-only">Danh sách bài học</SheetTitle>
-            <div className="flex-1 flex flex-col overflow-hidden">
+            <motion.div 
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.1, duration: 0.3 }}
+              className="flex-1 flex flex-col overflow-hidden"
+            >
               <SidebarContent />
-            </div>
+            </motion.div>
           </SheetContent>
         </Sheet>
 
