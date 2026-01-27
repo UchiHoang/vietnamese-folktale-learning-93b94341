@@ -296,26 +296,41 @@ export type Database = {
       }
       leaderboard: {
         Row: {
+          avatar: string | null
           created_at: string
+          display_name: string
+          grade: string | null
           id: string
+          normalized_grade: string | null
           points: number
           rank: number | null
+          school: string | null
           updated_at: string
           user_id: string
         }
         Insert: {
+          avatar?: string | null
           created_at?: string
+          display_name?: string
+          grade?: string | null
           id?: string
+          normalized_grade?: string | null
           points?: number
           rank?: number | null
+          school?: string | null
           updated_at?: string
           user_id: string
         }
         Update: {
+          avatar?: string | null
           created_at?: string
+          display_name?: string
+          grade?: string | null
           id?: string
+          normalized_grade?: string | null
           points?: number
           rank?: number | null
+          school?: string | null
           updated_at?: string
           user_id?: string
         }
