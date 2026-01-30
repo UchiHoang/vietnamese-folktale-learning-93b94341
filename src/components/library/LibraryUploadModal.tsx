@@ -180,7 +180,7 @@ const LibraryUploadModal = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md bg-card">
+      <DialogContent className="sm:max-w-md bg-card overflow-hidden">
         <DialogHeader>
           <DialogTitle className="text-xl font-semibold">Tải lên tài liệu</DialogTitle>
           <DialogDescription>
@@ -188,10 +188,10 @@ const LibraryUploadModal = ({
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-5">
+        <form onSubmit={handleSubmit} className="space-y-5 overflow-hidden">
           {/* File Drop Zone */}
           <div
-            className={`relative border-2 border-dashed rounded-xl p-4 text-center transition-all overflow-hidden ${
+            className={`relative border-2 border-dashed rounded-xl p-4 text-center transition-all ${
               dragActive
                 ? "border-primary bg-primary/10"
                 : file 
@@ -204,12 +204,16 @@ const LibraryUploadModal = ({
             onDrop={handleDrop}
           >
             {file ? (
-              <div className="flex items-center gap-3 w-full overflow-hidden">
+              <div className="flex items-center gap-3">
                 <div className="p-3 rounded-xl bg-primary/10 flex-shrink-0">
                   <FileText className="h-6 w-6 text-primary" />
                 </div>
-                <div className="flex-1 min-w-0 overflow-hidden text-left">
-                  <p className="font-medium text-sm text-foreground truncate max-w-full" title={file.name}>
+                <div className="flex-1 min-w-0 text-left">
+                  <p 
+                    className="font-medium text-sm text-foreground overflow-hidden text-ellipsis whitespace-nowrap" 
+                    title={file.name}
+                    style={{ maxWidth: 'calc(100%)' }}
+                  >
                     {file.name}
                   </p>
                   <p className="text-xs text-muted-foreground">
