@@ -260,7 +260,7 @@ const LibraryUploadModal = ({
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Nhập tiêu đề tài liệu"
               required
-              className="border-border bg-background focus:ring-2 focus:ring-primary/20"
+              className="border-border bg-background focus:border-primary focus:ring-2 focus:ring-primary/30 focus-visible:ring-primary/30"
             />
           </div>
 
@@ -273,7 +273,7 @@ const LibraryUploadModal = ({
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Mô tả ngắn về tài liệu (không bắt buộc)"
               rows={3}
-              className="border-border bg-background focus:ring-2 focus:ring-primary/20 resize-none"
+              className="border-border bg-background focus:border-primary focus:ring-2 focus:ring-primary/30 focus-visible:ring-primary/30 resize-none"
             />
           </div>
 
@@ -281,7 +281,7 @@ const LibraryUploadModal = ({
           <div className="space-y-2">
             <Label className="text-sm font-medium">Lớp học *</Label>
             <Select value={grade} onValueChange={setGrade} required>
-              <SelectTrigger className="border-border bg-background focus:ring-2 focus:ring-primary/20">
+              <SelectTrigger className="border-border bg-background focus:border-primary focus:ring-2 focus:ring-primary/30">
                 <SelectValue placeholder="Chọn lớp học" />
               </SelectTrigger>
               <SelectContent className="bg-popover border-border">
