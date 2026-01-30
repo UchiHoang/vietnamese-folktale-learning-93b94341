@@ -204,12 +204,14 @@ const LibraryUploadModal = ({
             onDrop={handleDrop}
           >
             {file ? (
-              <div className="flex items-center gap-3">
-                <div className="p-3 rounded-xl bg-primary/10">
+              <div className="flex items-center gap-3 w-full overflow-hidden">
+                <div className="p-3 rounded-xl bg-primary/10 flex-shrink-0">
                   <FileText className="h-6 w-6 text-primary" />
                 </div>
-                <div className="flex-1 text-left min-w-0">
-                  <p className="font-medium text-sm truncate text-foreground">{file.name}</p>
+                <div className="flex-1 min-w-0 overflow-hidden text-left">
+                  <p className="font-medium text-sm text-foreground truncate max-w-full" title={file.name}>
+                    {file.name}
+                  </p>
                   <p className="text-xs text-muted-foreground">
                     {(file.size / 1024 / 1024).toFixed(2)} MB
                   </p>
@@ -218,7 +220,7 @@ const LibraryUploadModal = ({
                   type="button"
                   variant="ghost"
                   size="icon"
-                  className="h-8 w-8 hover:bg-destructive/10 hover:text-destructive"
+                  className="h-8 w-8 flex-shrink-0 hover:bg-destructive/10 hover:text-destructive"
                   onClick={() => setFile(null)}
                 >
                   <X className="h-4 w-4" />
