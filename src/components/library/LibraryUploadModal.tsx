@@ -188,7 +188,7 @@ const LibraryUploadModal = ({
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-5">
+        <form onSubmit={handleSubmit} className="space-y-5 overflow-hidden">
           {/* File Drop Zone */}
           <div
             className={`relative border-2 border-dashed rounded-xl p-4 text-center transition-all ${
