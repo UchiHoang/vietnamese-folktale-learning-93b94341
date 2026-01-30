@@ -180,7 +180,7 @@ const LibraryUploadModal = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md bg-card overflow-hidden">
+      <DialogContent className="sm:max-w-md bg-card overflow-hidden px-4">
         <DialogHeader>
           <DialogTitle className="text-xl font-semibold">Tải lên tài liệu</DialogTitle>
           <DialogDescription>
