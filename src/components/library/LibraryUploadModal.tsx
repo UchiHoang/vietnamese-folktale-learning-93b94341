@@ -329,7 +329,7 @@ const LibraryUploadModal = ({
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Nhập tiêu đề tài liệu"
               required
-              className="border-border bg-background focus:border-primary focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:ring-offset-0"
+              className="border-border bg-background focus:border-primary focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-0"
             />
           </div>
 
@@ -342,7 +342,7 @@ const LibraryUploadModal = ({
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Mô tả ngắn về tài liệu (không bắt buộc)"
               rows={3}
-              className="border-border bg-background focus:border-primary focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:ring-offset-0 resize-none"
+              className="border-border bg-background focus:border-primary focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-0 resize-none"
             />
           </div>
 
