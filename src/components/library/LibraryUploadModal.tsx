@@ -195,7 +195,7 @@ const LibraryUploadModal = ({
       }
       onOpenChange(isOpen);
     }}>
-      <DialogContent className="sm:max-w-md bg-card">
+      <DialogContent className="sm:max-w-md bg-card overflow-hidden">
         {/* Confetti Effect */}
         <AnimatePresence>
           {showSuccess && (
@@ -273,15 +273,14 @@ const LibraryUploadModal = ({
             onDrop={handleDrop}
           >
             {file ? (
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3 w-full">
                 <div className="p-3 rounded-xl bg-primary/10 flex-shrink-0">
                   <FileText className="h-6 w-6 text-primary" />
                 </div>
-                <div className="flex-1 min-w-0 text-left">
+                <div className="flex-1 text-left overflow-hidden">
                   <p 
-                    className="font-medium text-sm text-foreground overflow-hidden text-ellipsis whitespace-nowrap" 
+                    className="font-medium text-sm text-foreground truncate" 
                     title={file.name}
-                    style={{ maxWidth: 'calc(100%)' }}
                   >
                     {file.name}
                   </p>
