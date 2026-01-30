@@ -18,10 +18,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Upload, FileText, X, Loader2, CheckCircle, Sparkles } from "lucide-react";
+import { Upload, FileText, X, Loader2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
-import { motion, AnimatePresence } from "framer-motion";
-import Confetti from "react-confetti";
 
 interface Grade {
   id: string;
@@ -64,14 +62,12 @@ const LibraryUploadModal = ({
   const [file, setFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [dragActive, setDragActive] = useState(false);
-  const [showSuccess, setShowSuccess] = useState(false);
 
   const resetForm = () => {
     setTitle("");
     setDescription("");
     setGrade("");
     setFile(null);
-    setShowSuccess(false);
   };
 
   const handleFileChange = (selectedFile: File | null) => {
@@ -163,19 +159,13 @@ const LibraryUploadModal = ({
 
       if (dbError) throw dbError;
 
-      // Show success animation
-      setShowSuccess(true);
-      
       toast({
         title: "Tải lên thành công",
         description: `"${title}" đã được thêm vào thư viện.`,
       });
 
-      // Delay closing to show animation
-      setTimeout(() => {
-        resetForm();
-        onSuccess();
-      }, 2000);
+      resetForm();
+      onSuccess();
     } catch (error) {
       console.error("Upload error:", error);
       toast({
@@ -189,67 +179,8 @@ const LibraryUploadModal = ({
   };
 
   return (
-    <Dialog open={open} onOpenChange={(isOpen) => {
-      if (!isOpen) {
-        setShowSuccess(false);
-      }
-      onOpenChange(isOpen);
-    }}>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md bg-card overflow-hidden">
-        {/* Confetti Effect */}
-        <AnimatePresence>
-          {showSuccess && (
-            <div className="fixed inset-0 pointer-events-none z-[100]">
-              <Confetti
-                width={window.innerWidth}
-                height={window.innerHeight}
-                recycle={false}
-                numberOfPieces={200}
-                gravity={0.3}
-                colors={['#22c55e', '#16a34a', '#4ade80', '#86efac', '#fbbf24', '#f59e0b']}
-              />
-            </div>
-          )}
-        </AnimatePresence>
-
-        {/* Success Overlay */}
-        <AnimatePresence>
-          {showSuccess && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.8 }}
-              className="absolute inset-0 bg-card/95 backdrop-blur-sm z-50 flex flex-col items-center justify-center rounded-lg"
-            >
-              <motion.div
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ type: "spring", stiffness: 300, damping: 20, delay: 0.1 }}
-                className="w-20 h-20 rounded-full bg-primary/20 flex items-center justify-center mb-4"
-              >
-                <CheckCircle className="w-12 h-12 text-primary" />
-              </motion.div>
-              <motion.h3
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 }}
-                className="text-xl font-bold text-foreground mb-2"
-              >
-                Tải lên thành công!
-              </motion.h3>
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 }}
-                className="flex items-center gap-2 text-muted-foreground"
-              >
-                <Sparkles className="w-4 h-4 text-primary" />
-                <span>Tài liệu đã được thêm vào thư viện</span>
-              </motion.div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
         <DialogHeader>
           <DialogTitle className="text-xl font-semibold">Tải lên tài liệu</DialogTitle>
           <DialogDescription>
@@ -257,10 +188,10 @@ const LibraryUploadModal = ({
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-5">
+        <form onSubmit={handleSubmit} className="space-y-5 overflow-hidden">
           {/* File Drop Zone */}
           <div
-            className={`relative border-2 border-dashed rounded-xl p-4 text-center transition-all overflow-hidden ${
+            className={`relative border-2 border-dashed rounded-xl p-4 text-center transition-all ${
               dragActive
                 ? "border-primary bg-primary/10"
                 : file 
@@ -273,14 +204,15 @@ const LibraryUploadModal = ({
             onDrop={handleDrop}
           >
             {file ? (
-              <div className="flex items-center gap-3 w-full min-w-0">
+              <div className="flex items-center gap-3">
                 <div className="p-3 rounded-xl bg-primary/10 flex-shrink-0">
                   <FileText className="h-6 w-6 text-primary" />
                 </div>
-                <div className="min-w-0 flex-1 text-left">
+                <div className="flex-1 min-w-0 text-left">
                   <p 
-                    className="font-medium text-sm text-foreground truncate block w-full" 
+                    className="font-medium text-sm text-foreground overflow-hidden text-ellipsis whitespace-nowrap" 
                     title={file.name}
+                    style={{ maxWidth: 'calc(100%)' }}
                   >
                     {file.name}
                   </p>
@@ -328,7 +260,7 @@ const LibraryUploadModal = ({
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Nhập tiêu đề tài liệu"
               required
-              className="border-border bg-background focus:border-primary focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-0"
+              className="border-border bg-background focus:ring-2 focus:ring-primary/20"
             />
           </div>
 
@@ -341,7 +273,7 @@ const LibraryUploadModal = ({
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Mô tả ngắn về tài liệu (không bắt buộc)"
               rows={3}
-              className="border-border bg-background focus:border-primary focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-0 resize-none"
+              className="border-border bg-background focus:ring-2 focus:ring-primary/20 resize-none"
             />
           </div>
 
@@ -349,7 +281,7 @@ const LibraryUploadModal = ({
           <div className="space-y-2">
             <Label className="text-sm font-medium">Lớp học *</Label>
             <Select value={grade} onValueChange={setGrade} required>
-              <SelectTrigger className="border-border bg-background focus:border-primary focus:ring-2 focus:ring-primary/20 focus:ring-offset-0">
+              <SelectTrigger className="border-border bg-background focus:ring-2 focus:ring-primary/20">
                 <SelectValue placeholder="Chọn lớp học" />
               </SelectTrigger>
               <SelectContent className="bg-popover border-border">
