@@ -191,7 +191,7 @@ const LibraryUploadModal = ({
         <form onSubmit={handleSubmit} className="space-y-5">
           {/* File Drop Zone */}
           <div
-            className={`relative border-2 border-dashed rounded-xl p-6 text-center transition-all ${
+            className={`relative border-2 border-dashed rounded-xl p-4 text-center transition-all overflow-hidden ${
               dragActive
                 ? "border-primary bg-primary/10"
                 : file 
