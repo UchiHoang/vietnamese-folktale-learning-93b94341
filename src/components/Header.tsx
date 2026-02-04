@@ -135,14 +135,6 @@ const Header = ({ onRoleChange, currentRole = "student" }: HeaderProps) => {
             <Home className="h-4 w-4" />
             Trang chủ
           </Link>
-          <Link to="/lessons" className="text-foreground hover:text-primary font-medium transition-colors flex items-center gap-1.5">
-            <BookOpen className="h-4 w-4" />
-            Bài giảng
-          </Link>
-          <Link to="/library" className="text-foreground hover:text-primary font-medium transition-colors flex items-center gap-1.5">
-            <Library className="h-4 w-4" />
-            Thư viện
-          </Link>
           <button 
             onClick={() => scrollToSection("about")} 
             className="text-foreground hover:text-primary font-medium transition-colors flex items-center gap-1.5 cursor-pointer"
@@ -150,6 +142,10 @@ const Header = ({ onRoleChange, currentRole = "student" }: HeaderProps) => {
             <Info className="h-4 w-4" />
             Giới thiệu
           </button>
+          <Link to="/lessons" className="text-foreground hover:text-primary font-medium transition-colors flex items-center gap-1.5">
+            <BookOpen className="h-4 w-4" />
+            Bài giảng
+          </Link>
           <button 
             onClick={() => scrollToSection("classes")} 
             className="text-foreground hover:text-primary font-medium transition-colors flex items-center gap-1.5 cursor-pointer"
@@ -157,6 +153,10 @@ const Header = ({ onRoleChange, currentRole = "student" }: HeaderProps) => {
             <Users className="h-4 w-4" />
             Lớp học
           </button>
+          <Link to="/library" className="text-foreground hover:text-primary font-medium transition-colors flex items-center gap-1.5">
+            <Library className="h-4 w-4" />
+            Thư viện
+          </Link>
           <button 
             onClick={() => scrollToSection("leaderboard")} 
             className="text-foreground hover:text-primary font-medium transition-colors flex items-center gap-1.5 cursor-pointer"
@@ -243,14 +243,6 @@ const Header = ({ onRoleChange, currentRole = "student" }: HeaderProps) => {
             <Home className="h-4 w-4" />
             Trang chủ
           </Link>
-          <Link to="/lessons" className="flex items-center gap-2 py-2 text-foreground hover:text-primary">
-            <BookOpen className="h-4 w-4" />
-            Bài giảng
-          </Link>
-          <Link to="/library" className="flex items-center gap-2 py-2 text-foreground hover:text-primary">
-            <Library className="h-4 w-4" />
-            Thư viện
-          </Link>
           <button 
             onClick={() => scrollToSection("about")} 
             className="flex items-center gap-2 py-2 text-foreground hover:text-primary w-full text-left"
@@ -258,6 +250,10 @@ const Header = ({ onRoleChange, currentRole = "student" }: HeaderProps) => {
             <Info className="h-4 w-4" />
             Giới thiệu
           </button>
+          <Link to="/lessons" className="flex items-center gap-2 py-2 text-foreground hover:text-primary">
+            <BookOpen className="h-4 w-4" />
+            Bài giảng
+          </Link>
           <button 
             onClick={() => scrollToSection("classes")} 
             className="flex items-center gap-2 py-2 text-foreground hover:text-primary w-full text-left"
@@ -265,6 +261,10 @@ const Header = ({ onRoleChange, currentRole = "student" }: HeaderProps) => {
             <Users className="h-4 w-4" />
             Lớp học
           </button>
+          <Link to="/library" className="flex items-center gap-2 py-2 text-foreground hover:text-primary">
+            <Library className="h-4 w-4" />
+            Thư viện
+          </Link>
           <button 
             onClick={() => scrollToSection("leaderboard")} 
             className="flex items-center gap-2 py-2 text-foreground hover:text-primary w-full text-left"
