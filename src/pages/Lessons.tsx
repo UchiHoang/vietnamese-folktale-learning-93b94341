@@ -13,6 +13,7 @@ import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/s
 import { Button } from "@/components/ui/button";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import PageTransition from "@/components/PageTransition";
 import { useLessonProgress } from "@/hooks/useLessonProgress";
 import { VideoPlayer } from "@/components/lesson/VideoPlayer";
 import { LessonProgressBadge } from "@/components/lesson/LessonProgressBadge";
@@ -2016,8 +2017,8 @@ const Lessons = () => {
   );
 
   return (
-    <div className="flex-1 flex flex-col bg-background">
-
+    <PageTransition className="flex-1 flex flex-col bg-background">
+      <Header />
       {/* KHU VỰC NỘI DUNG */}
       <div className="flex flex-1 min-h-0 relative">
         
@@ -2210,7 +2211,7 @@ const Lessons = () => {
         </div>
       </div>
       <Footer />
-    </div>
+    </PageTransition>
   );
 };
 

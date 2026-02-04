@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import Header from "@/components/Header";
+import PageTransition from "@/components/PageTransition";
 import Footer from "@/components/Footer";
 import LibraryGrid from "@/components/library/LibraryGrid";
 import LibraryUploadModal from "@/components/library/LibraryUploadModal";
@@ -110,7 +111,7 @@ const Library = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-secondary/5 transition-colors duration-300">
+    <PageTransition className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-secondary/5 transition-colors duration-300">
       <Header />
       <main className="container mx-auto px-4 py-8">
         {/* Hero Section */}
@@ -236,7 +237,7 @@ const Library = () => {
         onSuccess={handleUploadSuccess}
         grades={GRADES.filter(g => g.id !== "all")}
       />
-    </div>
+    </PageTransition>
   );
 };
 
