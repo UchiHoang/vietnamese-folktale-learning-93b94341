@@ -197,7 +197,7 @@ const Leaderboard = () => {
           </div>
 
           {/* Top label */}
-          <div className="text-center mb-12">
+          <div className="text-center mb-20">
             <div className="inline-block bg-lime-300 px-8 py-3 rounded-full shadow-lg">
               <span className="font-heading font-bold text-lg text-gray-800">
                 {isLoading ? 'Đang tải...' : `Top ${leaderboardData.length} - ${
