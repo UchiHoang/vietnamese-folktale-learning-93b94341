@@ -85,8 +85,9 @@ const Leaderboard = () => {
     fetchLeaderboardData();
   }, [selectedGrade, selectedPeriod]);
 
-  const topThree = leaderboardData.slice(0, 3);
-  const remaining = leaderboardData.slice(3, 10);
+  const hasEnoughForPodium = leaderboardData.length >= 3;
+  const topThree = hasEnoughForPodium ? leaderboardData.slice(0, 3) : [];
+  const remaining = hasEnoughForPodium ? leaderboardData.slice(3, 10) : leaderboardData;
 
   const getRankStyle = (rank: number) => {
     // Provide explicit vertical offsets and slight scale differences so
@@ -227,7 +228,7 @@ const Leaderboard = () => {
           ) : (
             <>
               {/* Top 3 Podium - Only show if we have at least 3 entries */}
-              {topThree.length >= 3 && (
+              {hasEnoughForPodium && topThree.length >= 3 && (
                 <div className="relative mb-16 min-h-[400px] flex items-end justify-center gap-8 px-4">
                   {[topThree[1], topThree[0], topThree[2]].map((student, idx) => {
                     if (!student) return null;
