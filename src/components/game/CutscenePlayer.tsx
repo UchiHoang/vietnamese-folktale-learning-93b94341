@@ -1,7 +1,6 @@
-import { useState, memo } from "react";
+import { useState, memo, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { ChevronRight, SkipForward } from "lucide-react";
-import { resolveLegacyAssetPath } from "@/utils/assetPaths";
 
 interface CutsceneFrame {
   id: string;
@@ -77,7 +76,7 @@ const CutscenePlayerComponent = ({ frames, onComplete, onSkip }: CutscenePlayerP
         <div className="bg-primary/10 p-8 flex flex-col items-center justify-center gap-4 min-h-[500px] md:min-h-[600px]">
           {currentFrame.sprite ? (
             <img 
-              src={resolveLegacyAssetPath(currentFrame.sprite)}
+              src={currentFrame.sprite}
               alt={currentFrame.speaker}
               className="w-full max-w-[300px] h-auto object-contain animate-fade-in"
             />

@@ -54,13 +54,19 @@ export const NotesTab = ({ topicId, topicTitle }: NotesTabProps) => {
         </div>
       </div>
 
-      {/* Textarea - Larger and more prominent */}
-      <Textarea
-        placeholder="Viết ghi chú của bạn tại đây... &#10;&#10;Ví dụ:&#10;• Công thức quan trọng&#10;• Các bước giải bài&#10;• Những điểm cần nhớ"
-        value={content}
-        onChange={(e) => handleContentChange(e.target.value)}
-        className="min-h-[350px] resize-none text-base leading-relaxed bg-card border-2 focus:border-primary/50 p-4 rounded-xl"
-      />
+     {/* Textarea - Larger and more prominent */}
+     <Textarea
+  placeholder={`Viết ghi chú của bạn tại đây...
+
+Ví dụ:
+• Công thức quan trọng
+• Các bước giải bài
+• Những điểm cần nhớ`}
+  value={content}
+  onChange={(e) => handleContentChange(e.target.value)}
+  className="min-h-[350px] resize-none text-base leading-relaxed bg-card border-2 focus:border-primary/50 p-4 rounded-xl"
+/>
+
 
       {/* Hint */}
       <div className="flex items-center justify-between text-sm text-muted-foreground bg-muted rounded-lg p-3">

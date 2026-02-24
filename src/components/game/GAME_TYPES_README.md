@@ -180,7 +180,7 @@ Hệ thống game cho lớp 2 bao gồm 5 loại trò chơi đa dạng, được
   "question": "Đếm xem có bao nhiêu quả táo?",
   "countingItems": [
     {
-      "image": "/assets/grades/preschool/counting-animals/questions/counting-apple.png",
+      "image": "/src/assets/game/counting-apple.png",
       "count": 7
     }
   ],
@@ -194,11 +194,11 @@ Hệ thống game cho lớp 2 bao gồm 5 loại trò chơi đa dạng, được
 {
   "countingItems": [
     {
-      "image": "/assets/grades/preschool/counting-animals/questions/counting-apple.png",
+      "image": "/src/assets/game/counting-apple.png",
       "count": 5
     },
     {
-      "image": "/assets/grades/preschool/counting-animals/questions/counting-banana.png",
+      "image": "/src/assets/game/counting-banana.png",
       "count": 4
     }
   ],
@@ -208,37 +208,18 @@ Hệ thống game cho lớp 2 bao gồm 5 loại trò chơi đa dạng, được
 
 ---
 
-## Hình ảnh câu hỏi có sẵn
+## Hình ảnh AI có sẵn
 
-### Hình đếm số (Mầm non)
-Thư mục: `public/assets/grades/preschool/counting-animals/questions/`
+Hệ thống đã tạo sẵn các hình ảnh AI trong thư mục `src/assets/game/`:
 
 - `counting-apple.png` - Quả táo dễ thương
 - `counting-banana.png` - Quả chuối đáng yêu
 - `counting-star.png` - Ngôi sao lấp lánh
 - `counting-flower.png` - Bông hoa màu sắc
 - `counting-dots.png` - Các chấm tròn đa màu
-
-### Hình dùng chung
-Thư mục: `public/assets/common/questions/`
-
 - `shapes-basic.png` - Các hình học cơ bản
 - `number-cards.png` - Thẻ số 0-9
 - `measurement-tools.png` - Các dụng cụ đo
-
-### Sử dụng trong code
-```typescript
-import { preschoolGames, commonAssets, getQuestionImage } from '@/utils/assetPaths';
-
-// Lấy hình câu hỏi theo game
-const appleImg = preschoolGames.countingAnimals.question('counting-apple');
-
-// Lấy hình dùng chung
-const shapesImg = commonAssets.question('shapes-basic');
-
-// Hoặc dùng helper (hỗ trợ legacy paths)
-const img = getQuestionImage('/src/assets/game/counting-apple.png');
-```
 
 ## Logic độ khó
 

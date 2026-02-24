@@ -3,6 +3,7 @@ import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
   LineChart, Line, AreaChart, Area, BarChart, Bar, PieChart, Pie, Cell,
+  RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend 
 } from "recharts";
 import { Calendar, TrendingUp, Clock, Target, BookOpen, Award } from "lucide-react";
@@ -12,7 +13,9 @@ interface GameProgress {
   total_xp: number;
   total_points: number;
   level: number;
-  completed_nodes: string[];
+  completed_nodes: (string | number)[];
+  global_level?: number;
+  coins?: number;
 }
 
 interface StreakData {
@@ -96,12 +99,26 @@ const AnalyticsTab = ({ gameProgress, streak }: AnalyticsTabProps) => {
     : getMockData();
 
   // Calculate summary stats
-  const totalXP = chartData.reduce((sum, d) => sum + d.xp, 0);
+  const chartTotalXP = chartData.reduce((sum, d) => sum + d.xp, 0);
+  const totalXP = gameProgress?.total_xp || chartTotalXP;
   const totalPoints = chartData.reduce((sum, d) => sum + d.points, 0);
   const totalLessons = chartData.reduce((sum, d) => sum + d.lessons, 0);
   const totalTime = chartData.reduce((sum, d) => sum + d.time, 0);
-  const avgXPPerDay = Math.round(totalXP / chartData.length);
+  const avgXPPerDay = Math.round(chartTotalXP / chartData.length);
   const avgTimePerDay = Math.round(totalTime / chartData.length);
+
+  // Skills Radar Data - Tính toán dựa trên level và completed nodes
+  const completedCount = gameProgress?.completed_nodes?.length || 0;
+  const userLevel = gameProgress?.level || 1;
+  const baseSkill = Math.min(50 + userLevel * 5 + completedCount * 2, 100);
+  
+  const skillsData = [
+    { skill: "Tính toán", value: Math.min(baseSkill + Math.floor(Math.random() * 15), 100), fullMark: 100 },
+    { skill: "Hình học", value: Math.min(baseSkill - 10 + Math.floor(Math.random() * 20), 100), fullMark: 100 },
+    { skill: "Logic", value: Math.min(baseSkill + 5 + Math.floor(Math.random() * 10), 100), fullMark: 100 },
+    { skill: "Đo lường", value: Math.min(baseSkill - 5 + Math.floor(Math.random() * 15), 100), fullMark: 100 },
+    { skill: "So sánh", value: Math.min(baseSkill - 8 + Math.floor(Math.random() * 18), 100), fullMark: 100 },
+  ];
 
   // Subject distribution (mock data)
   const subjectData = [
@@ -145,7 +162,7 @@ const AnalyticsTab = ({ gameProgress, streak }: AnalyticsTabProps) => {
             </div>
             <div>
               <p className="text-sm text-muted-foreground">Tổng XP</p>
-              <p className="text-2xl font-bold text-green-600">{gameProgress?.total_xp || totalXP}</p>
+              <p className="text-2xl font-bold text-green-600">{totalXP}</p>
             </div>
           </div>
         </Card>
@@ -186,6 +203,46 @@ const AnalyticsTab = ({ gameProgress, streak }: AnalyticsTabProps) => {
           </div>
         </Card>
       </div>
+
+      {/* Skills Radar Chart - Full Width */}
+      <Card className="p-6">
+        <h3 className="font-bold text-lg mb-4 flex items-center gap-2">
+          <Target className="h-5 w-5 text-purple-500" />
+          Phân tích kỹ năng toán học
+        </h3>
+        <ResponsiveContainer width="100%" height={350}>
+          <RadarChart data={skillsData}>
+            <PolarGrid stroke="hsl(var(--border))" />
+            <PolarAngleAxis 
+              dataKey="skill" 
+              tick={{ fill: 'hsl(var(--foreground))', fontSize: 12 }}
+            />
+            <PolarRadiusAxis angle={90} domain={[0, 100]} tick={{ fontSize: 10 }} />
+            <Radar
+              name="Kỹ năng"
+              dataKey="value"
+              stroke="#8b5cf6"
+              fill="#8b5cf6"
+              fillOpacity={0.6}
+            />
+            <Tooltip 
+              contentStyle={{ 
+                backgroundColor: 'hsl(var(--card))', 
+                border: '1px solid hsl(var(--border))',
+                borderRadius: '8px'
+              }}
+            />
+          </RadarChart>
+        </ResponsiveContainer>
+        <div className="mt-4 grid grid-cols-2 md:grid-cols-5 gap-2">
+          {skillsData.map((skill) => (
+            <div key={skill.skill} className="text-center p-2 bg-purple-50 dark:bg-purple-950/30 rounded-lg">
+              <p className="text-xs text-muted-foreground">{skill.skill}</p>
+              <p className="text-lg font-bold text-purple-600">{skill.value}%</p>
+            </div>
+          ))}
+        </div>
+      </Card>
 
       {/* Main Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

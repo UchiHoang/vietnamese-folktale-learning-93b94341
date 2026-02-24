@@ -14,166 +14,33 @@ export type Database = {
   }
   public: {
     Tables: {
-      classes: {
+      curriculumGrade0: {
         Row: {
-          created_at: string | null
-          description: string | null
-          grade: string
-          id: string
-          name: string
-          teacher_id: string | null
-          updated_at: string | null
+          id: number
+          metadata: Json
         }
         Insert: {
-          created_at?: string | null
-          description?: string | null
-          grade: string
-          id?: string
-          name: string
-          teacher_id?: string | null
-          updated_at?: string | null
+          id?: number
+          metadata: Json
         }
         Update: {
-          created_at?: string | null
-          description?: string | null
-          grade?: string
-          id?: string
-          name?: string
-          teacher_id?: string | null
-          updated_at?: string | null
+          id?: number
+          metadata?: Json
         }
         Relationships: []
       }
-      comment_likes: {
+      curriculumGrade1: {
         Row: {
-          comment_id: string
-          created_at: string
-          id: string
-          user_id: string
+          id: number
+          metadata: Json
         }
         Insert: {
-          comment_id: string
-          created_at?: string
-          id?: string
-          user_id: string
+          id?: number
+          metadata: Json
         }
         Update: {
-          comment_id?: string
-          created_at?: string
-          id?: string
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "comment_likes_comment_id_fkey"
-            columns: ["comment_id"]
-            isOneToOne: false
-            referencedRelation: "comments"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      comments: {
-        Row: {
-          content: string
-          created_at: string
-          id: string
-          is_admin_reply: boolean
-          parent_id: string | null
-          topic_id: string
-          user_id: string
-        }
-        Insert: {
-          content: string
-          created_at?: string
-          id?: string
-          is_admin_reply?: boolean
-          parent_id?: string | null
-          topic_id: string
-          user_id: string
-        }
-        Update: {
-          content?: string
-          created_at?: string
-          id?: string
-          is_admin_reply?: boolean
-          parent_id?: string | null
-          topic_id?: string
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "comments_parent_id_fkey"
-            columns: ["parent_id"]
-            isOneToOne: false
-            referencedRelation: "comments"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      contacts: {
-        Row: {
-          created_at: string | null
-          email: string
-          id: string
-          message: string
-          name: string
-          subject: string
-        }
-        Insert: {
-          created_at?: string | null
-          email: string
-          id?: string
-          message: string
-          name: string
-          subject: string
-        }
-        Update: {
-          created_at?: string | null
-          email?: string
-          id?: string
-          message?: string
-          name?: string
-          subject?: string
-        }
-        Relationships: []
-      }
-      course_progress: {
-        Row: {
-          completed_nodes: Json
-          course_id: string
-          created_at: string
-          current_node: number
-          extra_data: Json
-          id: string
-          total_stars: number
-          total_xp: number
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          completed_nodes?: Json
-          course_id: string
-          created_at?: string
-          current_node?: number
-          extra_data?: Json
-          id?: string
-          total_stars?: number
-          total_xp?: number
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          completed_nodes?: Json
-          course_id?: string
-          created_at?: string
-          current_node?: number
-          extra_data?: Json
-          id?: string
-          total_stars?: number
-          total_xp?: number
-          updated_at?: string
-          user_id?: string
+          id?: number
+          metadata?: Json
         }
         Relationships: []
       }
@@ -210,51 +77,14 @@ export type Database = {
         }
         Relationships: []
       }
-      game_globals: {
-        Row: {
-          avatar_config: Json
-          coins: number
-          created_at: string
-          global_level: number
-          total_xp: number
-          unlocked_badges: Json
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          avatar_config?: Json
-          coins?: number
-          created_at?: string
-          global_level?: number
-          total_xp?: number
-          unlocked_badges?: Json
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          avatar_config?: Json
-          coins?: number
-          created_at?: string
-          global_level?: number
-          total_xp?: number
-          unlocked_badges?: Json
-          updated_at?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
       game_progress: {
         Row: {
           completed_nodes: Json
           created_at: string
           current_node: number
           earned_badges: Json
-          grade: string | null
           id: string
-          last_played_at: string | null
           level: number
-          points: number | null
-          streak: Json | null
           total_points: number
           total_xp: number
           updated_at: string
@@ -265,12 +95,8 @@ export type Database = {
           created_at?: string
           current_node?: number
           earned_badges?: Json
-          grade?: string | null
           id?: string
-          last_played_at?: string | null
           level?: number
-          points?: number | null
-          streak?: Json | null
           total_points?: number
           total_xp?: number
           updated_at?: string
@@ -281,12 +107,8 @@ export type Database = {
           created_at?: string
           current_node?: number
           earned_badges?: Json
-          grade?: string | null
           id?: string
-          last_played_at?: string | null
           level?: number
-          points?: number | null
-          streak?: Json | null
           total_points?: number
           total_xp?: number
           updated_at?: string
@@ -296,176 +118,26 @@ export type Database = {
       }
       leaderboard: {
         Row: {
-          avatar: string | null
           created_at: string
-          display_name: string
-          grade: string | null
           id: string
-          normalized_grade: string | null
           points: number
           rank: number | null
-          school: string | null
           updated_at: string
           user_id: string
         }
         Insert: {
-          avatar?: string | null
           created_at?: string
-          display_name?: string
-          grade?: string | null
           id?: string
-          normalized_grade?: string | null
           points?: number
           rank?: number | null
-          school?: string | null
           updated_at?: string
           user_id: string
         }
         Update: {
-          avatar?: string | null
           created_at?: string
-          display_name?: string
-          grade?: string | null
           id?: string
-          normalized_grade?: string | null
           points?: number
           rank?: number | null
-          school?: string | null
-          updated_at?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
-      lessons: {
-        Row: {
-          created_at: string
-          description: string | null
-          id: string
-          title: string
-          updated_at: string
-        }
-        Insert: {
-          created_at?: string
-          description?: string | null
-          id: string
-          title: string
-          updated_at?: string
-        }
-        Update: {
-          created_at?: string
-          description?: string | null
-          id?: string
-          title?: string
-          updated_at?: string
-        }
-        Relationships: []
-      }
-      level_history: {
-        Row: {
-          course_id: string
-          created_at: string
-          duration_seconds: number
-          id: string
-          meta: Json
-          node_index: number
-          passed: boolean
-          score: number
-          stars: number
-          user_id: string
-        }
-        Insert: {
-          course_id: string
-          created_at?: string
-          duration_seconds?: number
-          id?: string
-          meta?: Json
-          node_index: number
-          passed?: boolean
-          score?: number
-          stars?: number
-          user_id: string
-        }
-        Update: {
-          course_id?: string
-          created_at?: string
-          duration_seconds?: number
-          id?: string
-          meta?: Json
-          node_index?: number
-          passed?: boolean
-          score?: number
-          stars?: number
-          user_id?: string
-        }
-        Relationships: []
-      }
-      library_documents: {
-        Row: {
-          created_at: string
-          description: string | null
-          download_count: number
-          file_name: string
-          file_path: string
-          file_size: number
-          file_type: string
-          grade: string
-          id: string
-          title: string
-          updated_at: string
-          uploaded_by: string
-        }
-        Insert: {
-          created_at?: string
-          description?: string | null
-          download_count?: number
-          file_name: string
-          file_path: string
-          file_size?: number
-          file_type: string
-          grade: string
-          id?: string
-          title: string
-          updated_at?: string
-          uploaded_by: string
-        }
-        Update: {
-          created_at?: string
-          description?: string | null
-          download_count?: number
-          file_name?: string
-          file_path?: string
-          file_size?: number
-          file_type?: string
-          grade?: string
-          id?: string
-          title?: string
-          updated_at?: string
-          uploaded_by?: string
-        }
-        Relationships: []
-      }
-      notes: {
-        Row: {
-          content: string
-          created_at: string
-          id: string
-          topic_id: string
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          content?: string
-          created_at?: string
-          id?: string
-          topic_id: string
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          content?: string
-          created_at?: string
-          id?: string
-          topic_id?: string
           updated_at?: string
           user_id?: string
         }
@@ -476,7 +148,6 @@ export type Database = {
           address: string | null
           avatar: string | null
           birth_date: string | null
-          class_id: string | null
           class_name: string | null
           created_at: string
           display_name: string
@@ -494,7 +165,6 @@ export type Database = {
           address?: string | null
           avatar?: string | null
           birth_date?: string | null
-          class_id?: string | null
           class_name?: string | null
           created_at?: string
           display_name: string
@@ -512,7 +182,6 @@ export type Database = {
           address?: string | null
           avatar?: string | null
           birth_date?: string | null
-          class_id?: string | null
           class_name?: string | null
           created_at?: string
           display_name?: string
@@ -526,19 +195,76 @@ export type Database = {
           updated_at?: string
           ward?: string | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "profiles_class_id_fkey"
-            columns: ["class_id"]
-            isOneToOne: false
-            referencedRelation: "classes"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
+      }
+      progressGrade0: {
+        Row: {
+          completedNodes: Json | null
+          correctAnswers: number | null
+          currentNodeIndex: number | null
+          currentQuestionIndex: number | null
+          earnedBadges: Json | null
+          id: number
+          incorrectAnswers: number | null
+          totalXp: number | null
+        }
+        Insert: {
+          completedNodes?: Json | null
+          correctAnswers?: number | null
+          currentNodeIndex?: number | null
+          currentQuestionIndex?: number | null
+          earnedBadges?: Json | null
+          id?: number
+          incorrectAnswers?: number | null
+          totalXp?: number | null
+        }
+        Update: {
+          completedNodes?: Json | null
+          correctAnswers?: number | null
+          currentNodeIndex?: number | null
+          currentQuestionIndex?: number | null
+          earnedBadges?: Json | null
+          id?: number
+          incorrectAnswers?: number | null
+          totalXp?: number | null
+        }
+        Relationships: []
+      }
+      progressGrade1: {
+        Row: {
+          completedNodes: Json | null
+          correctAnswers: number | null
+          currentNodeIndex: number | null
+          currentQuestionIndex: number | null
+          earnedBadges: Json | null
+          id: number
+          incorrectAnswers: number | null
+          totalXp: number | null
+        }
+        Insert: {
+          completedNodes?: Json | null
+          correctAnswers?: number | null
+          currentNodeIndex?: number | null
+          currentQuestionIndex?: number | null
+          earnedBadges?: Json | null
+          id?: number
+          incorrectAnswers?: number | null
+          totalXp?: number | null
+        }
+        Update: {
+          completedNodes?: Json | null
+          correctAnswers?: number | null
+          currentNodeIndex?: number | null
+          currentQuestionIndex?: number | null
+          earnedBadges?: Json | null
+          id?: number
+          incorrectAnswers?: number | null
+          totalXp?: number | null
+        }
+        Relationships: []
       }
       stage_history: {
         Row: {
-          accuracy: number | null
           attempt_number: number
           completed: boolean
           correct_answers: number
@@ -554,7 +280,6 @@ export type Database = {
           xp_earned: number
         }
         Insert: {
-          accuracy?: number | null
           attempt_number?: number
           completed?: boolean
           correct_answers?: number
@@ -570,7 +295,6 @@ export type Database = {
           xp_earned?: number
         }
         Update: {
-          accuracy?: number | null
           attempt_number?: number
           completed?: boolean
           correct_answers?: number
@@ -587,52 +311,35 @@ export type Database = {
         }
         Relationships: []
       }
-      topics: {
+      storyGrade0: {
         Row: {
-          created_at: string
-          description: string | null
-          duration_minutes: number | null
-          id: string
-          lesson_id: string
-          order_index: number
-          semester: number
-          title: string
-          updated_at: string
-          video_url: string
+          id: number
+          metadata: Json
         }
         Insert: {
-          created_at?: string
-          description?: string | null
-          duration_minutes?: number | null
-          id: string
-          lesson_id: string
-          order_index?: number
-          semester: number
-          title: string
-          updated_at?: string
-          video_url: string
+          id?: number
+          metadata: Json
         }
         Update: {
-          created_at?: string
-          description?: string | null
-          duration_minutes?: number | null
-          id?: string
-          lesson_id?: string
-          order_index?: number
-          semester?: number
-          title?: string
-          updated_at?: string
-          video_url?: string
+          id?: number
+          metadata?: Json
         }
-        Relationships: [
-          {
-            foreignKeyName: "topics_lesson_id_fkey"
-            columns: ["lesson_id"]
-            isOneToOne: false
-            referencedRelation: "lessons"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
+      }
+      storyGrade1: {
+        Row: {
+          id: number
+          metadata: Json
+        }
+        Insert: {
+          id?: number
+          metadata: Json
+        }
+        Update: {
+          id?: number
+          metadata?: Json
+        }
+        Relationships: []
       }
       user_achievements: {
         Row: {
@@ -666,7 +373,6 @@ export type Database = {
       }
       user_best_scores: {
         Row: {
-          attempts: number | null
           best_accuracy: number
           best_score: number
           course_id: string
@@ -679,7 +385,6 @@ export type Database = {
           user_id: string
         }
         Insert: {
-          attempts?: number | null
           best_accuracy?: number
           best_score?: number
           course_id?: string
@@ -692,7 +397,6 @@ export type Database = {
           user_id: string
         }
         Update: {
-          attempts?: number | null
           best_accuracy?: number
           best_score?: number
           course_id?: string
@@ -705,50 +409,6 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
-      }
-      user_lesson_progress: {
-        Row: {
-          completed_at: string | null
-          created_at: string
-          id: string
-          is_completed: boolean
-          last_position_seconds: number
-          topic_id: string
-          updated_at: string
-          user_id: string
-          watch_time_seconds: number
-        }
-        Insert: {
-          completed_at?: string | null
-          created_at?: string
-          id?: string
-          is_completed?: boolean
-          last_position_seconds?: number
-          topic_id: string
-          updated_at?: string
-          user_id: string
-          watch_time_seconds?: number
-        }
-        Update: {
-          completed_at?: string | null
-          created_at?: string
-          id?: string
-          is_completed?: boolean
-          last_position_seconds?: number
-          topic_id?: string
-          updated_at?: string
-          user_id?: string
-          watch_time_seconds?: number
-        }
-        Relationships: [
-          {
-            foreignKeyName: "user_lesson_progress_topic_id_fkey"
-            columns: ["topic_id"]
-            isOneToOne: false
-            referencedRelation: "topics"
-            referencedColumns: ["id"]
-          },
-        ]
       }
       user_roles: {
         Row: {
@@ -809,17 +469,6 @@ export type Database = {
       calculate_level_from_xp: { Args: { p_xp: number }; Returns: number }
       complete_stage: {
         Args: {
-          p_course_id: string
-          p_game_specific_data?: Json
-          p_node_index: number
-          p_score: number
-          p_stars: number
-          p_xp_reward: number
-        }
-        Returns: Json
-      }
-      complete_stage_grade5: {
-        Args: {
           p_correct_answers: number
           p_course_id: string
           p_max_score: number
@@ -829,29 +478,6 @@ export type Database = {
           p_total_questions: number
         }
         Returns: Json
-      }
-      get_full_game_state: { Args: { p_course_id: string }; Returns: Json }
-      get_leaderboard: {
-        Args: { p_grade?: string; p_limit?: number; p_period?: string }
-        Returns: {
-          avatar: string
-          display_name: string
-          grade: string
-          rank: number
-          school: string
-          total_points: number
-          total_xp: number
-          user_id: string
-        }[]
-      }
-      get_lesson_progress: {
-        Args: { p_lesson_id?: string }
-        Returns: {
-          completed_topics: number
-          completion_percentage: number
-          lesson_id: string
-          total_topics: number
-        }[]
       }
       get_public_profile: {
         Args: { profile_id: string }
@@ -864,7 +490,6 @@ export type Database = {
         }[]
       }
       get_user_progress: { Args: never; Returns: Json }
-      get_user_progress_by_grade: { Args: { p_grade: string }; Returns: Json }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -872,25 +497,14 @@ export type Database = {
         }
         Returns: boolean
       }
-      mark_topic_completed: { Args: { p_topic_id: string }; Returns: Json }
       unlock_badge: {
         Args: {
-          p_badge_description: string
-          p_badge_icon: string
+          p_badge_description?: string
+          p_badge_icon?: string
           p_badge_id: string
           p_badge_name: string
         }
-        Returns: {
-          already_earned: boolean
-          badge_id: string
-          earned_at: string
-          message: string
-          success: boolean
-        }[]
-      }
-      update_current_node: {
-        Args: { p_grade_id: string; p_node_index: number }
-        Returns: undefined
+        Returns: Json
       }
       update_user_streak: { Args: { p_user_id: string }; Returns: undefined }
     }

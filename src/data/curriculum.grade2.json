@@ -85,7 +85,14 @@
                 { "id": "slot2", "label": "Giữa" },
                 { "id": "slot3", "label": "Lớn nhất" }
               ]
-            }
+            },
+            { "id": "n1-q9", "type": "fill-blank", "question": "48 < 4___ ", "blanks": [{ "position": 0, "answer": "9", "placeholder": "?" }], "explanation": " 47 < 48 < 49 " },
+            { "id": "n1-q10", "type": "drag-drop", "question": "Sắp xếp kết quả từ nhỏ đến lớn","dragItems": [{"id": "d1","content": "78 - 19","correctSlot": "small"},{"id": "d2","content": "91 - 33","correctSlot": "medium"},{"id": "d3","content": "32 + 27","correctSlot": "large"}],"dropSlots": [{"id": "small","label": "57"},{"id": "medium","label": "58"},{"id": "large","label": "59"}]},
+            { "id": "n1-q11", "type": "multiple-choice", "prompt": "Phép tính có kết quả lớn nhất là?", "choices": ["98 - 74", "15 + 53", "54 - 23", "56 - 26"], "answer": "15 + 53", "explanation": "15 + 53 = 68" },
+            { "id": "n1-q12", "type": "counting", "question": "Đếm tổng số quả táo trên cây trong hình", "prompt": "", "countingItems": [{ "image": "/assets/grades/grade2/trangquynh/questions/apple_tree.png", "count": 1 }], "countingAnswer": "24", "explanation": "8 quả nhân với 3 cây bằng 24 quả" },
+            { "id": "n1-q13", "type": "matching-pairs", "question": "Ghép số tương ứng cách đọc", "pairs": [{ "id": "p1", "left": "13", "right": "Mười ba" }, { "id": "p2", "left": "37", "right": "Ba mươi bảy" }, { "id": "p3", "left": "40", "right": "Bốn mươi" }], "explanation": "" },
+            { "id": "n1-q14", "type": "fill-blank", "question": "7 + ___ x 3 = 28 ", "blanks": [{ "position": 0, "answer": "7", "placeholder": "___" }], "explanation": " (7 x 3) + 7 = 28" },
+            { "id": "n1-q15", "type": "drag-drop", "question": "Nối tên phép toán và kết quả","dragItems": [{"id": "d1","content": "Phép cộng","correctSlot": "small"},{"id": "d2","content": "Phép trừ","correctSlot": "medium"},{"id": "d3","content": "Phép nhân","correctSlot": "large"}],"dropSlots": [{"id": "small","label": "Tổng"},{"id": "medium","label": "Hiệu"},{"id": "large","label": "Tích"}]}
           ]
         },
         {
@@ -164,7 +171,14 @@
               "options": ["37", "47", "57", "67"],
               "correctAnswer": 1,
               "explanation": "75 - 28 = 47 người"
-            }
+            },
+            { "id": "n2-q9", "type": "fill-blank", "question": "Số ___ gồm 7 chục và 9 đơn vị", "blanks": [{ "position": 0, "answer": "79", "placeholder": "?" }], "explanation": " Bảy mươi chín " },
+            { "id": "n2-q10", "type": "drag-drop", "question": "Sắp xếp kết quả từ nhỏ đến lớn","dragItems": [{"id": "d1","content": "78 - 19","correctSlot": "small"},{"id": "d2","content": "91 - 33","correctSlot": "medium"},{"id": "d3","content": "32 + 27","correctSlot": "large"}],"dropSlots": [{"id": "small","label": "57"},{"id": "medium","label": "58"},{"id": "large","label": "59"}]},
+            { "id": "n2-q11", "type": "multiple-choice", "prompt": "Phép tính có kết quả lớn nhất là?", "choices": ["98 - 74", "15 + 53", "54 - 23", "56 - 26"], "answer": "15 + 53", "explanation": "15 + 53 = 68" },
+            { "id": "n2-q12", "type": "counting", "question": "Số hình tam giác là?", "prompt": "", "countingItems": [{ "image": "/assets/grades/grade3/fraction-quest/questions/measurement_tool.png", "count": 1 }], "countingAnswer": "24", "explanation": "Có 3 hàng, 7 + 8 + 9 = 24" },
+            { "id": "n2-q13", "type": "matching-pairs", "question": "Ghép số tương ứng cách đọc", "pairs": [{ "id": "p1", "left": "13", "right": "Mười ba" }, { "id": "p2", "left": "37", "right": "Ba mươi bảy" }, { "id": "p3", "left": "40", "right": "Bốn mươi" }], "explanation": "" },
+            { "id": "n2-q14", "type": "fill-blank", "question": "Hiệu của 48 và ___ là 19 ", "blanks": [{ "position": 0, "answer": "29", "placeholder": "___" }], "explanation": " 48 - 19 = 29" },
+            { "id": "n2-q15", "type": "drag-drop", "question": "Nối tên phép toán và kết quả","dragItems": [{"id": "d1","content": "Phép cộng","correctSlot": "small"},{"id": "d2","content": "Phép trừ","correctSlot": "medium"},{"id": "d3","content": "Phép nhân","correctSlot": "large"}],"dropSlots": [{"id": "small","label": "Tổng"},{"id": "medium","label": "Hiệu"},{"id": "large","label": "Tích"}]}
           ]
         },
         {
@@ -243,7 +257,13 @@
               "question": "Bà có 72 quả cam, bán 35 quả, mua thêm 18 quả. Bà có ___ quả cam.",
               "blanks": [{ "position": 55, "answer": "55", "placeholder": "?" }],
               "explanation": "72 - 35 = 37. Sau đó 37 + 18 = 55 quả cam."
-            }
+            },
+            { "id": "n3-q10", "type": "drag-drop", "question": "Sắp xếp kết quả từ nhỏ đến lớn","dragItems": [{"id": "d1","content": "78 - 19","correctSlot": "small"},{"id": "d2","content": "91 - 33","correctSlot": "medium"},{"id": "d3","content": "32 + 27","correctSlot": "large"}],"dropSlots": [{"id": "small","label": "57"},{"id": "medium","label": "58"},{"id": "large","label": "59"}]},
+            { "id": "n3-q11", "type": "multiple-choice", "prompt": "Phép tính có kết quả lớn nhất là?", "choices": ["98 - 74", "15 + 53", "54 - 23", "56 - 26"], "answer": "15 + 53", "explanation": "15 + 53 = 68" },
+            { "id": "n3-q12", "type": "counting", "question": "Số hình tam giác là?", "prompt": "", "countingItems": [{ "image": "/assets/grades/grade2/trangquynh/questions/trianglecount.png", "count": 1 }], "countingAnswer": "5", "explanation": "Có 5 hình tam giác" },
+            { "id": "n3-q13", "type": "matching-pairs", "question": "Ghép số tương ứng cách đọc", "pairs": [{ "id": "p1", "left": "13", "right": "Mười ba" }, { "id": "p2", "left": "37", "right": "Ba mươi bảy" }, { "id": "p3", "left": "40", "right": "Bốn mươi" }], "explanation": "" },
+            { "id": "n3-q14", "type": "fill-blank", "question": "Số gồm 5 chục và 2 đơn vị là ___ ", "blanks": [{ "position": 0, "answer": "52", "placeholder": "___" }], "explanation": " 48 - 19 = 29" },
+            { "id": "n3-q15", "type": "drag-drop", "question": "Nối tên phép toán và kết quả","dragItems": [{"id": "d1","content": "Phép cộng","correctSlot": "small"},{"id": "d2","content": "Phép trừ","correctSlot": "medium"},{"id": "d3","content": "Phép nhân","correctSlot": "large"}],"dropSlots": [{"id": "small","label": "Tổng"},{"id": "medium","label": "Hiệu"},{"id": "large","label": "Tích"}]}
           ]
         }
       ]
@@ -336,7 +356,14 @@
                 { "id": "slot2", "label": "Giữa" },
                 { "id": "slot3", "label": "Muộn nhất" }
               ]
-            }
+            },
+            { "id": "n4-q9", "type": "fill-blank", "question": "48 < 4___ ", "blanks": [{ "position": 0, "answer": "9", "placeholder": "?" }], "explanation": " 47 < 48 < 49 " },
+            { "id": "n4-q10", "type": "drag-drop", "question": "Sắp xếp kết quả từ nhỏ đến lớn","dragItems": [{"id": "d1","content": "78 - 19","correctSlot": "small"},{"id": "d2","content": "91 - 33","correctSlot": "medium"},{"id": "d3","content": "32 + 27","correctSlot": "large"}],"dropSlots": [{"id": "small","label": "57"},{"id": "medium","label": "58"},{"id": "large","label": "59"}]},
+            { "id": "n4-q11", "type": "multiple-choice", "prompt": "Phép tính có kết quả lớn nhất là?", "choices": ["98 - 74", "15 + 53", "54 - 23", "56 - 26"], "answer": "15 + 53", "explanation": "15 + 53 = 68" },
+            { "id": "n4-q12", "type": "counting", "question": "Đếm tổng số quả táo trên cây trong hình", "prompt": "", "countingItems": [{ "image": "/assets/grades/grade2/trangquynh/questions/apple_tree.png", "count": 1 }], "countingAnswer": "24", "explanation": "8 quả nhân với 3 cây bằng 24 quả" },
+            { "id": "n4-q13", "type": "matching-pairs", "question": "Ghép số tương ứng cách đọc", "pairs": [{ "id": "p1", "left": "13", "right": "Mười ba" }, { "id": "p2", "left": "37", "right": "Ba mươi bảy" }, { "id": "p3", "left": "40", "right": "Bốn mươi" }], "explanation": "" },
+            { "id": "n4-q14", "type": "fill-blank", "question": "7 + ___ x 3 = 28 ", "blanks": [{ "position": 0, "answer": "7", "placeholder": "___" }], "explanation": " (7 x 3) + 7 = 28" },
+            { "id": "n4-q15", "type": "drag-drop", "question": "Nối tên phép toán và kết quả","dragItems": [{"id": "d1","content": "Phép cộng","correctSlot": "small"},{"id": "d2","content": "Phép trừ","correctSlot": "medium"},{"id": "d3","content": "Phép nhân","correctSlot": "large"}],"dropSlots": [{"id": "small","label": "Tổng"},{"id": "medium","label": "Hiệu"},{"id": "large","label": "Tích"}]}
           ]
         },
         {
@@ -400,7 +427,22 @@
               "options": ["Ngày 8", "Ngày 10", "Ngày 12", "Ngày 15"],
               "correctAnswer": 1,
               "explanation": "15 - 5 = 10. Quỳnh phải đi muộn nhất vào ngày 10."
-            }
+            },
+            {
+              "id": "n5-q8",
+              "type": "multiple-choice",
+              "question": "Ngư dân cần sợi dây dài 2 m. Ông đã có sợi dây 1 m 60 cm. Cần thêm bao nhiêu cm nữa?",
+              "options": ["20 cm", "30 cm", "40 cm", "50 cm"],
+              "correctAnswer": 2,
+              "explanation": "2 m = 200 cm. Đã có 160 cm. Cần thêm: 200 - 160 = 40 cm"
+            },
+            { "id": "n5-q9", "type": "fill-blank", "question": "Số ___ gồm 7 chục và 9 đơn vị", "blanks": [{ "position": 0, "answer": "79", "placeholder": "?" }], "explanation": " Bảy mươi chín " },
+            { "id": "n5-q10", "type": "drag-drop", "question": "Sắp xếp kết quả từ nhỏ đến lớn","dragItems": [{"id": "d1","content": "78 - 19","correctSlot": "small"},{"id": "d2","content": "91 - 33","correctSlot": "medium"},{"id": "d3","content": "32 + 27","correctSlot": "large"}],"dropSlots": [{"id": "small","label": "57"},{"id": "medium","label": "58"},{"id": "large","label": "59"}]},
+            { "id": "n5-q11", "type": "multiple-choice", "prompt": "Phép tính có kết quả lớn nhất là?", "choices": ["98 - 74", "15 + 53", "54 - 23", "56 - 26"], "answer": "15 + 53", "explanation": "15 + 53 = 68" },
+            { "id": "n5-q12", "type": "counting", "question": "Số hình tam giác là?", "prompt": "", "countingItems": [{ "image": "/assets/grades/grade3/fraction-quest/questions/measurement_tool.png", "count": 1 }], "countingAnswer": "24", "explanation": "Có 3 hàng, 7 + 8 + 9 = 24" },
+            { "id": "n5-q13", "type": "matching-pairs", "question": "Ghép số tương ứng cách đọc", "pairs": [{ "id": "p1", "left": "13", "right": "Mười ba" }, { "id": "p2", "left": "37", "right": "Ba mươi bảy" }, { "id": "p3", "left": "40", "right": "Bốn mươi" }], "explanation": "" },
+            { "id": "n5-q14", "type": "fill-blank", "question": "Hiệu của 48 và ___ là 19 ", "blanks": [{ "position": 0, "answer": "29", "placeholder": "___" }], "explanation": " 48 - 19 = 29" },
+            { "id": "n5-q15", "type": "drag-drop", "question": "Nối tên phép toán và kết quả","dragItems": [{"id": "d1","content": "Phép cộng","correctSlot": "small"},{"id": "d2","content": "Phép trừ","correctSlot": "medium"},{"id": "d3","content": "Phép nhân","correctSlot": "large"}],"dropSlots": [{"id": "small","label": "Tổng"},{"id": "medium","label": "Hiệu"},{"id": "large","label": "Tích"}]}
           ]
         },
         {
@@ -479,7 +521,14 @@
               "options": ["20 cm", "30 cm", "40 cm", "50 cm"],
               "correctAnswer": 2,
               "explanation": "2 m = 200 cm. Đã có 160 cm. Cần thêm: 200 - 160 = 40 cm"
-            }
+            },
+            { "id": "n6-q9", "type": "matching-pairs", "question": "Ghép số tương ứng cách đọc", "pairs": [{ "id": "p1", "left": "13", "right": "Mười ba" }, { "id": "p2", "left": "37", "right": "Ba mươi bảy" }, { "id": "p3", "left": "40", "right": "Bốn mươi" }], "explanation": "" },
+            { "id": "n6-q10", "type": "fill-blank", "question": "Số ___ gồm 7 chục và 9 đơn vị", "blanks": [{ "position": 0, "answer": "79", "placeholder": "?" }], "explanation": " Bảy mươi chín " },
+            { "id": "n6-q11", "type": "drag-drop", "question": "Sắp xếp kết quả từ nhỏ đến lớn","dragItems": [{"id": "d1","content": "78 - 19","correctSlot": "small"},{"id": "d2","content": "91 - 33","correctSlot": "medium"},{"id": "d3","content": "32 + 27","correctSlot": "large"}],"dropSlots": [{"id": "small","label": "57"},{"id": "medium","label": "58"},{"id": "large","label": "59"}]},
+            { "id": "n6-q12", "type": "multiple-choice", "prompt": "Phép tính có kết quả lớn nhất là?", "choices": ["98 - 74", "15 + 53", "54 - 23", "56 - 26"], "answer": "15 + 53", "explanation": "15 + 53 = 68" },
+            { "id": "n6-q13", "type": "counting", "question": "Số hình tam giác là?", "prompt": "", "countingItems": [{ "image": "/assets/grades/grade3/fraction-quest/questions/measurement_tool.png", "count": 1 }], "countingAnswer": "24", "explanation": "Có 3 hàng, 7 + 8 + 9 = 24" },
+            { "id": "n6-q14", "type": "fill-blank", "question": "Hiệu của 48 và ___ là 19 ", "blanks": [{ "position": 0, "answer": "29", "placeholder": "___" }], "explanation": " 48 - 19 = 29" },
+            { "id": "n6-q15", "type": "drag-drop", "question": "Nối tên phép toán và kết quả","dragItems": [{"id": "d1","content": "Phép cộng","correctSlot": "small"},{"id": "d2","content": "Phép trừ","correctSlot": "medium"},{"id": "d3","content": "Phép nhân","correctSlot": "large"}],"dropSlots": [{"id": "small","label": "Tổng"},{"id": "medium","label": "Hiệu"},{"id": "large","label": "Tích"}]}
           ]
         },
         {
@@ -543,7 +592,29 @@
               "options": ["2 cạnh", "3 cạnh", "4 cạnh", "5 cạnh"],
               "correctAnswer": 2,
               "explanation": "Hình chữ nhật có 4 cạnh (2 cạnh dài, 2 cạnh ngắn)."
-            }
+            },
+            {
+              "id": "n7-q8",
+              "type": "drag-drop",
+              "question": "Sắp xếp kết quả từ nhỏ đến lớn",
+              "dragItems": [
+                { "id": "d1", "content": "35 + 28 = 63", "correctSlot": "slot2" },
+                { "id": "d2", "content": "47 + 15 = 62", "correctSlot": "slot1" },
+                { "id": "d3", "content": "39 + 46 = 85", "correctSlot": "slot3" }
+              ],
+              "dropSlots": [
+                { "id": "slot1", "label": "Nhỏ nhất" },
+                { "id": "slot2", "label": "Giữa" },
+                { "id": "slot3", "label": "Lớn nhất" }
+              ]
+            },
+            { "id": "n7-q9", "type": "fill-blank", "question": "48 < 4___ ", "blanks": [{ "position": 0, "answer": "9", "placeholder": "?" }], "explanation": " 47 < 48 < 49 " },
+            { "id": "n7-q10", "type": "drag-drop", "question": "Sắp xếp kết quả từ nhỏ đến lớn","dragItems": [{"id": "d1","content": "78 - 19","correctSlot": "small"},{"id": "d2","content": "91 - 33","correctSlot": "medium"},{"id": "d3","content": "32 + 27","correctSlot": "large"}],"dropSlots": [{"id": "small","label": "57"},{"id": "medium","label": "58"},{"id": "large","label": "59"}]},
+            { "id": "n7-q11", "type": "multiple-choice", "prompt": "Phép tính có kết quả lớn nhất là?", "choices": ["98 - 74", "15 + 53", "54 - 23", "56 - 26"], "answer": "15 + 53", "explanation": "15 + 53 = 68" },
+            { "id": "n7-q12", "type": "counting", "question": "Đếm tổng số quả táo trên cây trong hình", "prompt": "", "countingItems": [{ "image": "/assets/grades/grade2/trangquynh/questions/apple_tree.png", "count": 1 }], "countingAnswer": "24", "explanation": "8 quả nhân với 3 cây bằng 24 quả" },
+            { "id": "n7-q13", "type": "matching-pairs", "question": "Ghép số tương ứng cách đọc", "pairs": [{ "id": "p1", "left": "13", "right": "Mười ba" }, { "id": "p2", "left": "37", "right": "Ba mươi bảy" }, { "id": "p3", "left": "40", "right": "Bốn mươi" }], "explanation": "" },
+            { "id": "n7-q14", "type": "fill-blank", "question": "7 + ___ x 3 = 28 ", "blanks": [{ "position": 0, "answer": "7", "placeholder": "___" }], "explanation": " (7 x 3) + 7 = 28" },
+            { "id": "n7-q15", "type": "drag-drop", "question": "Nối tên phép toán và kết quả","dragItems": [{"id": "d1","content": "Phép cộng","correctSlot": "small"},{"id": "d2","content": "Phép trừ","correctSlot": "medium"},{"id": "d3","content": "Phép nhân","correctSlot": "large"}],"dropSlots": [{"id": "small","label": "Tổng"},{"id": "medium","label": "Hiệu"},{"id": "large","label": "Tích"}]}
           ]
         },
         {
@@ -622,7 +693,14 @@
                 { "id": "slot2", "label": "Giữa" },
                 { "id": "slot3", "label": "Nặng nhất" }
               ]
-            }
+            },
+            { "id": "n8-q9", "type": "fill-blank", "question": "Số ___ gồm 7 chục và 9 đơn vị", "blanks": [{ "position": 0, "answer": "79", "placeholder": "?" }], "explanation": " Bảy mươi chín " },
+            { "id": "n8-q10", "type": "drag-drop", "question": "Sắp xếp kết quả từ nhỏ đến lớn","dragItems": [{"id": "d1","content": "78 - 19","correctSlot": "small"},{"id": "d2","content": "91 - 33","correctSlot": "medium"},{"id": "d3","content": "32 + 27","correctSlot": "large"}],"dropSlots": [{"id": "small","label": "57"},{"id": "medium","label": "58"},{"id": "large","label": "59"}]},
+            { "id": "n8-q11", "type": "multiple-choice", "prompt": "Phép tính có kết quả lớn nhất là?", "choices": ["98 - 74", "15 + 53", "54 - 23", "56 - 26"], "answer": "15 + 53", "explanation": "15 + 53 = 68" },
+            { "id": "n8-q12", "type": "counting", "question": "Số hình tam giác là?", "prompt": "", "countingItems": [{ "image": "/assets/grades/grade3/fraction-quest/questions/measurement_tool.png", "count": 1 }], "countingAnswer": "24", "explanation": "Có 3 hàng, 7 + 8 + 9 = 24" },
+            { "id": "n8-q13", "type": "matching-pairs", "question": "Ghép số tương ứng cách đọc", "pairs": [{ "id": "p1", "left": "13", "right": "Mười ba" }, { "id": "p2", "left": "37", "right": "Ba mươi bảy" }, { "id": "p3", "left": "40", "right": "Bốn mươi" }], "explanation": "" },
+            { "id": "n8-q14", "type": "fill-blank", "question": "Hiệu của 48 và ___ là 19 ", "blanks": [{ "position": 0, "answer": "29", "placeholder": "___" }], "explanation": " 48 - 19 = 29" },
+            { "id": "n8-q15", "type": "drag-drop", "question": "Nối tên phép toán và kết quả","dragItems": [{"id": "d1","content": "Phép cộng","correctSlot": "small"},{"id": "d2","content": "Phép trừ","correctSlot": "medium"},{"id": "d3","content": "Phép nhân","correctSlot": "large"}],"dropSlots": [{"id": "small","label": "Tổng"},{"id": "medium","label": "Hiệu"},{"id": "large","label": "Tích"}]}
           ]
         }
       ]
@@ -711,7 +789,20 @@
                 { "id": "slot2", "label": "Giữa" },
                 { "id": "slot3", "label": "Lớn nhất" }
               ]
-            }
+            },
+            {
+              "id": "n9-q9",
+              "type": "fill-blank",
+              "question": "Bà có 72 quả cam, bán 35 quả, mua thêm 18 quả. Bà có ___ quả cam.",
+              "blanks": [{ "position": 55, "answer": "55", "placeholder": "?" }],
+              "explanation": "72 - 35 = 37. Sau đó 37 + 18 = 55 quả cam."
+            },
+            { "id": "n9-q10", "type": "drag-drop", "question": "Sắp xếp kết quả từ nhỏ đến lớn","dragItems": [{"id": "d1","content": "78 - 19","correctSlot": "small"},{"id": "d2","content": "91 - 33","correctSlot": "medium"},{"id": "d3","content": "32 + 27","correctSlot": "large"}],"dropSlots": [{"id": "small","label": "57"},{"id": "medium","label": "58"},{"id": "large","label": "59"}]},
+            { "id": "n9-q11", "type": "multiple-choice", "prompt": "Phép tính có kết quả lớn nhất là?", "choices": ["98 - 74", "15 + 53", "54 - 23", "56 - 26"], "answer": "15 + 53", "explanation": "15 + 53 = 68" },
+            { "id": "n9-q12", "type": "counting", "question": "Số hình tam giác là?", "prompt": "", "countingItems": [{ "image": "/assets/grades/grade2/trangquynh/questions/trianglecount.png", "count": 1 }], "countingAnswer": "5", "explanation": "Có 5 hình tam giác" },
+            { "id": "n9-q13", "type": "matching-pairs", "question": "Ghép số tương ứng cách đọc", "pairs": [{ "id": "p1", "left": "13", "right": "Mười ba" }, { "id": "p2", "left": "37", "right": "Ba mươi bảy" }, { "id": "p3", "left": "40", "right": "Bốn mươi" }], "explanation": "" },
+            { "id": "n9-q14", "type": "fill-blank", "question": "Số gồm 5 chục và 2 đơn vị là ___ ", "blanks": [{ "position": 0, "answer": "52", "placeholder": "___" }], "explanation": " 48 - 19 = 29" },
+            { "id": "n9-q15", "type": "drag-drop", "question": "Nối tên phép toán và kết quả","dragItems": [{"id": "d1","content": "Phép cộng","correctSlot": "small"},{"id": "d2","content": "Phép trừ","correctSlot": "medium"},{"id": "d3","content": "Phép nhân","correctSlot": "large"}],"dropSlots": [{"id": "small","label": "Tổng"},{"id": "medium","label": "Hiệu"},{"id": "large","label": "Tích"}]}
           ]
         },
         {
@@ -791,7 +882,14 @@
                 { "id": "slot2", "label": "Giữa" },
                 { "id": "slot3", "label": "Lớn nhất" }
               ]
-            }
+            },
+            { "id": "n10-q9", "type": "fill-blank", "question": "48 < 4___ ", "blanks": [{ "position": 0, "answer": "9", "placeholder": "?" }], "explanation": " 47 < 48 < 49 " },
+            { "id": "n10-q10", "type": "drag-drop", "question": "Sắp xếp kết quả từ nhỏ đến lớn","dragItems": [{"id": "d1","content": "78 - 19","correctSlot": "small"},{"id": "d2","content": "91 - 33","correctSlot": "medium"},{"id": "d3","content": "32 + 27","correctSlot": "large"}],"dropSlots": [{"id": "small","label": "57"},{"id": "medium","label": "58"},{"id": "large","label": "59"}]},
+            { "id": "n10-q11", "type": "multiple-choice", "prompt": "Phép tính có kết quả lớn nhất là?", "choices": ["98 - 74", "15 + 53", "54 - 23", "56 - 26"], "answer": "15 + 53", "explanation": "15 + 53 = 68" },
+            { "id": "n10-q12", "type": "counting", "question": "Đếm tổng số quả táo trên cây trong hình", "prompt": "", "countingItems": [{ "image": "/assets/grades/grade2/trangquynh/questions/apple_tree.png", "count": 1 }], "countingAnswer": "24", "explanation": "8 quả nhân với 3 cây bằng 24 quả" },
+            { "id": "n10-q13", "type": "matching-pairs", "question": "Ghép số tương ứng cách đọc", "pairs": [{ "id": "p1", "left": "13", "right": "Mười ba" }, { "id": "p2", "left": "37", "right": "Ba mươi bảy" }, { "id": "p3", "left": "40", "right": "Bốn mươi" }], "explanation": "" },
+            { "id": "n10-q14", "type": "fill-blank", "question": "7 + ___ x 3 = 28 ", "blanks": [{ "position": 0, "answer": "7", "placeholder": "___" }], "explanation": " (7 x 3) + 7 = 28" },
+            { "id": "n10-q15", "type": "drag-drop", "question": "Nối tên phép toán và kết quả","dragItems": [{"id": "d1","content": "Phép cộng","correctSlot": "small"},{"id": "d2","content": "Phép trừ","correctSlot": "medium"},{"id": "d3","content": "Phép nhân","correctSlot": "large"}],"dropSlots": [{"id": "small","label": "Tổng"},{"id": "medium","label": "Hiệu"},{"id": "large","label": "Tích"}]}
           ]
         },
         {
@@ -870,7 +968,14 @@
                 { "id": "slot2", "label": "Giữa" },
                 { "id": "slot3", "label": "Nhiều nhất" }
               ]
-            }
+            },
+            { "id": "n11-q9", "type": "fill-blank", "question": "Số ___ gồm 7 chục và 9 đơn vị", "blanks": [{ "position": 0, "answer": "79", "placeholder": "?" }], "explanation": " Bảy mươi chín " },
+            { "id": "n11-q10", "type": "drag-drop", "question": "Sắp xếp kết quả từ nhỏ đến lớn","dragItems": [{"id": "d1","content": "78 - 19","correctSlot": "small"},{"id": "d2","content": "91 - 33","correctSlot": "medium"},{"id": "d3","content": "32 + 27","correctSlot": "large"}],"dropSlots": [{"id": "small","label": "57"},{"id": "medium","label": "58"},{"id": "large","label": "59"}]},
+            { "id": "n11-q11", "type": "multiple-choice", "prompt": "Phép tính có kết quả lớn nhất là?", "choices": ["98 - 74", "15 + 53", "54 - 23", "56 - 26"], "answer": "15 + 53", "explanation": "15 + 53 = 68" },
+            { "id": "n11-q12", "type": "counting", "question": "Số hình tam giác là?", "prompt": "", "countingItems": [{ "image": "/assets/grades/grade3/fraction-quest/questions/measurement_tool.png", "count": 1 }], "countingAnswer": "24", "explanation": "Có 3 hàng, 7 + 8 + 9 = 24" },
+            { "id": "n11-q13", "type": "matching-pairs", "question": "Ghép số tương ứng cách đọc", "pairs": [{ "id": "p1", "left": "13", "right": "Mười ba" }, { "id": "p2", "left": "37", "right": "Ba mươi bảy" }, { "id": "p3", "left": "40", "right": "Bốn mươi" }], "explanation": "" },
+            { "id": "n11-q14", "type": "fill-blank", "question": "Hiệu của 48 và ___ là 19 ", "blanks": [{ "position": 0, "answer": "29", "placeholder": "___" }], "explanation": " 48 - 19 = 29" },
+            { "id": "n11-q15", "type": "drag-drop", "question": "Nối tên phép toán và kết quả","dragItems": [{"id": "d1","content": "Phép cộng","correctSlot": "small"},{"id": "d2","content": "Phép trừ","correctSlot": "medium"},{"id": "d3","content": "Phép nhân","correctSlot": "large"}],"dropSlots": [{"id": "small","label": "Tổng"},{"id": "medium","label": "Hiệu"},{"id": "large","label": "Tích"}]}
           ]
         }
       ]
@@ -966,7 +1071,13 @@
               "options": ["399", "401", "300", "500"],
               "correctAnswer": 0,
               "explanation": "Số liền trước của 400 là 400 - 1 = 399"
-            }
+            },
+            { "id": "n12-q10", "type": "drag-drop", "question": "Sắp xếp kết quả từ nhỏ đến lớn","dragItems": [{"id": "d1","content": "78 - 19","correctSlot": "small"},{"id": "d2","content": "91 - 33","correctSlot": "medium"},{"id": "d3","content": "32 + 27","correctSlot": "large"}],"dropSlots": [{"id": "small","label": "57"},{"id": "medium","label": "58"},{"id": "large","label": "59"}]},
+            { "id": "n12-q11", "type": "multiple-choice", "prompt": "Phép tính có kết quả lớn nhất là?", "choices": ["98 - 74", "15 + 53", "54 - 23", "56 - 26"], "answer": "15 + 53", "explanation": "15 + 53 = 68" },
+            { "id": "n12-q12", "type": "counting", "question": "Số hình tam giác là?", "prompt": "", "countingItems": [{ "image": "/assets/grades/grade2/trangquynh/questions/trianglecount.png", "count": 1 }], "countingAnswer": "5", "explanation": "Có 5 hình tam giác" },
+            { "id": "n12-q13", "type": "matching-pairs", "question": "Ghép số tương ứng cách đọc", "pairs": [{ "id": "p1", "left": "13", "right": "Mười ba" }, { "id": "p2", "left": "37", "right": "Ba mươi bảy" }, { "id": "p3", "left": "40", "right": "Bốn mươi" }], "explanation": "" },
+            { "id": "n12-q14", "type": "fill-blank", "question": "Số gồm 5 chục và 2 đơn vị là ___ ", "blanks": [{ "position": 0, "answer": "52", "placeholder": "___" }], "explanation": " 48 - 19 = 29" },
+            { "id": "n12-q15", "type": "drag-drop", "question": "Nối tên phép toán và kết quả","dragItems": [{"id": "d1","content": "Phép cộng","correctSlot": "small"},{"id": "d2","content": "Phép trừ","correctSlot": "medium"},{"id": "d3","content": "Phép nhân","correctSlot": "large"}],"dropSlots": [{"id": "small","label": "Tổng"},{"id": "medium","label": "Hiệu"},{"id": "large","label": "Tích"}]}
           ]
         },
         {
@@ -1045,7 +1156,14 @@
                 { "id": "slot2", "label": "Giữa" },
                 { "id": "slot3", "label": "Bé nhất" }
               ]
-            }
+            },
+            { "id": "n13-q9", "type": "fill-blank", "question": "48 < 4___ ", "blanks": [{ "position": 0, "answer": "9", "placeholder": "?" }], "explanation": " 47 < 48 < 49 " },
+            { "id": "n13-q10", "type": "drag-drop", "question": "Sắp xếp kết quả từ nhỏ đến lớn","dragItems": [{"id": "d1","content": "78 - 19","correctSlot": "small"},{"id": "d2","content": "91 - 33","correctSlot": "medium"},{"id": "d3","content": "32 + 27","correctSlot": "large"}],"dropSlots": [{"id": "small","label": "57"},{"id": "medium","label": "58"},{"id": "large","label": "59"}]},
+            { "id": "n13-q11", "type": "multiple-choice", "prompt": "Phép tính có kết quả lớn nhất là?", "choices": ["98 - 74", "15 + 53", "54 - 23", "56 - 26"], "answer": "15 + 53", "explanation": "15 + 53 = 68" },
+            { "id": "n13-q12", "type": "counting", "question": "Đếm tổng số quả táo trên cây trong hình", "prompt": "", "countingItems": [{ "image": "/assets/grades/grade2/trangquynh/questions/apple_tree.png", "count": 1 }], "countingAnswer": "24", "explanation": "8 quả nhân với 3 cây bằng 24 quả" },
+            { "id": "n13-q13", "type": "matching-pairs", "question": "Ghép số tương ứng cách đọc", "pairs": [{ "id": "p1", "left": "13", "right": "Mười ba" }, { "id": "p2", "left": "37", "right": "Ba mươi bảy" }, { "id": "p3", "left": "40", "right": "Bốn mươi" }], "explanation": "" },
+            { "id": "n13-q14", "type": "fill-blank", "question": "7 + ___ x 3 = 28 ", "blanks": [{ "position": 0, "answer": "7", "placeholder": "___" }], "explanation": " (7 x 3) + 7 = 28" },
+            { "id": "n13-q15", "type": "drag-drop", "question": "Nối tên phép toán và kết quả","dragItems": [{"id": "d1","content": "Phép cộng","correctSlot": "small"},{"id": "d2","content": "Phép trừ","correctSlot": "medium"},{"id": "d3","content": "Phép nhân","correctSlot": "large"}],"dropSlots": [{"id": "small","label": "Tổng"},{"id": "medium","label": "Hiệu"},{"id": "large","label": "Tích"}]}
           ]
         },
         {
@@ -1124,7 +1242,14 @@
                 { "id": "slot2", "label": "Giữa" },
                 { "id": "slot3", "label": "Lớn nhất" }
               ]
-            }
+            },
+            { "id": "n14-q9", "type": "fill-blank", "question": "Số ___ gồm 7 chục và 9 đơn vị", "blanks": [{ "position": 0, "answer": "79", "placeholder": "?" }], "explanation": " Bảy mươi chín " },
+            { "id": "n14-q10", "type": "drag-drop", "question": "Sắp xếp kết quả từ nhỏ đến lớn","dragItems": [{"id": "d1","content": "78 - 19","correctSlot": "small"},{"id": "d2","content": "91 - 33","correctSlot": "medium"},{"id": "d3","content": "32 + 27","correctSlot": "large"}],"dropSlots": [{"id": "small","label": "57"},{"id": "medium","label": "58"},{"id": "large","label": "59"}]},
+            { "id": "n14-q11", "type": "multiple-choice", "prompt": "Phép tính có kết quả lớn nhất là?", "choices": ["98 - 74", "15 + 53", "54 - 23", "56 - 26"], "answer": "15 + 53", "explanation": "15 + 53 = 68" },
+            { "id": "n14-q12", "type": "counting", "question": "Số hình tam giác là?", "prompt": "", "countingItems": [{ "image": "/assets/grades/grade3/fraction-quest/questions/measurement_tool.png", "count": 1 }], "countingAnswer": "24", "explanation": "Có 3 hàng, 7 + 8 + 9 = 24" },
+            { "id": "n14-q13", "type": "matching-pairs", "question": "Ghép số tương ứng cách đọc", "pairs": [{ "id": "p1", "left": "13", "right": "Mười ba" }, { "id": "p2", "left": "37", "right": "Ba mươi bảy" }, { "id": "p3", "left": "40", "right": "Bốn mươi" }], "explanation": "" },
+            { "id": "n14-q14", "type": "fill-blank", "question": "Hiệu của 48 và ___ là 19 ", "blanks": [{ "position": 0, "answer": "29", "placeholder": "___" }], "explanation": " 48 - 19 = 29" },
+            { "id": "n14-q15", "type": "drag-drop", "question": "Nối tên phép toán và kết quả","dragItems": [{"id": "d1","content": "Phép cộng","correctSlot": "small"},{"id": "d2","content": "Phép trừ","correctSlot": "medium"},{"id": "d3","content": "Phép nhân","correctSlot": "large"}],"dropSlots": [{"id": "small","label": "Tổng"},{"id": "medium","label": "Hiệu"},{"id": "large","label": "Tích"}]}
           ]
         },
         {
@@ -1211,7 +1336,12 @@
               "options": ["10 tháng", "11 tháng", "12 tháng", "13 tháng"],
               "correctAnswer": 2,
               "explanation": "Một năm có 12 tháng."
-            }
+            },
+            { "id": "n15-q11", "type": "multiple-choice", "prompt": "Phép tính có kết quả lớn nhất là?", "choices": ["98 - 74", "15 + 53", "54 - 23", "56 - 26"], "answer": "15 + 53", "explanation": "15 + 53 = 68" },
+            { "id": "n15-q12", "type": "counting", "question": "Số hình tam giác là?", "prompt": "", "countingItems": [{ "image": "/assets/grades/grade2/trangquynh/questions/trianglecount.png", "count": 1 }], "countingAnswer": "5", "explanation": "Có 5 hình tam giác" },
+            { "id": "n15-q13", "type": "matching-pairs", "question": "Ghép số tương ứng cách đọc", "pairs": [{ "id": "p1", "left": "13", "right": "Mười ba" }, { "id": "p2", "left": "37", "right": "Ba mươi bảy" }, { "id": "p3", "left": "40", "right": "Bốn mươi" }], "explanation": "" },
+            { "id": "n15-q14", "type": "fill-blank", "question": "Số gồm 5 chục và 2 đơn vị là ___ ", "blanks": [{ "position": 0, "answer": "52", "placeholder": "___" }], "explanation": " 48 - 19 = 29" },
+            { "id": "n15-q15", "type": "drag-drop", "question": "Nối tên phép toán và kết quả","dragItems": [{"id": "d1","content": "Phép cộng","correctSlot": "small"},{"id": "d2","content": "Phép trừ","correctSlot": "medium"},{"id": "d3","content": "Phép nhân","correctSlot": "large"}],"dropSlots": [{"id": "small","label": "Tổng"},{"id": "medium","label": "Hiệu"},{"id": "large","label": "Tích"}]}
           ]
         }
       ]
