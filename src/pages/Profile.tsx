@@ -39,7 +39,7 @@ interface GameProgress {
   level: number;
   current_node: number;
   completed_nodes: (string | number)[];
-  earned_badges: string[];
+  earned_badges: (string | number | boolean | null | Record<string, unknown>)[];
   global_level?: number;
   coins?: number;
 }
@@ -67,7 +67,7 @@ const Profile = () => {
   const [gameProgress, setGameProgress] = useState<GameProgress | null>(null);
   const [userRole, setUserRole] = useState<string>("student");
   const [streak, setStreak] = useState<StreakData | null>(null);
-  const [achievements, setAchievements] = useState<Achievement[]>([]);
+  const [achievements, setAchievements] = useState<any[]>([]);
   const [avatarModalOpen, setAvatarModalOpen] = useState(false);
 
     // Achievement system hook
@@ -207,7 +207,7 @@ const Profile = () => {
       level: globalLevel,
       current_node: progressData?.current_node || 0,
       completed_nodes: allCompletedNodes,
-      earned_badges: progressData?.earned_badges || [],
+      earned_badges: (progressData?.earned_badges as any[]) || [],
       global_level: globalLevel,
       coins: globalData?.coins || 0,
     });
@@ -264,7 +264,7 @@ const Profile = () => {
       return;
     }
 
-    setAchievements((data as Achievement[]) || []);
+    setAchievements((data as any[]) || []);
   };
 
   const updateStreak = async (userId: string) => {
@@ -357,7 +357,7 @@ const Profile = () => {
       case "stats":
         return (
           <StatsTab
-            gameProgress={gameProgress}
+            gameProgress={gameProgress as any}
             streak={streak}
             achievements={earnedAchievements as EarnedAchievement[]}
           />
@@ -376,7 +376,7 @@ const Profile = () => {
       case "password":
         return <PasswordTab />;
       case "courses":
-        return <CoursesTab gameProgress={gameProgress} />;
+        return <CoursesTab gameProgress={gameProgress as any} />;
       default:
         return null;
     }
