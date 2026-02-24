@@ -242,7 +242,7 @@ const Leaderboard = () => {
                 >
                   {/* Crown for first place */}
                   {actualRank === 1 && (
-                    <Crown className="h-12 w-12 text-yellow-400 mb-2 drop-shadow-lg animate-pulse" />
+                    <Crown className="h-12 w-12 text-yellow-400 mb-2 drop-shadow-lg animate-float" style={{ animationDelay: `${idx * 0.5}s` }} />
                   )}
 
                   {/* Avatar with rank badge - with float animation */}
