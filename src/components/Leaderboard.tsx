@@ -91,16 +91,13 @@ const Leaderboard = () => {
   const remaining = hasEnoughForPodium ? leaderboardData.slice(3, 10) : leaderboardData;
 
   const getRankStyle = (rank: number) => {
-    // Provide explicit vertical offsets and slight scale differences so
-    // podiums visually stack: 1 > 2 > 3. We prefer explicit translate classes
-    // so the islands and avatars appear at slightly different heights.
     switch (rank) {
       case 1:
-        return "-translate-y-8 scale-110"; // highest, slightly larger
+        return "-translate-y-16 scale-110";
       case 2:
-        return "-translate-y-4 scale-105"; // middle
+        return "translate-y-4 scale-100";
       case 3:
-        return "-translate-y-1 scale-100"; // lowest
+        return "translate-y-10 scale-95";
       default:
         return "";
     }
@@ -231,7 +228,7 @@ const Leaderboard = () => {
             <>
               {/* Top 3 Podium - Only show if we have at least 3 entries */}
               {hasEnoughForPodium && topThree.length >= 3 && (
-                <div className="relative mb-16 min-h-[400px] flex items-end justify-center gap-8 px-4">
+                <div className="relative mb-16 min-h-[450px] flex items-end justify-center gap-12 md:gap-16 lg:gap-20 px-4">
                   {[topThree[1], topThree[0], topThree[2]].map((student, idx) => {
                     if (!student) return null;
                     const displayOrder = idx === 0 ? 2 : idx === 1 ? 1 : 3;
