@@ -95,7 +95,23 @@ export const VideoPlayer = ({ videoUrl, title, topicId, isCompleted = false, onC
         </div>
 
         {/* Complete Button */}
-        <div className="flex items-center justify-between p-4 bg-card rounded-xl border border-border">
+        <div className="relative flex items-center justify-between p-4 bg-card rounded-xl border border-border overflow-visible">
+          {/* Floating +20 XP */}
+          <AnimatePresence>
+            {justCompleted && (
+              <motion.div
+                className="absolute -top-2 right-6 pointer-events-none z-10 flex items-center gap-1"
+                initial={{ opacity: 0, y: 0, scale: 0.5 }}
+                animate={{ opacity: [0, 1, 1, 0], y: -60, scale: [0.5, 1.2, 1, 0.8] }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 2, ease: "easeOut" }}
+              >
+                <Sparkles className="h-5 w-5 text-primary" />
+                <span className="text-xl font-bold text-primary drop-shadow-md">+20 XP</span>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
           <div className="flex items-center gap-3">
             <AnimatePresence mode="wait">
               {hasMarkedComplete ? (
