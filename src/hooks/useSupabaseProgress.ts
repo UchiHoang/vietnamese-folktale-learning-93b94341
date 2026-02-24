@@ -160,14 +160,12 @@ export const useSupabaseProgress = () => {
 
         // Race between RPC call and timeout
         const rpcPromise = supabase.rpc('complete_stage', {
-          p_stage_id: stageId,
           p_course_id: courseId,
+          p_node_index: 0,
           p_score: score,
-          p_max_score: maxScore,
-          p_correct_answers: correctAnswers,
-          p_total_questions: totalQuestions,
-          p_time_spent_seconds: timeSpentSeconds,
-        });
+          p_stars: Math.round((score / maxScore) * 3),
+          p_xp_reward: correctAnswers * 10,
+        } as any);
 
         type RpcError = { code?: string; message?: string } | null;
 
@@ -307,7 +305,7 @@ export const useSupabaseProgress = () => {
         return null;
       }
 
-      const result = data as Record<string, unknown>;
+      const result = (Array.isArray(data) ? data[0] : data) as Record<string, unknown>;
       const badgeResult: BadgeResult = {
         success: result.success as boolean,
         alreadyEarned: result.already_earned as boolean,

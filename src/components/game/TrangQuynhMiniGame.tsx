@@ -37,7 +37,7 @@ type SimpleQuestion = {
   dropSlots?: Array<{ id: string; label: string; image?: string }>;
   blanks?: Array<{ position: number; answer: string; placeholder?: string }>;
   countingItems?: Array<{ image: string; count: number }>;
-  countingAnswer?: number;
+  countingAnswer?: number | string;
   [key: string]: unknown; // Allow other fields
 };
 

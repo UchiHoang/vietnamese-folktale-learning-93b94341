@@ -3,10 +3,11 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 
 interface FooterProps {
-  compact?: boolean; // Thêm prop này để bật chế độ gọn
+  compact?: boolean;
+  className?: string;
 }
 
-const Footer = ({ compact = false }: FooterProps) => {
+const Footer = ({ compact = false, className }: FooterProps) => {
   const linkVariants = {
     hover: { 
       x: 5, 
