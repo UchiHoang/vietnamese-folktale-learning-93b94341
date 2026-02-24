@@ -6,14 +6,15 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Award, Sparkles } from "lucide-react";
-import Confetti from "react-confetti";
 import { useEffect, useState } from "react";
+import { StarRating } from "./StarRating";
 
 interface BadgeModalProps {
   isOpen: boolean;
   badgeId: string | null;
   badgeInfo?: any;
   earnedXp: number;
+  stars?: number;
   performance: "excellent" | "good" | "retry";
   onBackToMap: () => void;
   onNextLevel?: () => void;
@@ -25,21 +26,13 @@ export const BadgeModal = ({
   badgeId, 
   badgeInfo,
   earnedXp,
+  stars = 0,
   performance,
   onBackToMap,
   onNextLevel,
   onRetry
 }: BadgeModalProps) => {
-  const [showConfetti, setShowConfetti] = useState(false);
   const badge = badgeId && badgeInfo ? badgeInfo(badgeId) : null;
-
-  useEffect(() => {
-    if (isOpen && performance === "excellent") {
-      setShowConfetti(true);
-      const timer = setTimeout(() => setShowConfetti(false), 5000);
-      return () => clearTimeout(timer);
-    }
-  }, [isOpen, performance]);
 
   const performanceConfig = {
     excellent: {
@@ -63,15 +56,6 @@ export const BadgeModal = ({
 
   return (
     <>
-      {showConfetti && (
-        <Confetti
-          width={window.innerWidth}
-          height={window.innerHeight}
-          recycle={false}
-          numberOfPieces={500}
-        />
-      )}
-      
       <Dialog open={isOpen} onOpenChange={() => {}}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
@@ -81,6 +65,19 @@ export const BadgeModal = ({
           </DialogHeader>
           
           <div className="space-y-6 py-4">
+            {/* Star Rating Display */}
+            {isOpen && (
+              <div className="py-2">
+                <StarRating
+                  stars={stars}
+                  size="lg"
+                  showConfetti={stars === 3}
+                  enableSound={true}
+                  delay={400}
+                />
+              </div>
+            )}
+
             {/* Badge Display */}
             {badge && performance !== "retry" && (
               <div className="flex flex-col items-center gap-4 animate-scale-in">

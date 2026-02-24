@@ -132,6 +132,7 @@ export const TrangQuynhMiniGame = ({ grade, courseId = "grade2-trangquynh", stor
   const [correctThisLevel, setCorrectThisLevel] = useState(0);
   const [incorrectThisLevel, setIncorrectThisLevel] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [starsThisLevel, setStarsThisLevel] = useState(0);
   
   // 3. useRef
   const levelStartTime = useRef<number>(Date.now());
@@ -487,6 +488,7 @@ export const TrangQuynhMiniGame = ({ grade, courseId = "grade2-trangquynh", stor
         
         // Tính số sao (0-3)
         const stars = Math.floor((newCorrect / totalQuestions) * 3);
+        setStarsThisLevel(stars);
         
         // Tính XP reward dựa trên số câu đúng
         const calculatedXpReward = newCorrect * xpReward;
@@ -891,6 +893,7 @@ export const TrangQuynhMiniGame = ({ grade, courseId = "grade2-trangquynh", stor
 
         <BadgeModal
           isOpen={showBadgeModal}
+          stars={starsThisLevel}
           badgeId={completedBadgeId}
           earnedXp={earnedXpThisLevel}
           performance={levelPerformance}
