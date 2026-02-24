@@ -26,15 +26,14 @@ const Leaderboard = () => {
   const [leaderboardData, setLeaderboardData] = useState<LeaderboardEntry[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Fetch leaderboard data từ Supabase
+  // Fetch leaderboard data từ Supabase via RPC
   useEffect(() => {
     const fetchLeaderboardData = async () => {
       setIsLoading(true);
       
       try {
-        // Map grade values từ UI sang database format
-        const gradeMap: Record<string, string> = {
-          'tat-ca': 'all',
+        const gradeMap: Record<string, string | null> = {
+          'tat-ca': null,
           'mam-non': 'preschool',
           'khoi-1': 'grade1',
           'khoi-2': 'grade2',
@@ -43,129 +42,38 @@ const Leaderboard = () => {
           'khoi-5': 'grade5',
         };
         
-        const dbGrade = gradeMap[selectedGrade];
-        
-        // SPECIAL CASE: "Tất cả" - query from game_globals
-        if (selectedGrade === 'tat-ca') {
-          console.log('[DEBUG] Filter: Tất Cả - querying game_globals');
-          
-          // Query game_globals for global leaderboard
-          const { data: globalsData, error: globalsError } = await supabase
-            .from('game_globals')
-            .select('user_id, total_xp, global_level')
-            .order('total_xp', { ascending: false })
-            .limit(10);
+        const periodMap: Record<string, string> = {
+          'tuan': 'week',
+          'thang': 'month',
+          'nam': 'year',
+        };
 
-          console.log('[DEBUG] game_globals results:', globalsData);
+        const p_grade = gradeMap[selectedGrade] ?? null;
+        const p_period = periodMap[selectedPeriod] || 'all';
 
-          if (globalsError) {
-            console.error('Error fetching global leaderboard:', globalsError);
-            setLeaderboardData([]);
-            return;
-          }
+        const { data, error } = await supabase.rpc('get_leaderboard', {
+          p_grade,
+          p_period,
+          p_limit: 10,
+        });
 
-          if (!globalsData || globalsData.length === 0) {
-            console.log('[DEBUG] No data in game_globals');
-            setLeaderboardData([]);
-            return;
-          }
-
-          // Get display info from leaderboard table
-          const userIds = globalsData.map(g => g.user_id);
-          const { data: leaderboardInfo } = await supabase
-            .from('leaderboard')
-            .select('user_id, display_name, avatar, school')
-            .in('user_id', userIds);
-
-          console.log('[DEBUG] Leaderboard info:', leaderboardInfo);
-
-          // Join data
-          const mappedData: LeaderboardEntry[] = globalsData.map((entry: any, index: number) => {
-            const info = leaderboardInfo?.find(l => l.user_id === entry.user_id);
-            return {
-              rank: index + 1,
-              name: info?.display_name || 'Người chơi ẩn danh',
-              points: entry.total_xp || 0,
-              avatar: info?.avatar || '👤',
-              school: info?.school || 'Chưa cập nhật trường',
-              grade: 'all',
-              user_id: entry.user_id,
-            };
-          });
-
-          console.log('[DEBUG] Final global top 10:', mappedData);
-          setLeaderboardData(mappedData);
-        } else {
-          // NORMAL CASE: Filter by specific grade
-          // Step 1: Get ALL users from leaderboard (để có thể fill 0đ cho users chưa chơi)
-          const { data: allUsers, error: usersError } = await supabase
-            .from('leaderboard')
-            .select('user_id, display_name, avatar, school');
-
-          if (usersError) {
-            console.error('Error fetching users:', usersError);
-            setLeaderboardData([]);
-            return;
-          }
-
-          if (!allUsers || allUsers.length === 0) {
-            console.log('No users found in leaderboard table');
-            setLeaderboardData([]);
-            return;
-          }
-
-          // Step 2: Get points for THIS specific grade from game_progress
-          const { data: gradeProgress, error: progressError } = await supabase
-            .from('game_progress')
-            .select('user_id, total_points')
-            .like('grade', `${dbGrade}%`);  // e.g., 'grade1%' matches 'grade1-number-adventure', 'grade1-alphabet'
-
-          console.log(`[DEBUG] Filter: ${selectedGrade} → dbGrade: ${dbGrade}`);
-          console.log(`[DEBUG] Query pattern: grade LIKE '${dbGrade}%'`);
-          console.log(`[DEBUG] gradeProgress results:`, gradeProgress);
-
-          if (progressError) {
-            console.error('Error fetching grade progress:', progressError);
-            // Không return - vẫn tiếp tục với 0đ cho tất cả users
-          }
-
-          // Step 3: Calculate total points per user for this specific grade
-          const userPointsMap = new Map<string, number>();
-          gradeProgress?.forEach(entry => {
-            const currentPoints = userPointsMap.get(entry.user_id) || 0;
-            userPointsMap.set(entry.user_id, currentPoints + (entry.total_points || 0));
-          });
-
-          console.log(`[DEBUG] Points map:`, Object.fromEntries(userPointsMap));
-
-          // Step 4: Merge users with their grade-specific points
-          const mergedData = allUsers.map(user => ({
-            user_id: user.user_id,
-            display_name: user.display_name,
-            avatar: user.avatar,
-            school: user.school,
-            points: userPointsMap.get(user.user_id) || 0  // 0đ nếu chưa chơi grade này
-          }));
-
-          // Step 5: Sort by points DESC, take top 10
-          mergedData.sort((a, b) => b.points - a.points);
-          const top10 = mergedData.slice(0, 10);
-
-          // Step 6: Map to LeaderboardEntry format
-          const mappedData: LeaderboardEntry[] = top10.map((entry, index) => ({
-            rank: index + 1,
-            name: entry.display_name || 'Người chơi ẩn danh',
-            points: entry.points,
-            avatar: entry.avatar || '👤',
-            school: entry.school || 'Chưa cập nhật trường',
-            grade: dbGrade,
-            user_id: entry.user_id,
-          }));
-
-          console.log(`[DEBUG] Final top 10 for ${selectedGrade}:`, mappedData);
-          setLeaderboardData(mappedData);
+        if (error) {
+          console.error('Error fetching leaderboard:', error);
+          setLeaderboardData([]);
+          return;
         }
-        
+
+        const mappedData: LeaderboardEntry[] = (data || []).map((entry: any) => ({
+          rank: Number(entry.rank),
+          name: entry.display_name || 'Người chơi ẩn danh',
+          points: Number(entry.total_points) || 0,
+          avatar: entry.avatar || '👤',
+          school: entry.school || 'Chưa cập nhật trường',
+          grade: entry.grade,
+          user_id: entry.user_id,
+        }));
+
+        setLeaderboardData(mappedData);
       } catch (err) {
         console.error('Unexpected error:', err);
         setLeaderboardData([]);
@@ -175,7 +83,7 @@ const Leaderboard = () => {
     };
 
     fetchLeaderboardData();
-  }, [selectedGrade, selectedPeriod]); // Re-fetch khi filter thay đổi
+  }, [selectedGrade, selectedPeriod]);
 
   const topThree = leaderboardData.slice(0, 3);
   const remaining = leaderboardData.slice(3, 10);
@@ -292,7 +200,14 @@ const Leaderboard = () => {
           <div className="text-center mb-12">
             <div className="inline-block bg-lime-300 px-8 py-3 rounded-full shadow-lg">
               <span className="font-heading font-bold text-lg text-gray-800">
-                {isLoading ? 'Đang tải...' : `Top ${leaderboardData.length} - ${selectedGrade === 'mam-non' ? 'Mầm Non' : selectedGrade === 'khoi-1' ? 'Khối 1' : selectedGrade === 'khoi-2' ? 'Khối 2' : selectedGrade === 'khoi-3' ? 'Khối 3' : selectedGrade === 'khoi-4' ? 'Khối 4' : 'Khối 5'}`}
+                {isLoading ? 'Đang tải...' : `Top ${leaderboardData.length} - ${
+                  selectedGrade === 'tat-ca' ? 'Tất Cả' :
+                  selectedGrade === 'mam-non' ? 'Mầm Non' :
+                  selectedGrade === 'khoi-1' ? 'Khối 1' :
+                  selectedGrade === 'khoi-2' ? 'Khối 2' :
+                  selectedGrade === 'khoi-3' ? 'Khối 3' :
+                  selectedGrade === 'khoi-4' ? 'Khối 4' : 'Khối 5'
+                }`}
               </span>
             </div>
           </div>
