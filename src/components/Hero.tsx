@@ -1,247 +1,149 @@
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Sparkles, Star, Zap } from "lucide-react";
+import { ArrowRight, Sparkles, Wand2, BookOpen, Gamepad2 } from "lucide-react";
 import heroBanner from "@/assets/hero-banner.jpg";
+import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
+import { fadeInLeft, fadeInRight, staggerContainer, zoomIn } from "./animations";
 
 const Hero = () => {
-  const floatingAnimation = {
-    y: [-10, 10, -10],
-    transition: {
-      duration: 4,
-      repeat: Infinity,
-      ease: [0.4, 0, 0.6, 1] as const
-    }
-  };
-
-  const statsVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: (i: number) => ({
-      opacity: 1,
-      y: 0,
-      transition: {
-        delay: 0.8 + i * 0.15,
-        duration: 0.5
-      }
-    })
-  };
-
   return (
-    <section className="relative overflow-hidden bg-gradient-to-br from-background via-highlight to-secondary/20">
+    <section id="home" className="relative overflow-hidden bg-gradient-to-br from-background via-highlight to-secondary/20">
       {/* Animated background elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <motion.div 
-          className="absolute top-20 left-10 text-4xl"
-          animate={{ rotate: 360, scale: [1, 1.2, 1] }}
-          transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
-        >
-          ⭐
-        </motion.div>
-        <motion.div 
-          className="absolute top-40 right-20 text-3xl"
-          animate={floatingAnimation}
-        >
-          📚
-        </motion.div>
-        <motion.div 
-          className="absolute bottom-32 left-1/4 text-2xl"
-          animate={{ y: [-5, 15, -5], x: [-5, 5, -5] }}
-          transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-        >
-          🎯
-        </motion.div>
-        <motion.div 
-          className="absolute top-1/3 right-1/3 text-3xl opacity-60"
-          animate={{ scale: [1, 1.3, 1], rotate: [0, 15, -15, 0] }}
-          transition={{ duration: 3, repeat: Infinity }}
-        >
-          ✨
-        </motion.div>
-        <motion.div 
-          className="absolute bottom-20 right-1/4 text-2xl"
-          animate={{ y: [-5, 10, -5] }}
-          transition={{ duration: 3, repeat: Infinity }}
-        >
-          🏆
-        </motion.div>
+        <div className="absolute top-20 left-10 w-72 h-72 bg-primary/10 rounded-full blur-3xl animate-float" />
+        <div className="absolute bottom-20 right-10 w-96 h-96 bg-secondary/10 rounded-full blur-3xl animate-float" />
+        <div className="absolute top-1/3 right-1/3 w-32 h-32 rounded-full bg-accent/10 blur-3xl animate-float" />
+
+        {/* Subtle background icons */}
+        <div className="absolute inset-0 opacity-20">
+          <BookOpen className="absolute top-24 right-[18%] h-10 w-10 text-accent/50" />
+          <Gamepad2 className="absolute bottom-24 left-[15%] h-10 w-10 text-primary/50" />
+          <Sparkles className="absolute top-10 left-1/2 h-8 w-8 text-secondary/70" />
+        </div>
       </div>
 
-      <div className="container mx-auto px-4 py-16 md:py-24">
-        <div className="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
-          <motion.div 
-            className="space-y-6"
-            initial={{ opacity: 0, x: -50 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.7, ease: "easeOut" }}
-          >
-            <motion.div 
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary font-medium"
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.2, duration: 0.5 }}
-              whileHover={{ scale: 1.05 }}
+      <div className="container mx-auto px-4 py-16 md:py-24 relative z-10">
+        <motion.div
+          className="grid md:grid-cols-2 gap-8 md:gap-12 items-center"
+          variants={staggerContainer}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, amount: 0.4 }}
+        >
+          <div className="space-y-6">
+            <motion.div
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary font-medium hover:bg-primary/20 transition-all duration-300 shimmer-wrapper"
+              variants={fadeInLeft}
             >
-              <motion.div
-                animate={{ rotate: [0, 15, -15, 0] }}
-                transition={{ duration: 2, repeat: Infinity }}
-              >
-                <Sparkles className="h-4 w-4" />
-              </motion.div>
+              <Sparkles className="h-4 w-4" />
               <span>Học qua chơi - Vui là chính!</span>
             </motion.div>
             
-            <motion.h1 
+            <motion.h1
               className="text-4xl md:text-5xl lg:text-6xl font-heading font-bold leading-tight"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3, duration: 0.6 }}
+              variants={fadeInLeft}
             >
               Hành trình học tập <br />
-              <motion.span 
-                className="text-primary inline-block"
-                animate={{ 
-                  textShadow: ["0 0 0px hsl(var(--primary))", "0 0 20px hsl(var(--primary) / 0.5)", "0 0 0px hsl(var(--primary))"]
-                }}
-                transition={{ duration: 2, repeat: Infinity }}
-              >
-                kỳ diệu
-              </motion.span> cùng <br />
+              <span className="relative inline-flex items-center gap-2 text-primary">
+                <span className="animate-pulse">kỳ diệu</span>
+                <Wand2 className="h-6 w-6" />
+              </span>{" "}
+              cùng <br />
               văn hóa Việt
             </motion.h1>
             
-            <motion.p 
+            <motion.p
               className="text-lg md:text-xl text-muted-foreground max-w-lg"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.5, duration: 0.6 }}
+              variants={fadeInLeft}
             >
               Khám phá toán học và ngôn ngữ qua những câu chuyện dân gian Việt Nam đầy màu sắc và thú vị
             </motion.p>
 
-            <motion.div 
+            <motion.div
               className="flex flex-col sm:flex-row gap-4"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6, duration: 0.5 }}
+              variants={fadeInLeft}
             >
-              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.98 }}>
-                <Button size="lg" className="text-lg group relative overflow-hidden">
-                  <motion.span 
-                    className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
-                    initial={{ x: "-100%" }}
-                    whileHover={{ x: "100%" }}
-                    transition={{ duration: 0.5 }}
-                  />
-                  Bắt đầu chơi
-                  <motion.div
-                    className="ml-2"
-                    animate={{ x: [0, 5, 0] }}
-                    transition={{ duration: 1.5, repeat: Infinity }}
-                  >
-                    <ArrowRight className="h-5 w-5" />
-                  </motion.div>
+              <Link to="/lessons">
+                <Button size="lg" className="text-lg hover-scale shadow-lg hover:shadow-xl transition-all duration-300 group w-full sm:w-auto">
+                  Bắt đầu học
+                  <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
                 </Button>
-              </motion.div>
-              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.98 }}>
-                <Button size="lg" variant="outline" className="text-lg">
+              </Link>
+              <button
+                onClick={() => {
+                  const element = document.getElementById("classes");
+                  if (element) {
+                    element.scrollIntoView({ behavior: "smooth", block: "start" });
+                  }
+                }}
+              >
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="text-lg hover-scale border-2 hover:border-primary/50 transition-all duration-300 w-full sm:w-auto"
+                >
                   Khám phá lớp học
                 </Button>
-              </motion.div>
+              </button>
             </motion.div>
 
-            <div className="flex items-center gap-8 pt-4">
-              {[
-                { value: "5000+", label: "Học sinh" },
-                { value: "200+", label: "Giáo viên" },
-                { value: "50+", label: "Trường học" }
-              ].map((stat, i) => (
-                <motion.div
-                  key={stat.label}
-                  custom={i}
-                  variants={statsVariants}
-                  initial="hidden"
-                  animate="visible"
-                  whileHover={{ scale: 1.1, y: -5 }}
-                  className="cursor-default"
-                >
-                  <motion.div 
-                    className="text-3xl font-bold text-primary"
-                    animate={{ scale: [1, 1.05, 1] }}
-                    transition={{ delay: 1.5 + i * 0.2, duration: 0.5 }}
-                  >
-                    {stat.value}
-                  </motion.div>
-                  <div className="text-sm text-muted-foreground">{stat.label}</div>
-                </motion.div>
-              ))}
-            </div>
-          </motion.div>
+            <motion.div
+              className="flex flex-wrap gap-8 pt-4"
+              variants={fadeInLeft}
+            >
+              <div className="group cursor-default transition-transform duration-300 hover:scale-125 hover:-translate-y-1">
+                <div className="text-3xl font-bold text-emerald-500 group-hover:drop-shadow">
+                  5000+
+                </div>
+                <div className="text-sm text-emerald-700/80">
+                  Học sinh
+                </div>
+              </div>
+              <div className="group cursor-default transition-transform duration-300 hover:scale-125 hover:-translate-y-1">
+                <div className="text-3xl font-bold text-orange-500 group-hover:drop-shadow">
+                  200+
+                </div>
+                <div className="text-sm text-orange-700/80">
+                  Giáo viên
+                </div>
+              </div>
+              <div className="group cursor-default transition-transform duration-300 hover:scale-125 hover:-translate-y-1">
+                <div className="text-3xl font-bold text-sky-500 group-hover:drop-shadow">
+                  50+
+                </div>
+                <div className="text-sm text-sky-700/80">
+                  Trường học
+                </div>
+              </div>
+            </motion.div>
+          </div>
 
-          <motion.div 
+          <motion.div
             className="relative"
-            initial={{ opacity: 0, x: 50 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.7, delay: 0.2 }}
+            variants={fadeInRight}
           >
-            <motion.div 
-              className="aspect-video rounded-3xl overflow-hidden card-shadow"
-              whileHover={{ scale: 1.02, y: -10 }}
-              transition={{ duration: 0.3 }}
+            <motion.div
+              className="aspect-video rounded-3xl overflow-hidden card-shadow hover-lift transition-all duration-500 group bg-card"
+              variants={zoomIn}
             >
               <img
                 src={heroBanner}
                 alt="Học qua chơi với văn hóa Việt"
-                className="w-full h-full object-cover"
-              />
-              {/* Shine effect overlay */}
-              <motion.div
-                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
-                initial={{ x: "-100%" }}
-                animate={{ x: "200%" }}
-                transition={{ duration: 3, repeat: Infinity, repeatDelay: 2 }}
+                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
               />
             </motion.div>
-            
-            {/* Floating decorative elements */}
-            <motion.div 
-              className="absolute -top-4 -right-4 w-24 h-24 bg-secondary rounded-full opacity-50 blur-2xl"
-              animate={{ scale: [1, 1.2, 1], opacity: [0.5, 0.7, 0.5] }}
-              transition={{ duration: 4, repeat: Infinity }}
-            />
-            <motion.div 
-              className="absolute -bottom-4 -left-4 w-32 h-32 bg-primary/30 rounded-full opacity-50 blur-2xl"
-              animate={{ scale: [1, 1.3, 1], opacity: [0.5, 0.8, 0.5] }}
-              transition={{ duration: 5, repeat: Infinity, delay: 1 }}
-            />
-            
-            {/* Floating badge */}
+            {/* Decorative elements */}
             <motion.div
-              className="absolute -top-6 -left-6 bg-card rounded-2xl p-3 shadow-lg border"
-              initial={{ opacity: 0, scale: 0 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 1, type: "spring", stiffness: 200 }}
-              whileHover={{ scale: 1.1, rotate: 5 }}
-            >
-              <div className="flex items-center gap-2">
-                <Star className="h-5 w-5 text-yellow-500 fill-yellow-500" />
-                <span className="text-sm font-bold">4.9/5</span>
-              </div>
-            </motion.div>
-            
-            {/* Floating students count */}
+              className="absolute -top-4 -right-4 w-24 h-24 bg-secondary rounded-full opacity-60 blur-2xl"
+            />
             <motion.div
-              className="absolute -bottom-6 -right-6 bg-card rounded-2xl p-3 shadow-lg border"
-              initial={{ opacity: 0, scale: 0 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 1.2, type: "spring", stiffness: 200 }}
-              whileHover={{ scale: 1.1, rotate: -5 }}
-            >
-              <div className="flex items-center gap-2">
-                <Zap className="h-5 w-5 text-primary" />
-                <span className="text-sm font-bold">Online</span>
-              </div>
-            </motion.div>
+              className="absolute -bottom-4 -left-4 w-32 h-32 bg-primary/30 rounded-full opacity-60 blur-2xl"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 0.6, scale: 1 }}
+              transition={{ duration: 1.2, delay: 0.3 }}
+            />
           </motion.div>
-        </div>
+        </motion.div>
       </div>
     </section>
   );

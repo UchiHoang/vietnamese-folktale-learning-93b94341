@@ -180,7 +180,7 @@ const LibraryUploadModal = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md bg-card overflow-hidden px-4">
+      <DialogContent className="sm:max-w-md bg-card">
         <DialogHeader>
           <DialogTitle className="text-xl font-semibold">Tải lên tài liệu</DialogTitle>
           <DialogDescription>
@@ -188,7 +188,7 @@ const LibraryUploadModal = ({
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-5 overflow-hidden">
+        <form onSubmit={handleSubmit} className="space-y-5">
           {/* File Drop Zone */}
           <div
             className={`relative border-2 border-dashed rounded-xl p-4 text-center transition-all ${
@@ -210,9 +210,8 @@ const LibraryUploadModal = ({
                 </div>
                 <div className="flex-1 min-w-0 text-left">
                   <p 
-                    className="font-medium text-sm text-foreground overflow-hidden text-ellipsis whitespace-nowrap" 
+                    className="font-medium text-sm text-foreground break-words leading-snug max-h-12 overflow-hidden"
                     title={file.name}
-                    style={{ maxWidth: 'calc(100%)' }}
                   >
                     {file.name}
                   </p>

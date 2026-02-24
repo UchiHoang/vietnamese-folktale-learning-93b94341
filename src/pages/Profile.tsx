@@ -38,8 +38,10 @@ interface GameProgress {
   total_points: number;
   level: number;
   current_node: number;
-  completed_nodes: string[];
+  completed_nodes: (string | number)[];
   earned_badges: string[];
+  global_level?: number;
+  coins?: number;
 }
 
 interface StreakData {
@@ -49,12 +51,12 @@ interface StreakData {
   last_activity_date: string | null;
 }
 
-// Achievement interface is now imported from @/data/achievements
+
 
 const Profile = () => {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
   const [loading, setLoading] = useState(true);
+  const [searchParams] = useSearchParams();
   const [activeTab, setActiveTab] = useState(() => {
     const tabFromUrl = searchParams.get("tab");
     return tabFromUrl && ["info", "stats", "analytics", "activity", "settings", "password", "courses"].includes(tabFromUrl)
@@ -65,17 +67,18 @@ const Profile = () => {
   const [gameProgress, setGameProgress] = useState<GameProgress | null>(null);
   const [userRole, setUserRole] = useState<string>("student");
   const [streak, setStreak] = useState<StreakData | null>(null);
+  const [achievements, setAchievements] = useState<Achievement[]>([]);
   const [avatarModalOpen, setAvatarModalOpen] = useState(false);
 
-  // Achievement system hook
-  const {
-    earnedAchievements,
-    newlyUnlocked,
-    checkAndUnlockAchievements,
-    dismissNewAchievement,
-  } = useAchievements();
-
-  // Check achievements when data is loaded
+    // Achievement system hook
+    const {
+      earnedAchievements,
+      newlyUnlocked,
+      checkAndUnlockAchievements,
+      dismissNewAchievement,
+    } = useAchievements();
+    
+    // Check achievements when data is loaded
   const checkAchievements = useCallback(async (
     gp: GameProgress | null,
     sk: StreakData | null
@@ -111,6 +114,7 @@ const Profile = () => {
     }
   }, [loading, gameProgress, streak, checkAchievements]);
 
+
   const checkUser = async () => {
     try {
       const { data: { session } } = await supabase.auth.getSession();
@@ -129,9 +133,6 @@ const Profile = () => {
 
       // Update streak on login
       await updateStreak(session.user.id);
-
-      // Check achievements after data is loaded
-      // Note: We'll trigger this after state updates via useEffect
     } catch (error) {
       console.error("Error checking user:", error);
       toast({
@@ -160,25 +161,59 @@ const Profile = () => {
   };
 
   const loadGameProgress = async (userId: string) => {
-    const { data, error } = await supabase
+    // Load global progress from game_globals (PRIMARY SOURCE for XP)
+    const { data: globalData, error: globalError } = await supabase
+      .from("game_globals")
+      .select("*")
+      .eq("user_id", userId)
+      .single(); 
+
+    // Load all course progress to calculate total completed nodes
+    const { data: coursesData } = await supabase
+      .from("course_progress")
+      .select("*")
+      .eq("user_id", userId);
+
+    // Load from game_progress (legacy, for compatibility)
+    const { data: progressData } = await supabase
       .from("game_progress")
       .select("*")
       .eq("user_id", userId)
       .single();
 
-    if (error) {
-      console.error("Error loading game progress:", error);
-      return;
+    if (globalError && !globalData) {
+      console.error("Error loading global progress:", globalError);
     }
 
-    if (data) {
-      setGameProgress({
-        ...data,
-        completed_nodes: (data.completed_nodes as string[]) || [],
-        earned_badges: (data.earned_badges as string[]) || [],
+    // Calculate total completed nodes from ALL courses
+    const allCompletedNodes: (string | number)[] = [];
+    let totalPoints = 0;
+    
+    if (coursesData && coursesData.length > 0) {
+      coursesData.forEach((course: any) => {
+        // completed_nodes can be array of numbers [0,1,2] or strings ["n1","n2"]
+        const nodes = Array.isArray(course.completed_nodes) ? course.completed_nodes : [];
+        allCompletedNodes.push(...nodes);
+        totalPoints += (course.total_stars || 0);
       });
     }
+
+    // Use global_xp from game_globals as PRIMARY source
+    const totalXP = (globalData?.total_xp as number) || (progressData?.total_xp as number) || 0;
+    const globalLevel = (globalData?.global_level as number) || (progressData?.level as number) || 1;
+    setGameProgress({
+      total_xp: totalXP,
+      total_points: totalPoints,
+      level: globalLevel,
+      current_node: progressData?.current_node || 0,
+      completed_nodes: allCompletedNodes,
+      earned_badges: progressData?.earned_badges || [],
+      global_level: globalLevel,
+      coins: globalData?.coins || 0,
+    });
   };
+
+     // loadAchievements is now handled by useAchievements hook
 
   const loadUserRole = async (userId: string) => {
     const { data, error } = await supabase
@@ -218,7 +253,19 @@ const Profile = () => {
     setStreak(data as StreakData);
   };
 
-  // loadAchievements is now handled by useAchievements hook
+  const loadAchievements = async (userId: string) => {
+    const { data, error } = await supabase
+      .from("user_achievements")
+      .select("*")
+      .eq("user_id", userId);
+
+    if (error) {
+      console.error("Error loading achievements:", error);
+      return;
+    }
+
+    setAchievements((data as Achievement[]) || []);
+  };
 
   const updateStreak = async (userId: string) => {
     try {
@@ -369,9 +416,8 @@ const Profile = () => {
         currentAvatar={profile?.avatar || "👤"}
         onSave={handleAvatarSave}
       />
-
-      {/* Achievement Notification */}
-      <AchievementNotification
+     {/* Achievement Notification */}
+     <AchievementNotification
         achievement={newlyUnlocked}
         onDismiss={dismissNewAchievement}
       />

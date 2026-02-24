@@ -51,7 +51,7 @@ const DEFAULT_PROGRESS: UserProgress = {
   leaderboardRank: null,
 };
 
-export const useSupabaseProgress = (gradeId: string = 'grade2-trangquynh') => {
+export const useSupabaseProgress = () => {
   const [progress, setProgress] = useState<UserProgress>(DEFAULT_PROGRESS);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -62,29 +62,60 @@ export const useSupabaseProgress = (gradeId: string = 'grade2-trangquynh') => {
       setIsLoading(true);
       setError(null);
 
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        setIsLoading(false);
-        return;
-      }
-
       const { data, error: rpcError } = await supabase.rpc('get_user_progress');
 
       if (rpcError) {
         console.error('Error fetching progress:', rpcError);
-        setError(rpcError.message);
+        
+        // Handle authentication errors
+        if (rpcError.code === 'PGRST301' || rpcError.message?.includes('Not authenticated')) {
+          setError('Phiên đăng nhập đã hết hạn');
+          toast.error('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
+          return;
+        }
+        
+        const msg = rpcError.message || 'Không thể tải tiến độ';
+        setError(msg);
+        toast.error(msg);
         return;
       }
 
       if (data) {
         const progressData = data as Record<string, unknown>;
+        
+        // Safely parse completed_nodes and earned_badges
+        let completedNodes: string[] = [];
+        let earnedBadges: string[] = [];
+        
+        try {
+          if (Array.isArray(progressData.completed_nodes)) {
+            completedNodes = progressData.completed_nodes as string[];
+          } else if (typeof progressData.completed_nodes === 'string') {
+            completedNodes = JSON.parse(progressData.completed_nodes);
+          }
+        } catch (e) {
+          console.warn('Error parsing completed_nodes:', e);
+          completedNodes = [];
+        }
+        
+        try {
+          if (Array.isArray(progressData.earned_badges)) {
+            earnedBadges = progressData.earned_badges as string[];
+          } else if (typeof progressData.earned_badges === 'string') {
+            earnedBadges = JSON.parse(progressData.earned_badges);
+          }
+        } catch (e) {
+          console.warn('Error parsing earned_badges:', e);
+          earnedBadges = [];
+        }
+        
         setProgress({
           xp: (progressData.xp as number) || 0,
           points: (progressData.points as number) || 0,
           level: (progressData.level as number) || 1,
           currentNode: (progressData.current_node as number) || 0,
-          completedNodes: (progressData.completed_nodes as string[]) || [],
-          earnedBadges: (progressData.earned_badges as string[]) || [],
+          completedNodes,
+          earnedBadges,
           streak: {
             current: ((progressData.streak as Record<string, number>)?.current) || 0,
             longest: ((progressData.streak as Record<string, number>)?.longest) || 0,
@@ -93,105 +124,167 @@ export const useSupabaseProgress = (gradeId: string = 'grade2-trangquynh') => {
           leaderboardPoints: (progressData.leaderboard_points as number) || 0,
           leaderboardRank: (progressData.leaderboard_rank as number) || null,
         });
+      } else {
+        // No data returned - might be first time user
+        setProgress(DEFAULT_PROGRESS);
       }
     } catch (err) {
-      console.error('Unexpected error:', err);
-      setError('Failed to load progress');
+      console.error('Unexpected error fetching progress:', err);
+      setError('Không thể tải tiến độ');
+      // Set default progress on error to prevent UI from breaking
+      setProgress(DEFAULT_PROGRESS);
     } finally {
       setIsLoading(false);
     }
-  }, [gradeId]);
+  }, []);
 
-  // Complete a stage - atomic operation with retry logic
+  // Complete a stage - atomic operation with retry and timeout
   const completeStage = useCallback(async (
-    nodeIndex: number,
+    stageId: string,
     courseId: string,
     score: number,
-    stars: number,
-    xpReward: number,
-    gameSpecificData?: Record<string, unknown>,
-    retryCount: number = 0
+    maxScore: number,
+    correctAnswers: number,
+    totalQuestions: number,
+    timeSpentSeconds: number
   ): Promise<StageResult | null> => {
-    const MAX_RETRIES = 2;
+    const MAX_RETRIES = 3;
+    const TIMEOUT_MS = 30000; // 30 seconds timeout
     
-    try {
-      console.log('Submitting stage result:', { nodeIndex, courseId, score, stars, xpReward });
-      
-      const { data, error: rpcError } = await supabase.rpc('complete_stage', {
-        p_course_id: courseId,
-        p_node_index: nodeIndex,
-        p_score: score,
-        p_stars: stars,
-        p_xp_reward: xpReward,
-      });
+    for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
+      try {
+        // Create a timeout promise
+        const timeoutPromise = new Promise<never>((_, reject) => {
+          setTimeout(() => reject(new Error('Request timeout')), TIMEOUT_MS);
+        });
 
-      if (rpcError) {
-        console.error('Error completing stage:', rpcError);
+        // Race between RPC call and timeout
+        const rpcPromise = supabase.rpc('complete_stage', {
+          p_stage_id: stageId,
+          p_course_id: courseId,
+          p_score: score,
+          p_max_score: maxScore,
+          p_correct_answers: correctAnswers,
+          p_total_questions: totalQuestions,
+          p_time_spent_seconds: timeSpentSeconds,
+        });
+
+        type RpcError = { code?: string; message?: string } | null;
+
+        const rpcResult = (await Promise.race([
+          rpcPromise,
+          timeoutPromise,
+        ])) as { data: unknown; error: unknown };
+
+        const data = rpcResult.data;
+        const rpcError = rpcResult.error as RpcError;
+
+        if (rpcError) {
+          console.error(`Error completing stage (attempt ${attempt + 1}/${MAX_RETRIES}):`, rpcError);
+          
+          // Don't retry on authentication errors
+          if (rpcError.code === 'PGRST301' || rpcError.message?.includes('Not authenticated')) {
+            toast.error('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
+            return null;
+          }
+          
+          // Retry on network errors or server errors
+          if (attempt < MAX_RETRIES - 1 && (
+            rpcError.code === 'PGRST301' || 
+            rpcError.message?.includes('network') ||
+            rpcError.message?.includes('timeout') ||
+            rpcError.code?.startsWith('5')
+          )) {
+            // Wait before retrying (exponential backoff)
+            await new Promise(resolve => setTimeout(resolve, 1000 * (attempt + 1)));
+            continue;
+          }
+          
+          toast.error('Không thể lưu tiến độ. Vui lòng kiểm tra kết nối mạng.');
+          return null;
+        }
+
+        if (!data) {
+          console.error('No data returned from complete_stage');
+          if (attempt < MAX_RETRIES - 1) {
+            await new Promise(resolve => setTimeout(resolve, 1000 * (attempt + 1)));
+            continue;
+          }
+          toast.error('Không nhận được phản hồi từ server.');
+          return null;
+        }
+
+        const result = data as Record<string, unknown>;
         
-        // Retry on transient errors
-        if (retryCount < MAX_RETRIES && (rpcError.message.includes('timeout') || rpcError.message.includes('connection'))) {
-          console.log(`Retrying... attempt ${retryCount + 1}`);
-          await new Promise(resolve => setTimeout(resolve, 1000 * (retryCount + 1)));
-          return completeStage(nodeIndex, courseId, score, stars, xpReward, gameSpecificData, retryCount + 1);
+        // Validate response structure
+        if (typeof result.success !== 'boolean') {
+          console.error('Invalid response structure:', result);
+          if (attempt < MAX_RETRIES - 1) {
+            await new Promise(resolve => setTimeout(resolve, 1000 * (attempt + 1)));
+            continue;
+          }
+          toast.error('Dữ liệu phản hồi không hợp lệ.');
+          return null;
+        }
+
+        const stageResult: StageResult = {
+          success: result.success as boolean,
+          xpEarned: (result.xp_earned as number) || 0,
+          totalXp: (result.total_xp as number) || 0,
+          newLevel: (result.new_level as number) || 1,
+          levelUp: (result.level_up as boolean) || false,
+          completed: (result.completed as boolean) || false,
+          accuracy: (result.accuracy as number) || 0,
+          isNewBest: (result.is_new_best as boolean) || false,
+          attemptNumber: (result.attempt_number as number) || 1,
+          badgeEarned: (result.badge_earned as string) || null,
+        };
+
+        // If RPC executed but function returned failure, treat it as an error.
+        if (!stageResult.success) {
+          const errorMessage =
+            (result.error as string) ||
+            'Không thể lưu tiến độ (server trả về success=false).';
+          console.error('complete_stage returned success=false:', { stageId, courseId, result });
+          toast.error(errorMessage);
+          return null;
+        }
+
+        // Update local state
+        setProgress(prev => ({
+          ...prev,
+          xp: stageResult.totalXp,
+          level: stageResult.newLevel,
+          points: prev.points + score,
+          completedNodes: stageResult.completed && !prev.completedNodes.includes(stageId)
+            ? [...prev.completedNodes, stageId]
+            : prev.completedNodes,
+        }));
+
+        if (stageResult.levelUp) {
+          toast.success(`🎉 Lên cấp ${stageResult.newLevel}!`);
+        }
+
+        return stageResult;
+      } catch (err) {
+        console.error(`Unexpected error completing stage (attempt ${attempt + 1}/${MAX_RETRIES}):`, err);
+        
+        // Don't retry on timeout if it's the last attempt
+        if (attempt === MAX_RETRIES - 1) {
+          if (err instanceof Error && err.message === 'Request timeout') {
+            toast.error('Yêu cầu quá chậm. Vui lòng kiểm tra kết nối mạng và thử lại.');
+          } else {
+            toast.error('Lỗi khi lưu tiến độ. Vui lòng thử lại.');
+          }
+          return null;
         }
         
-        toast.error('Không thể lưu tiến độ. Vui lòng thử lại.');
-        return null;
+        // Wait before retrying
+        await new Promise(resolve => setTimeout(resolve, 1000 * (attempt + 1)));
       }
-
-      console.log('Stage result saved:', data);
-      
-      const result = data as Record<string, unknown>;
-      
-      if (!result.success) {
-        console.error('Stage completion failed:', result.error);
-        toast.error('Lỗi khi lưu tiến độ');
-        return null;
-      }
-      
-      const stageResult: StageResult = {
-        success: result.success as boolean,
-        xpEarned: (result.xp_earned as number) || 0,
-        totalXp: (result.total_xp as number) || 0,
-        newLevel: (result.new_level as number) || 1,
-        levelUp: (result.level_up as boolean) || false,
-        completed: (result.completed as boolean) || false,
-        accuracy: (result.accuracy as number) || 0,
-        isNewBest: (result.is_new_best as boolean) || false,
-        attemptNumber: (result.attempt_number as number) || 1,
-        badgeEarned: (result.badge_earned as string) || null,
-      };
-
-      // Update local state
-      const nodeId = `node-${nodeIndex}`;
-      setProgress(prev => ({
-        ...prev,
-        xp: stageResult.totalXp,
-        level: stageResult.newLevel,
-        points: prev.points + score,
-        completedNodes: stageResult.completed && !prev.completedNodes.includes(nodeId)
-          ? [...prev.completedNodes, nodeId]
-          : prev.completedNodes,
-      }));
-
-      if (stageResult.levelUp) {
-        toast.success(`🎉 Lên cấp ${stageResult.newLevel}!`);
-      }
-
-      return stageResult;
-    } catch (err) {
-      console.error('Unexpected error completing stage:', err);
-      
-      // Retry on network errors
-      if (retryCount < MAX_RETRIES) {
-        console.log(`Retrying after error... attempt ${retryCount + 1}`);
-        await new Promise(resolve => setTimeout(resolve, 1000 * (retryCount + 1)));
-        return completeStage(nodeIndex, courseId, score, stars, xpReward, gameSpecificData, retryCount + 1);
-      }
-      
-      toast.error('Lỗi kết nối. Vui lòng kiểm tra mạng và thử lại.');
-      return null;
     }
+    
+    return null;
   }, []);
 
   // Unlock a badge - atomic with duplicate prevention
@@ -214,21 +307,13 @@ export const useSupabaseProgress = (gradeId: string = 'grade2-trangquynh') => {
         return null;
       }
 
-      // unlock_badge returns an array with one item
-      const resultArray = data as Array<{ success: boolean; already_earned: boolean; badge_id: string; earned_at: string; message: string }>;
-      const result = resultArray?.[0];
-      
-      if (!result) {
-        console.error('No result from unlock_badge');
-        return null;
-      }
-      
+      const result = data as Record<string, unknown>;
       const badgeResult: BadgeResult = {
-        success: result.success,
-        alreadyEarned: result.already_earned,
-        badgeId: result.badge_id,
-        earnedAt: result.earned_at,
-        message: result.message,
+        success: result.success as boolean,
+        alreadyEarned: result.already_earned as boolean,
+        badgeId: result.badge_id as string,
+        earnedAt: result.earned_at as string,
+        message: result.message as string,
       };
 
       if (badgeResult.success) {
@@ -257,8 +342,7 @@ export const useSupabaseProgress = (gradeId: string = 'grade2-trangquynh') => {
       const { error: updateError } = await supabase
         .from('game_progress')
         .update({ current_node: nodeIndex, updated_at: new Date().toISOString() })
-        .eq('user_id', user.id)
-        .eq('grade', gradeId);
+        .eq('user_id', user.id);
 
       if (updateError) {
         console.error('Error updating current node:', updateError);
@@ -269,7 +353,7 @@ export const useSupabaseProgress = (gradeId: string = 'grade2-trangquynh') => {
     } catch (err) {
       console.error('Unexpected error:', err);
     }
-  }, [gradeId]);
+  }, []);
 
   // Reset progress (for testing/admin)
   const resetProgress = useCallback(async () => {
@@ -281,22 +365,21 @@ export const useSupabaseProgress = (gradeId: string = 'grade2-trangquynh') => {
         .from('game_progress')
         .update({
           total_xp: 0,
-          points: 0,
+          total_points: 0,
           level: 1,
           current_node: 0,
           completed_nodes: [],
           earned_badges: [],
           updated_at: new Date().toISOString(),
         })
-        .eq('user_id', user.id)
-        .eq('grade', gradeId);
+        .eq('user_id', user.id);
 
       setProgress(DEFAULT_PROGRESS);
       toast.success('Đã đặt lại tiến độ');
     } catch (err) {
       console.error('Error resetting progress:', err);
     }
-  }, [gradeId]);
+  }, []);
 
   // Get stage history
   const getStageHistory = useCallback(async (stageId?: string, courseId?: string) => {

@@ -2,7 +2,6 @@ import { useState, memo, useRef, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { CheckCircle2, XCircle } from "lucide-react";
 import { motion } from "framer-motion";
-import { resolveLegacyAssetPath } from "@/utils/assetPaths";
 
 interface CountingGameProps {
   items: {
@@ -64,7 +63,7 @@ const CountingGameComponent = ({ items, correctAnswer, question, explanation, on
                 {Array.from({ length: item.count }, (_, idx) => (
                   <motion.img
                     key={`${groupIdx}-${idx}`}
-                    src={resolveLegacyAssetPath(item.image)}
+                    src={item.image}
                     alt=""
                     className="w-12 h-12 md:w-16 md:h-16 object-contain"
                     initial={{ scale: 0, opacity: 0 }}

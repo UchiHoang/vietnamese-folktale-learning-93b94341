@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -6,8 +6,6 @@ import { useToast } from "@/hooks/use-toast";
 import { z } from "zod";
 import { motion } from "framer-motion";
 import { Send, MessageCircle, Mail, User, FileText, Phone, MapPin, Star, Heart, Sparkles, BookOpen, Pencil } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
-import { useRecaptcha } from "@/hooks/useRecaptcha";
 
 const contactSchema = z.object({
   name: z.string().trim().min(1, { message: "Vui lòng nhập họ tên" }).max(100, { message: "Họ tên không được quá 100 ký tự" }),
@@ -28,7 +26,6 @@ const ContactForm = () => {
   const [errors, setErrors] = useState<Partial<Record<keyof ContactFormData, string>>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
-  const { executeRecaptcha, isReady: recaptchaReady } = useRecaptcha();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -57,36 +54,11 @@ const ContactForm = () => {
     setIsSubmitting(true);
     
     try {
-      // Get reCAPTCHA token
-      const recaptchaToken = await executeRecaptcha('contact_form');
+      await new Promise(resolve => setTimeout(resolve, 1000));
       
-      if (!recaptchaToken) {
-        toast({
-          title: "Lỗi bảo mật",
-          description: "Không thể xác minh reCAPTCHA. Vui lòng tải lại trang và thử lại.",
-          variant: "destructive",
-        });
-        setIsSubmitting(false);
-        return;
-      }
-
-      const { data, error } = await supabase.functions.invoke('send-contact-email', {
-        body: {
-          name: result.data.name,
-          email: result.data.email,
-          subject: result.data.subject,
-          message: result.data.message,
-          recaptchaToken,
-        },
-      });
-
-      if (error) {
-        throw error;
-      }
-
       toast({
-        title: "Gửi thành công! 🎉",
-        description: "Chúng mình sẽ liên hệ với bạn sớm nhất có thể. Bạn cũng sẽ nhận được email xác nhận.",
+        title: "Gửi thành công!",
+        description: "Chúng mình sẽ liên hệ với bạn sớm nhất có thể.",
       });
       
       setFormData({

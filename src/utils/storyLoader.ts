@@ -1,10 +1,9 @@
 import storyData from "@/data/story.grade2.trangquynh.json";
 import curriculumData from "@/data/curriculum.grade2.json";
-import { getBadgeIconPath } from "@/utils/assetPaths";
 
 export interface Question {
   id: string;
-  type: "multiple-choice" | "matching-pairs" | "drag-drop" | "fill-blank" | "counting";
+  type: "multiple-choice" | "matching-pairs" | "drag-drop" | "fill-blank" | "counting"| "interactive-choice";
   question: string;
   options?: string[];
   correctAnswer?: number;
@@ -170,39 +169,39 @@ export const getBadgeInfo = (badgeId: string) => {
   const badges: Record<string, { name: string; icon: string; description: string }> = {
     "addition-master": {
       name: "Huy hiệu Tính nhanh",
-      icon: getBadgeIconPath("addition-master"),
+      icon: "/assets/user/icon_badge.png",
       description: "Hoàn thành thử thách phép cộng"
     },
     "subtraction-master": {
       name: "Huy hiệu Tư duy",
-      icon: getBadgeIconPath("subtraction-master"),
+      icon: "/assets/user/icon_badge.png",
       description: "Hoàn thành thử thách phép trừ"
     },
     "measurement-master": {
       name: "Huy hiệu Đo lường",
-      icon: getBadgeIconPath("measurement-master"),
+      icon: "/assets/user/icon_badge.png",
       description: "Hoàn thành thử thách đo lường"
     },
     "time-master": {
       name: "Huy hiệu Thời gian",
-      icon: getBadgeIconPath("time-master"),
+      icon: "/assets/user/icon_clock.png",
       description: "Hoàn thành thử thách về thời gian"
     },
     "money-master": {
       name: "Huy hiệu Tiền tệ",
-      icon: getBadgeIconPath("money-master"),
+      icon: "/assets/user/icon_money.png",
       description: "Hoàn thành thử thách về tiền"
     },
     "grade2-master": {
       name: "Huy hiệu Giỏi toán lớp 2",
-      icon: getBadgeIconPath("grade2-master"),
+      icon: "/assets/user/icon_badge.png",
       description: "Hoàn thành tất cả thử thách lớp 2"
     }
   };
   
   return badges[badgeId] || {
     name: "Huy hiệu",
-    icon: getBadgeIconPath("default"),
+    icon: "/assets/user/icon_badge.png",
     description: "Hoàn thành thử thách"
   };
 };

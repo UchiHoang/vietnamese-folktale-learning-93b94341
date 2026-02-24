@@ -1,28 +1,55 @@
 import { memo } from "react";
 import { Lock, CheckCircle, Star } from "lucide-react";
-import { StoryNode } from "@/utils/storyLoader";
 import { GameProgress } from "@/hooks/useGameEngine";
-import { getTrangQuynhLevelIcon } from "@/utils/assetPaths";
+import { StoryNode } from "@/types/game";
+import { getLevelIcon } from "@/utils/levelIcons";
 
 interface LevelSelectionProps {
+  title: string;
+  description: string;
   nodes: StoryNode[];
   progress: GameProgress;
   onSelectLevel: (nodeIndex: number) => void;
 }
 
-const LevelSelectionComponent = ({ nodes, progress, onSelectLevel }: LevelSelectionProps) => {
+const LevelSelectionComponent = ({
+  title,
+  description,
+  nodes,
+  progress,
+  onSelectLevel,
+}: LevelSelectionProps) => {
+  // Chuẩn hóa completed nodes và ngưỡng mở khóa để tránh khóa lùi khi chơi lại màn cũ
+  const completedNodeIndices: number[] = progress.completedNodes
+    .map((n: unknown) => {
+      if (typeof n === "number") return n;
+      if (typeof n === "string") {
+        if (!isNaN(Number(n))) return Number(n);
+        const foundIndex = nodes.findIndex((nd) => nd.id === n);
+        return foundIndex >= 0 ? foundIndex : -1;
+      }
+      return -1;
+    })
+    .filter((n: number) => n >= 0);
+
+  const maxCompletedIndex = completedNodeIndices.length
+    ? Math.max(...completedNodeIndices)
+    : -1;
+  const unlockUntil = Math.max(progress.currentNodeIndex, maxCompletedIndex + 1);
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-primary/5 p-4 md:p-8">
       <div className="max-w-7xl mx-auto">
+        
         {/* Header */}
         <div className="text-center mb-12 space-y-4">
           <h1 className="text-4xl md:text-5xl font-heading font-bold text-primary">
-            Trạng Quỳnh đi thi
+            {title}
           </h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Cậu bé Trạng Quỳnh chuẩn bị đi thi Toán rồi đó! Hãy giúp Quỳnh vượt qua từng màn thử thách và trở thành &quot;Trạng nhí thông minh&quot; nhé!
+            {description}
           </p>
-          
+
           {/* Progress Summary */}
           <div className="flex items-center justify-center gap-6 mt-6">
             <div className="bg-card px-6 py-3 rounded-full border border-primary/20">
@@ -31,9 +58,12 @@ const LevelSelectionComponent = ({ nodes, progress, onSelectLevel }: LevelSelect
                 {progress.completedNodes.length}/{nodes.length}
               </span>
             </div>
+
             <div className="bg-card px-6 py-3 rounded-full border border-primary/20">
               <Star className="w-4 h-4 text-primary inline mr-2" />
-              <span className="text-lg font-bold text-primary">{progress.totalXp} XP</span>
+              <span className="text-lg font-bold text-primary">
+                {progress.totalXp} XP
+              </span>
             </div>
           </div>
         </div>
@@ -41,8 +71,9 @@ const LevelSelectionComponent = ({ nodes, progress, onSelectLevel }: LevelSelect
         {/* Level Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {nodes.map((node, index) => {
-            const isCompleted = progress.completedNodes.includes(node.id);
-            const isUnlocked = index === 0 || progress.completedNodes.includes(nodes[index - 1]?.id);
+            const isCompleted = completedNodeIndices.includes(index);
+            // Màn được unlock nếu index <= ngưỡng mở khóa cao nhất (max completed + 1) hoặc currentNodeIndex
+            const isUnlocked = index === 0 || index <= unlockUntil;
             const isCurrent = progress.currentNodeIndex === index;
 
             return (
@@ -52,9 +83,17 @@ const LevelSelectionComponent = ({ nodes, progress, onSelectLevel }: LevelSelect
                 disabled={!isUnlocked}
                 className={`
                   relative bg-card rounded-xl p-6 border-2 transition-all duration-300
-                  ${isUnlocked ? "hover:scale-105 hover:shadow-xl cursor-pointer" : "opacity-50 cursor-not-allowed"}
+                  ${
+                    isUnlocked
+                      ? "hover:scale-105 hover:shadow-xl cursor-pointer"
+                      : "opacity-50 cursor-not-allowed"
+                  }
                   ${isCurrent ? "border-primary ring-4 ring-primary/20" : "border-primary/20"}
-                  ${isCompleted ? "bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-950/20 dark:to-emerald-950/20" : ""}
+                  ${
+                    isCompleted
+                      ? "bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-950/20 dark:to-emerald-950/20"
+                      : ""
+                  }
                 `}
                 aria-label={`Màn ${node.order}: ${node.title}`}
               >
@@ -78,10 +117,12 @@ const LevelSelectionComponent = ({ nodes, progress, onSelectLevel }: LevelSelect
 
                 {/* Level Icon */}
                 <div className="mb-4 flex justify-center">
-                  <img 
-                    src={getTrangQuynhLevelIcon(node.order)} 
+                  <img
+                    src={getLevelIcon(title, index)}
                     alt={node.title}
-                    className={`w-20 h-20 object-contain ${!isUnlocked ? 'opacity-50 grayscale' : ''}`}
+                    className={`w-20 h-20 object-contain ${
+                      !isUnlocked ? "opacity-50 grayscale" : ""
+                    }`}
                   />
                 </div>
 
@@ -93,7 +134,7 @@ const LevelSelectionComponent = ({ nodes, progress, onSelectLevel }: LevelSelect
                   <p className="text-sm text-muted-foreground line-clamp-2">
                     {node.objective}
                   </p>
-                  
+
                   {/* Math Topic Badge */}
                   <div className="pt-2">
                     <span className="inline-block px-3 py-1 bg-primary/10 text-primary text-xs font-medium rounded-full">
@@ -102,7 +143,7 @@ const LevelSelectionComponent = ({ nodes, progress, onSelectLevel }: LevelSelect
                   </div>
                 </div>
 
-                {/* Play Button or Lock */}
+                {/* Play Button */}
                 <div className="mt-4">
                   {isUnlocked ? (
                     <div className="text-sm font-semibold text-primary">

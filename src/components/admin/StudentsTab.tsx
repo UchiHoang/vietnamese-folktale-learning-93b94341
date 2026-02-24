@@ -4,7 +4,15 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Search, Users, TrendingUp, Award, Eye } from "lucide-react";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Search, Users, TrendingUp, Award, Eye, UserPlus, Loader2 } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -18,7 +26,9 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogFooter,
 } from "@/components/ui/dialog";
+import { toast } from "@/hooks/use-toast";
 
 interface Student {
   id: string;
@@ -27,6 +37,11 @@ interface Student {
   grade?: string;
   email?: string;
   school?: string;
+  phone?: string;
+  address?: string;
+  birth_date?: string;
+  class_id?: string;
+  class_name?: string;
 }
 
 interface StudentStats {
@@ -34,72 +49,241 @@ interface StudentStats {
   level: number;
   total_points: number;
   current_streak: number;
+  completed_lessons: number;
 }
+
+interface Class {
+  id: string;
+  name: string;
+  grade: string;
+}
+
+const GRADE_DISPLAY: Record<string, string> = {
+  "grade0": "Mầm non",
+  "grade1": "Lớp 1",
+  "grade2": "Lớp 2",
+  "grade3": "Lớp 3",
+  "grade4": "Lớp 4",
+  "grade5": "Lớp 5",
+};
 
 const StudentsTab = () => {
   const [students, setStudents] = useState<Student[]>([]);
+  const [classes, setClasses] = useState<Class[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
   const [studentStats, setStudentStats] = useState<StudentStats | null>(null);
   const [showDetailModal, setShowDetailModal] = useState(false);
+  const [showAssignModal, setShowAssignModal] = useState(false);
+  const [assigningStudent, setAssigningStudent] = useState<Student | null>(null);
+  const [selectedClassId, setSelectedClassId] = useState<string>("");
+  const [isAssigning, setIsAssigning] = useState(false);
 
   useEffect(() => {
     loadStudents();
+    loadClasses();
   }, []);
 
   const loadStudents = async () => {
     setIsLoading(true);
     
-    // Get all student user IDs
-    const { data: studentRoles } = await supabase
-      .from("user_roles")
-      .select("user_id")
-      .eq("role", "student");
+    try {
+      // Get all student user IDs
+      const { data: studentRoles } = await supabase
+        .from("user_roles")
+        .select("user_id")
+        .eq("role", "student");
 
-    if (studentRoles && studentRoles.length > 0) {
-      const studentIds = studentRoles.map(r => r.user_id);
-      
-      const { data: profiles } = await supabase
-        .from("profiles")
-        .select("*")
-        .in("id", studentIds);
+      if (studentRoles && studentRoles.length > 0) {
+        const studentIds = studentRoles.map(r => r.user_id);
+        
+        // Load profiles
+        const { data: profiles } = await supabase
+          .from("profiles")
+          .select("*")
+          .in("id", studentIds);
 
-      setStudents(profiles || []);
+        if (!profiles) {
+          setStudents([]);
+          setIsLoading(false);
+          return;
+        }
+
+        // Load classes separately
+        const classIds = profiles
+          .map(p => p.class_id)
+          .filter((id): id is string => id != null);
+
+        let classesMap: Record<string, string> = {};
+        
+        if (classIds.length > 0) {
+          const { data: classesData } = await supabase
+            .from("classes")
+            .select("id, name")
+            .in("id", classIds);
+
+          if (classesData) {
+            classesMap = classesData.reduce((acc, cls) => {
+              acc[cls.id] = cls.name;
+              return acc;
+            }, {} as Record<string, string>);
+          }
+        }
+
+        // Transform data to include class_name
+        const studentsWithClass = profiles.map((profile: any) => ({
+          ...profile,
+          class_name: profile.class_id ? classesMap[profile.class_id] : undefined,
+        }));
+
+        setStudents(studentsWithClass);
+      } else {
+        setStudents([]);
+      }
+    } catch (error) {
+      console.error("Error loading students:", error);
+      toast({
+        title: "Lỗi",
+        description: "Không thể tải danh sách học sinh",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
     }
-    
-    setIsLoading(false);
+  };
+
+  const loadClasses = async () => {
+    const { data } = await supabase
+      .from("classes")
+      .select("id, name, grade")
+      .order("name");
+
+    setClasses(data || []);
   };
 
   const viewStudentDetail = async (student: Student) => {
     setSelectedStudent(student);
     
-    // Load student stats
-    const { data: gameProgress } = await supabase
-      .from("game_progress")
-      .select("total_xp, level, total_points")
-      .eq("user_id", student.id)
-      .single();
+    try {
+      // Load student stats from game_globals (primary source)
+      const { data: globalData } = await supabase
+        .from("game_globals")
+        .select("total_xp, global_level")
+        .eq("user_id", student.id)
+        .maybeSingle();
 
-    const { data: streak } = await supabase
-      .from("user_streaks")
-      .select("current_streak")
-      .eq("user_id", student.id)
-      .single();
+      // Load from game_progress as fallback
+      const { data: gameProgress } = await supabase
+        .from("game_progress")
+        .select("total_xp, level, total_points")
+        .eq("user_id", student.id)
+        .maybeSingle();
 
-    setStudentStats({
-      total_xp: gameProgress?.total_xp || 0,
-      level: gameProgress?.level || 1,
-      total_points: gameProgress?.total_points || 0,
-      current_streak: streak?.current_streak || 0,
-    });
+      // Load streak data
+      const { data: streak } = await supabase
+        .from("user_streaks")
+        .select("current_streak")
+        .eq("user_id", student.id)
+        .maybeSingle();
+
+      // Load completed lessons from course_progress
+      const { data: courseProgress } = await supabase
+        .from("course_progress")
+        .select("completed_nodes")
+        .eq("user_id", student.id);
+
+      let totalCompletedLessons = 0;
+      let totalPoints = 0;
+
+      if (courseProgress && courseProgress.length > 0) {
+        courseProgress.forEach((course: any) => {
+          const nodes = Array.isArray(course.completed_nodes) ? course.completed_nodes : [];
+          totalCompletedLessons += nodes.length;
+        });
+      }
+
+      // Calculate total points from course_progress
+      const { data: courseStars } = await supabase
+        .from("course_progress")
+        .select("total_stars")
+        .eq("user_id", student.id);
+
+      if (courseStars && courseStars.length > 0) {
+        totalPoints = courseStars.reduce((sum, course) => sum + (course.total_stars || 0), 0);
+      }
+
+      setStudentStats({
+        total_xp: globalData?.total_xp || gameProgress?.total_xp || 0,
+        level: globalData?.global_level || gameProgress?.level || 1,
+        total_points: totalPoints || gameProgress?.total_points || 0,
+        current_streak: streak?.current_streak || 0,
+        completed_lessons: totalCompletedLessons,
+      });
+    } catch (error) {
+      console.error("Error loading student stats:", error);
+      toast({
+        title: "Lỗi",
+        description: "Không thể tải thông tin học sinh",
+        variant: "destructive",
+      });
+    }
 
     setShowDetailModal(true);
   };
 
+  const handleOpenAssignModal = (student: Student) => {
+    setAssigningStudent(student);
+    setSelectedClassId(student.class_id || "none");
+    setShowAssignModal(true);
+  };
+
+  const handleAssignClass = async () => {
+    if (!assigningStudent) return;
+
+    setIsAssigning(true);
+    try {
+      const classIdToUpdate = selectedClassId === "none" ? null : selectedClassId;
+      
+      const { error } = await supabase
+        .from("profiles")
+        .update({
+          class_id: classIdToUpdate,
+          updated_at: new Date().toISOString(),
+        })
+        .eq("id", assigningStudent.id);
+
+      if (error) {
+        console.error("Error updating class:", error);
+        throw error;
+      }
+
+      toast({
+        title: "Thành công",
+        description: classIdToUpdate 
+          ? "Đã gán học sinh vào lớp"
+          : "Đã xóa học sinh khỏi lớp",
+      });
+
+      setShowAssignModal(false);
+      setSelectedClassId("none");
+      await loadStudents();
+    } catch (error: any) {
+      console.error("Failed to assign class:", error);
+      toast({
+        title: "Lỗi",
+        description: error.message || "Không thể gán lớp",
+        variant: "destructive",
+      });
+    } finally {
+      setIsAssigning(false);
+    }
+  };
+
   const filteredStudents = students.filter(student =>
     student.display_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    student.email?.toLowerCase().includes(searchQuery.toLowerCase())
+    student.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    student.class_name?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const isEmojiAvatar = (avatar?: string) => !avatar || 
@@ -130,8 +314,10 @@ const StudentsTab = () => {
                 <TrendingUp className="h-6 w-6 text-green-600" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Đang hoạt động</p>
-                <p className="text-2xl font-bold">{Math.floor(students.length * 0.7)}</p>
+                <p className="text-sm text-muted-foreground">Đã có lớp</p>
+                <p className="text-2xl font-bold">
+                  {students.filter(s => s.class_id).length}
+                </p>
               </div>
             </div>
           </CardContent>
@@ -144,8 +330,10 @@ const StudentsTab = () => {
                 <Award className="h-6 w-6 text-amber-600" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Hoàn thành xuất sắc</p>
-                <p className="text-2xl font-bold">{Math.floor(students.length * 0.3)}</p>
+                <p className="text-sm text-muted-foreground">Chưa có lớp</p>
+                <p className="text-2xl font-bold">
+                  {students.filter(s => !s.class_id).length}
+                </p>
               </div>
             </div>
           </CardContent>
@@ -170,8 +358,8 @@ const StudentsTab = () => {
         </CardHeader>
         <CardContent>
           {isLoading ? (
-            <div className="text-center py-8 text-muted-foreground">
-              Đang tải dữ liệu...
+            <div className="flex items-center justify-center py-8">
+              <Loader2 className="h-8 w-8 animate-spin text-primary" />
             </div>
           ) : filteredStudents.length === 0 ? (
             <div className="text-center py-8 text-muted-foreground">
@@ -182,7 +370,8 @@ const StudentsTab = () => {
               <TableHeader>
                 <TableRow>
                   <TableHead>Học sinh</TableHead>
-                  <TableHead>Lớp</TableHead>
+                  <TableHead>Lớp học</TableHead>
+                  <TableHead>Khối</TableHead>
                   <TableHead>Trường</TableHead>
                   <TableHead>Email</TableHead>
                   <TableHead className="text-right">Hành động</TableHead>
@@ -208,18 +397,37 @@ const StudentsTab = () => {
                         <span className="font-medium">{student.display_name}</span>
                       </div>
                     </TableCell>
+                    <TableCell>
+                      {student.class_name ? (
+                        <span className="px-2 py-1 bg-primary/10 text-primary rounded-md text-sm">
+                          {student.class_name}
+                        </span>
+                      ) : (
+                        <span className="text-muted-foreground">—</span>
+                      )}
+                    </TableCell>
                     <TableCell>{student.grade || "—"}</TableCell>
                     <TableCell>{student.school || "—"}</TableCell>
                     <TableCell>{student.email || "—"}</TableCell>
                     <TableCell className="text-right">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => viewStudentDetail(student)}
-                      >
-                        <Eye className="h-4 w-4 mr-1" />
-                        Xem
-                      </Button>
+                      <div className="flex items-center justify-end gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleOpenAssignModal(student)}
+                        >
+                          <UserPlus className="h-4 w-4 mr-1" />
+                          Gán lớp
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => viewStudentDetail(student)}
+                        >
+                          <Eye className="h-4 w-4 mr-1" />
+                          Xem
+                        </Button>
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))}
@@ -250,32 +458,168 @@ const StudentsTab = () => {
                     </>
                   )}
                 </Avatar>
-                <div>
+                <div className="flex-1">
                   <h3 className="text-lg font-bold">{selectedStudent.display_name}</h3>
-                  <p className="text-muted-foreground">{selectedStudent.email}</p>
+                  <p className="text-sm text-muted-foreground">{selectedStudent.email || "Chưa có email"}</p>
+                  {selectedStudent.class_name && (
+                    <p className="text-sm text-primary mt-1">Lớp: {selectedStudent.class_name}</p>
+                  )}
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div className="p-4 bg-muted rounded-xl text-center">
-                  <p className="text-2xl font-bold text-primary">{studentStats?.level || 1}</p>
-                  <p className="text-sm text-muted-foreground">Cấp độ</p>
+              {/* Personal Info */}
+              <div className="space-y-3 p-4 bg-muted/50 rounded-lg">
+                <h4 className="font-semibold text-sm">Thông tin cá nhân</h4>
+                <div className="grid grid-cols-2 gap-3 text-sm">
+                  <div>
+                    <p className="text-muted-foreground">Khối</p>
+                    <p className="font-medium">{selectedStudent.grade || "Chưa cập nhật"}</p>
+                  </div>
+                  <div>
+                    <p className="text-muted-foreground">Trường</p>
+                    <p className="font-medium">{selectedStudent.school || "Chưa cập nhật"}</p>
+                  </div>
+                  <div>
+                    <p className="text-muted-foreground">Số điện thoại</p>
+                    <p className="font-medium">{selectedStudent.phone || "Chưa cập nhật"}</p>
+                  </div>
+                  <div>
+                    <p className="text-muted-foreground">Ngày sinh</p>
+                    <p className="font-medium">
+                      {selectedStudent.birth_date 
+                        ? new Date(selectedStudent.birth_date).toLocaleDateString("vi-VN")
+                        : "Chưa cập nhật"}
+                    </p>
+                  </div>
+                  {selectedStudent.address && (
+                    <div className="col-span-2">
+                      <p className="text-muted-foreground">Địa chỉ</p>
+                      <p className="font-medium">{selectedStudent.address}</p>
+                    </div>
+                  )}
                 </div>
-                <div className="p-4 bg-muted rounded-xl text-center">
-                  <p className="text-2xl font-bold text-primary">{studentStats?.total_xp || 0}</p>
-                  <p className="text-sm text-muted-foreground">Tổng XP</p>
-                </div>
-                <div className="p-4 bg-muted rounded-xl text-center">
-                  <p className="text-2xl font-bold text-primary">{studentStats?.total_points || 0}</p>
-                  <p className="text-sm text-muted-foreground">Điểm số</p>
-                </div>
-                <div className="p-4 bg-muted rounded-xl text-center">
-                  <p className="text-2xl font-bold text-orange-500">{studentStats?.current_streak || 0}</p>
-                  <p className="text-sm text-muted-foreground">Chuỗi ngày</p>
+              </div>
+
+              {/* Stats */}
+              <div className="space-y-3">
+                <h4 className="font-semibold text-sm">Thống kê học tập</h4>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="p-4 bg-gradient-to-br from-primary/10 to-primary/5 rounded-xl text-center">
+                    <p className="text-2xl font-bold text-primary">{studentStats?.level || 1}</p>
+                    <p className="text-xs text-muted-foreground">Cấp độ</p>
+                  </div>
+                  <div className="p-4 bg-gradient-to-br from-blue-500/10 to-blue-500/5 rounded-xl text-center">
+                    <p className="text-2xl font-bold text-blue-600">{studentStats?.total_xp || 0}</p>
+                    <p className="text-xs text-muted-foreground">Tổng XP</p>
+                  </div>
+                  <div className="p-4 bg-gradient-to-br from-green-500/10 to-green-500/5 rounded-xl text-center">
+                    <p className="text-2xl font-bold text-green-600">{studentStats?.total_points || 0}</p>
+                    <p className="text-xs text-muted-foreground">Điểm số</p>
+                  </div>
+                  <div className="p-4 bg-gradient-to-br from-orange-500/10 to-orange-500/5 rounded-xl text-center">
+                    <p className="text-2xl font-bold text-orange-600">{studentStats?.current_streak || 0}</p>
+                    <p className="text-xs text-muted-foreground">Chuỗi ngày</p>
+                  </div>
+                  <div className="col-span-2 p-4 bg-gradient-to-br from-purple-500/10 to-purple-500/5 rounded-xl text-center">
+                    <p className="text-2xl font-bold text-purple-600">{studentStats?.completed_lessons || 0}</p>
+                    <p className="text-xs text-muted-foreground">Bài đã hoàn thành</p>
+                  </div>
                 </div>
               </div>
             </div>
           )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Assign Class Modal */}
+      <Dialog open={showAssignModal} onOpenChange={setShowAssignModal}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Gán lớp học</DialogTitle>
+          </DialogHeader>
+          {assigningStudent && (
+            <div className="space-y-4">
+              <div className="flex items-center gap-3 p-4 bg-muted rounded-lg">
+                <Avatar className="h-12 w-12">
+                  {isEmojiAvatar(assigningStudent.avatar) ? (
+                    <AvatarFallback className="bg-primary/10 text-lg">
+                      {assigningStudent.avatar || "👤"}
+                    </AvatarFallback>
+                  ) : (
+                    <>
+                      <AvatarImage src={assigningStudent.avatar} />
+                      <AvatarFallback>{assigningStudent.display_name?.[0]}</AvatarFallback>
+                    </>
+                  )}
+                </Avatar>
+                <div>
+                  <p className="font-medium">{assigningStudent.display_name}</p>
+                  <p className="text-sm text-muted-foreground">{assigningStudent.email}</p>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="class">Chọn lớp học</Label>
+                <Select
+                  value={selectedClassId}
+                  onValueChange={(value) => {
+                    console.log("Selected class:", value);
+                    setSelectedClassId(value);
+                  }}
+                >
+                  <SelectTrigger id="class">
+                    <SelectValue placeholder="Chọn lớp học..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">
+                      <span className="text-muted-foreground italic">Không có lớp</span>
+                    </SelectItem>
+                    {classes.length === 0 ? (
+                      <div className="p-2 text-sm text-muted-foreground text-center">
+                        Chưa có lớp học nào
+                      </div>
+                    ) : (
+                      classes.map((cls) => (
+                        <SelectItem key={cls.id} value={cls.id}>
+                          {cls.name} - {GRADE_DISPLAY[cls.grade] || cls.grade}
+                        </SelectItem>
+                      ))
+                    )}
+                  </SelectContent>
+                </Select>
+                {assigningStudent?.class_name && (
+                  <p className="text-sm text-muted-foreground">
+                    Lớp hiện tại: <span className="font-medium text-primary">{assigningStudent.class_name}</span>
+                  </p>
+                )}
+                {!assigningStudent?.class_name && (
+                  <p className="text-sm text-muted-foreground">
+                    Học sinh chưa có lớp
+                  </p>
+                )}
+              </div>
+            </div>
+          )}
+
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setShowAssignModal(false)}
+              disabled={isAssigning}
+            >
+              Hủy
+            </Button>
+            <Button onClick={handleAssignClass} disabled={isAssigning}>
+              {isAssigning ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Đang lưu...
+                </>
+              ) : (
+                "Lưu"
+              )}
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>

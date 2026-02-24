@@ -1,183 +1,155 @@
-import { BookOpen, Heart, Trophy, Sparkles } from "lucide-react";
+import { useState } from "react";
+import {
+  Play,
+  Gamepad2,
+  BookOpenCheck,
+  ScrollText,
+  LineChart,
+  Clock,
+  PiggyBank,
+  ShieldCheck,
+  Sparkles,
+  Users
+} from "lucide-react";
+import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
+import { staggerContainer, fadeInUp, fadeInLeft, fadeInRight, floating } from "./animations";
 
 const About = () => {
-  const benefits = [
-    {
-      icon: BookOpen,
-      title: "Cho học sinh",
-      description: "Học tập vui vẻ qua trò chơi và câu chuyện dân gian, phát triển tư duy logic và sáng tạo",
-      color: "from-blue-500/20 to-cyan-500/20"
-    },
-    {
-      icon: Heart,
-      title: "Cho phụ huynh",
-      description: "Theo dõi tiến độ học tập của con, an tâm với nội dung giáo dục chất lượng và an toàn",
-      color: "from-pink-500/20 to-rose-500/20"
-    },
-    {
-      icon: Trophy,
-      title: "Cho giáo viên",
-      description: "Công cụ hỗ trợ giảng dạy hiệu quả, quản lý lớp học dễ dàng và đánh giá kết quả cụ thể",
-      color: "from-amber-500/20 to-orange-500/20"
-    }
-  ];
+  const [audience, setAudience] = useState<"parent" | "student" | "teacher" | "school">("parent");
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.2
-      }
-    }
-  };
+  const commonIntro = (
+    <p className="text-lg md:text-xl text-muted-foreground leading-relaxed">
+      VietEdu Odyssey là nền tảng học tập trực tuyến độc đáo, kết hợp giáo dục hiện đại với văn hóa dân gian Việt Nam. Chúng tôi tin rằng học tập là một hành trình vui vẻ, và mỗi đứa trẻ đều có thể phát huy tiềm năng của mình khi được học theo cách phù hợp.
+    </p>
+  );
 
-  const cardVariants = {
-    hidden: { opacity: 0, y: 40 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: 0.6
-      }
-    }
+  const audienceFeatures: Record<
+    typeof audience,
+    { icon: React.ElementType; title: string; desc: string }[]
+  > = {
+    parent: [
+      { icon: LineChart, title: "Báo cáo trực quan", desc: "Theo dõi tiến độ, điểm mạnh/yếu của con theo từng bài giảng và trò chơi." },
+      { icon: Clock, title: "Tiết kiệm thời gian", desc: "Con tự học chủ động với video và game; phụ huynh nhận nhắc nhở thông minh." },
+      { icon: PiggyBank, title: "Tiết kiệm chi phí", desc: "Kho video – game đa dạng thay cho nhiều lớp học phụ thêm." },
+      { icon: ShieldCheck, title: "Nội dung an toàn", desc: "Bài học kiểm duyệt kỹ, phù hợp lứa tuổi, bám sát chương trình." }
+    ],
+    student: [
+      { icon: Sparkles, title: "Linh hoạt, chủ động", desc: "Xem video mọi lúc; tua lại phần chưa hiểu, luyện game để ghi nhớ lâu." },
+      { icon: Gamepad2, title: "Cạnh tranh, thu hút", desc: "Minigame – thử thách điểm số, bảng xếp hạng khuyến khích học tập." },
+      { icon: BookOpenCheck, title: "Lộ trình cá nhân hóa", desc: "Đề xuất video và trò chơi phù hợp năng lực, tăng tiến độ 30%-50%." },
+      { icon: ScrollText, title: "Cốt truyện Việt", desc: "Học trong thế giới cổ tích – truyền thuyết Việt đầy màu sắc." }
+    ],
+    teacher: [
+      { icon: Clock, title: "Tiết kiệm thời gian", desc: "Thư viện video – game có sẵn, giao bài và chấm tự động." },
+      { icon: LineChart, title: "Hỗ trợ quản lý", desc: "Báo cáo theo lớp/bài, theo dõi mức độ hoàn thành và hiểu bài." },
+      { icon: Users, title: "Dạy học hiệu quả", desc: "Kết hợp video minh họa + game tương tác để khởi động và ôn tập." },
+      { icon: ShieldCheck, title: "Giảm áp lực", desc: "Công cụ đồng bộ, học liệu chuẩn giúp giảm khối lượng soạn giảng." }
+    ],
+    school: [
+      { icon: Users, title: "Quản lý toàn diện", desc: "Theo dõi hoạt động dạy – học toàn trường theo khối, lớp, môn." },
+      { icon: LineChart, title: "Nâng cao chất lượng", desc: "Dữ liệu học tập giúp đánh giá, điều chỉnh kế hoạch bồi dưỡng." },
+      { icon: Clock, title: "Tối ưu thời gian", desc: "Giảm thời gian thống kê, báo cáo; tăng thời gian cho chuyên môn." },
+      { icon: ShieldCheck, title: "Chuẩn hoá nội dung", desc: "Kho video – game thống nhất, bám chương trình, giàu bản sắc Việt." }
+    ]
   };
 
   return (
     <section id="about" className="py-16 md:py-24 bg-gradient-to-br from-muted/30 to-highlight/30 relative overflow-hidden">
-      {/* Animated background patterns */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <motion.div
-          className="absolute -top-40 -right-40 w-96 h-96 bg-primary/5 rounded-full blur-3xl"
-          animate={{ 
-            scale: [1, 1.2, 1],
-            x: [0, 30, 0],
-            y: [0, -20, 0]
-          }}
-          transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
-        />
-        <motion.div
-          className="absolute -bottom-40 -left-40 w-96 h-96 bg-secondary/10 rounded-full blur-3xl"
-          animate={{ 
-            scale: [1, 1.3, 1],
-            x: [0, -20, 0],
-            y: [0, 30, 0]
-          }}
-          transition={{ duration: 12, repeat: Infinity, ease: "easeInOut", delay: 2 }}
-        />
-        
-        {/* Floating decorative elements */}
-        <motion.div
-          className="absolute top-1/4 left-1/4 text-3xl opacity-20"
-          animate={{ y: [-10, 10, -10], rotate: [0, 10, -10, 0] }}
-          transition={{ duration: 6, repeat: Infinity }}
-        >
-          📖
-        </motion.div>
-        <motion.div
-          className="absolute top-1/3 right-1/4 text-2xl opacity-20"
-          animate={{ y: [10, -10, 10], rotate: [0, -15, 15, 0] }}
-          transition={{ duration: 5, repeat: Infinity, delay: 1 }}
-        >
-          🎓
-        </motion.div>
+      {/* Background decoration */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-1/4 right-10 w-64 h-64 bg-primary/5 rounded-full blur-3xl animate-float" />
+        <div className="absolute bottom-1/4 left-10 w-64 h-64 bg-secondary/5 rounded-full blur-3xl animate-float" />
+
+        {/* Subtle background icons */}
+        <div className="absolute inset-0 opacity-15">
+          <Sparkles className="absolute top-12 left-1/4 h-8 w-8 text-primary/70" />
+          <Play className="absolute bottom-16 right-1/4 h-10 w-10 text-accent/70" />
+        </div>
       </div>
 
       <div className="container mx-auto px-4 relative z-10">
-        <motion.div 
-          className="max-w-4xl mx-auto text-center space-y-6 mb-16"
-          initial={{ opacity: 0, y: -30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
+        <motion.div
+          className="max-w-5xl mx-auto text-center space-y-6 mb-10"
+          variants={staggerContainer}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, amount: 0.4 }}
         >
-          <motion.div
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary font-medium mx-auto mb-4"
-            initial={{ opacity: 0, scale: 0.8 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.2 }}
-            whileHover={{ scale: 1.05 }}
-          >
-            <motion.div
-              animate={{ rotate: [0, 360] }}
-              transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
-            >
-              <Sparkles className="h-4 w-4" />
-            </motion.div>
-            <span>Về chúng tôi</span>
-          </motion.div>
-          
-          <motion.h2 
+          <motion.h2
             className="text-3xl md:text-4xl lg:text-5xl font-heading font-bold"
-            initial={{ opacity: 0, scale: 0.9 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.1 }}
+            variants={fadeInUp}
           >
             Sứ mệnh của chúng tôi
           </motion.h2>
-          <motion.p 
-            className="text-lg md:text-xl text-muted-foreground leading-relaxed"
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.3 }}
-          >
-            VietEdu Odyssey mang đến trải nghiệm học tập độc đáo, kết hợp giáo dục hiện đại 
-            với văn hóa dân gian Việt Nam. Chúng tôi tin rằng học qua chơi là cách tốt nhất 
-            để trẻ em phát triển toàn diện và yêu thích việc học.
-          </motion.p>
+          <motion.div variants={fadeInUp}>
+            {commonIntro}
+          </motion.div>
         </motion.div>
 
-        <motion.div 
-          className="grid md:grid-cols-3 gap-8"
-          variants={containerVariants}
+        {/* Segmented audience selector */}
+        <motion.div
+          className="max-w-3xl mx-auto mb-10"
+          variants={fadeInUp}
           initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-50px" }}
+          whileInView="show"
+          viewport={{ once: true, amount: 0.3 }}
         >
-          {benefits.map((benefit, index) => (
-            <motion.div
-              key={index}
-              variants={cardVariants}
-              whileHover={{ 
-                y: -15, 
-                scale: 1.03,
-                boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.15)"
-              }}
-              className={`bg-card rounded-2xl p-8 card-shadow space-y-4 relative overflow-hidden group cursor-pointer`}
-            >
-              {/* Gradient overlay on hover */}
-              <motion.div 
-                className={`absolute inset-0 bg-gradient-to-br ${benefit.color} opacity-0 group-hover:opacity-100 transition-opacity duration-300`}
-              />
-              
-              <motion.div 
-                className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center relative z-10"
-                whileHover={{ rotate: 360, scale: 1.1 }}
-                transition={{ duration: 0.5 }}
+          <div className="rounded-full bg-muted p-1 flex gap-2 justify-between shadow-inner shimmer-wrapper">
+            {([
+              { key: "parent", label: "Phụ huynh" },
+              { key: "student", label: "Học sinh" },
+              { key: "teacher", label: "Giáo viên" },
+              { key: "school", label: "Nhà trường" }
+            ] as const).map((item) => (
+              <button
+                key={item.key}
+                onClick={() => setAudience(item.key)}
+                className={`px-5 py-2.5 rounded-full text-sm md:text-base font-semibold transition-all duration-300 ${
+                  audience === item.key
+                    ? "bg-primary text-primary-foreground shadow-lg scale-105"
+                    : "hover:bg-card hover:scale-105"
+                }`}
               >
-                <benefit.icon className="h-7 w-7 text-primary" />
-              </motion.div>
-              
-              <h3 className="text-xl font-heading font-bold relative z-10">
-                {benefit.title}
-              </h3>
-              <p className="text-muted-foreground leading-relaxed relative z-10">
-                {benefit.description}
-              </p>
-              
-              {/* Decorative corner */}
+                {item.label}
+              </button>
+            ))}
+          </div>
+        </motion.div>
+
+        {/* Features grid (single unified section, no chip, no CTA) */}
+        <motion.div
+          className="space-y-6"
+          variants={staggerContainer}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, amount: 0.3 }}
+        >
+          <motion.h3
+            className="text-2xl md:text-3xl font-heading font-bold text-center"
+            variants={fadeInUp}
+          >
+            Một nơi cho hành trình học tập sinh động của mọi đối tượng
+          </motion.h3>
+          <div className="grid md:grid-cols-2 gap-6 md:gap-8 max-w-5xl mx-auto">
+            {audienceFeatures[audience].map((f, idx) => (
               <motion.div
-                className="absolute -bottom-8 -right-8 w-24 h-24 bg-primary/5 rounded-full"
-                initial={{ scale: 0 }}
-                whileHover={{ scale: 1.5 }}
-                transition={{ duration: 0.3 }}
-              />
-            </motion.div>
-          ))}
+                key={idx}
+                className="flex gap-4 p-4 rounded-xl hover:bg-card/50 transition-all duration-300 hover:shadow-md group"
+                variants={idx % 2 === 0 ? fadeInLeft : fadeInRight}
+                whileHover={{ y: -4, scale: 1.01 }}
+                transition={{ type: "spring", stiffness: 220, damping: 20 }}
+              >
+                <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 group-hover:bg-primary/20 group-hover:scale-110 transition-all duration-300">
+                  <f.icon className="h-6 w-6 text-primary group-hover:scale-110 transition-transform" />
+                </div>
+                <div>
+                  <div className="font-semibold mb-1 group-hover:text-primary transition-colors">{f.title}</div>
+                  <div className="text-muted-foreground">{f.desc}</div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
         </motion.div>
       </div>
     </section>

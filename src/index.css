@@ -49,6 +49,7 @@ All colors MUST be HSL.
     /* Custom tokens */
     --highlight: 32 100% 85%;
     --success: 142 71% 45%;
+    
     --warning: 38 92% 50%;
     --admin-reply: 142 50% 95%;
     --sidebar-background: 0 0% 98%;
@@ -91,7 +92,7 @@ All colors MUST be HSL.
     --ring: 92 64% 46%;
     
     --admin-reply: 142 40% 20%;
-    
+
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;
@@ -108,26 +109,12 @@ All colors MUST be HSL.
     @apply border-border;
   }
 
-  /* Smooth theme transition */
-  html {
-    transition: background-color 0.3s ease, color 0.3s ease;
-  }
-
   body {
     @apply bg-background text-foreground font-body;
-    transition: background-color 0.3s ease, color 0.3s ease;
   }
 
   h1, h2, h3, h4, h5, h6 {
     @apply font-heading;
-  }
-
-  /* Theme transition for common elements */
-  .theme-transition,
-  [class*="bg-"],
-  [class*="text-"],
-  [class*="border-"] {
-    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
   }
 }
 
@@ -142,5 +129,78 @@ All colors MUST be HSL.
 
   .card-shadow {
     @apply shadow-md hover:shadow-xl transition-shadow duration-300;
+  }
+
+  /* === Extra homepage motion helpers === */
+  .shimmer-wrapper {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .shimmer-wrapper::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -150%;
+    width: 80%;
+    height: 100%;
+    background: linear-gradient(
+      120deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.35) 40%,
+      rgba(255, 255, 255, 0.15) 60%,
+      transparent 100%
+    );
+    animation: shimmer-slide 2.4s infinite;
+  }
+
+  @keyframes shimmer-slide {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(220%);
+    }
+  }
+
+  .glass-panel {
+    @apply bg-white/70 backdrop-blur-md border border-white/60 shadow-lg;
+  }
+
+  /* Floating animation used by leaderboard (gentle vertical float) */
+  @keyframes float-y {
+    0% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+    100% { transform: translateY(0); }
+  }
+
+  .animate-float {
+    animation: float-y 3.5s ease-in-out infinite;
+    will-change: transform;
+  }
+
+  /* Custom scrollbar cho danh sách bài học - mảnh và tinh tế */
+  .lesson-list-scroll {
+    scrollbar-width: thin;
+    scrollbar-color: hsl(var(--primary) / 0.25) transparent;
+  }
+  
+  .lesson-list-scroll::-webkit-scrollbar {
+    width: 5px;
+  }
+  
+  .lesson-list-scroll::-webkit-scrollbar-track {
+    background: transparent;
+    margin: 4px 0;
+  }
+  
+  .lesson-list-scroll::-webkit-scrollbar-thumb {
+    background: hsl(var(--primary) / 0.25);
+    border-radius: 10px;
+    transition: background 0.2s ease;
+  }
+  
+  .lesson-list-scroll::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--primary) / 0.45);
   }
 }

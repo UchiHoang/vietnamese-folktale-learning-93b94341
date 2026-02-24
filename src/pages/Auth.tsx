@@ -61,6 +61,7 @@ const Auth = () => {
     try {
       if (isForgotPassword) {
         const { error } = await supabase.auth.resetPasswordForEmail(formData.email, {
+          redirectTo: `${window.location.origin}/auth?reset=true`,
           redirectTo: `${window.location.origin}/reset-password`,
         });
 
@@ -73,13 +74,12 @@ const Auth = () => {
         setIsForgotPassword(false);
         setIsLogin(true);
       } else if (isLogin) {
-        // Lưu email nếu chọn "Ghi nhớ đăng nhập"
-        if (rememberMe) {
-          localStorage.setItem("rememberedEmail", formData.email);
-        } else {
-          localStorage.removeItem("rememberedEmail");
-        }
-
+              // Lưu email nếu chọn "Ghi nhớ đăng nhập"
+              if (rememberMe) {
+                localStorage.setItem("rememberedEmail", formData.email);
+              } else {
+                localStorage.removeItem("rememberedEmail");
+              }
         const { error } = await supabase.auth.signInWithPassword({
           email: formData.email,
           password: formData.password,
@@ -152,7 +152,7 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/5 via-secondary/10 to-accent/5 relative overflow-hidden">
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-primary/5 via-secondary/10 to-accent/5 relative overflow-hidden">
       {/* Animated Background Elements */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute top-20 left-10 w-72 h-72 bg-primary/10 rounded-full blur-3xl animate-pulse" />
@@ -160,7 +160,7 @@ const Auth = () => {
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-accent/5 rounded-full blur-3xl" />
       </div>
 
-      <div className="relative min-h-screen flex items-center justify-center p-4">
+      <div className="relative flex-1 flex items-center justify-center p-4 min-h-0">
         <div className="w-full max-w-5xl mx-auto">
           
           {/* Back to Home */}
