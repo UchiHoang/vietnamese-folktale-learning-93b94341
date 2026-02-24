@@ -90,42 +90,31 @@ const Leaderboard = () => {
   const topThree = hasEnoughForPodium ? leaderboardData.slice(0, 3) : [];
   const remaining = hasEnoughForPodium ? leaderboardData.slice(3, 10) : leaderboardData;
 
-  const getRankStyle = (rank: number) => {
+  // Podium bottom offset: how far up from the bottom each column sits
+  const getPodiumBottom = (rank: number) => {
     switch (rank) {
-      case 1:
-        return "-translate-y-16 scale-110";
-      case 2:
-        return "translate-y-4 scale-100";
-      case 3:
-        return "translate-y-10 scale-95";
-      default:
-        return "";
+      case 1: return "mb-24"; // highest
+      case 2: return "mb-8";
+      case 3: return "mb-0"; // lowest
+      default: return "";
     }
   };
 
   const getIslandSize = (rank: number) => {
     switch (rank) {
-      case 1:
-        return "w-48 h-40 md:w-56 md:h-44";
-      case 2:
-        return "w-44 h-36 md:w-52 md:h-40";
-      case 3:
-        return "w-40 h-32 md:w-44 md:h-36";
-      default:
-        return "w-36 h-28 md:w-40 md:h-32";
+      case 1: return "w-52 h-44 md:w-60 md:h-48";
+      case 2: return "w-44 h-36 md:w-52 md:h-40";
+      case 3: return "w-40 h-32 md:w-48 md:h-36";
+      default: return "w-36 h-28 md:w-40 md:h-32";
     }
   };
 
   const getAvatarSize = (rank: number) => {
     switch (rank) {
-      case 1:
-        return "w-24 h-24 md:w-28 md:h-28 text-5xl";
-      case 2:
-        return "w-20 h-20 md:w-24 md:h-24 text-4xl";
-      case 3:
-        return "w-18 h-18 md:w-20 md:h-20 text-3xl";
-      default:
-        return "w-12 h-12 text-2xl";
+      case 1: return "w-24 h-24 md:w-28 md:h-28 text-5xl";
+      case 2: return "w-20 h-20 md:w-22 md:h-22 text-4xl";
+      case 3: return "w-18 h-18 md:w-20 md:h-20 text-3xl";
+      default: return "w-12 h-12 text-2xl";
     }
   };
 
@@ -228,82 +217,62 @@ const Leaderboard = () => {
             <>
               {/* Top 3 Podium - Only show if we have at least 3 entries */}
               {hasEnoughForPodium && topThree.length >= 3 && (
-                <div className="relative mb-16 min-h-[450px] flex items-end justify-center gap-12 md:gap-16 lg:gap-20 px-4">
+                <div className="relative mb-12 flex items-end justify-center gap-4 md:gap-8 lg:gap-12 px-4">
                   {[topThree[1], topThree[0], topThree[2]].map((student, idx) => {
                     if (!student) return null;
-                    const displayOrder = idx === 0 ? 2 : idx === 1 ? 1 : 3;
                     const actualRank = student.rank;
-              
-              return (
-                <div
-                  key={student.user_id}
-                  className={`flex flex-col items-center ${getRankStyle(actualRank)} transition-all animate-fade-in`}
-                  style={{ animationDelay: `${idx * 200}ms` }}
-                >
-                  {/* Crown for first place */}
-                  {actualRank === 1 && (
-                    <Crown className="h-12 w-12 text-yellow-400 mb-2 drop-shadow-lg animate-pulse" />
-                  )}
 
-                  {/* Avatar with rank badge - with float animation */}
-                  <div className="relative mb-2 animate-float" style={{ animationDelay: `${idx * 0.5}s` }}>
-                    <div className={`rounded-full ${getRankBadge(actualRank)} flex items-center justify-center border-4 border-white shadow-2xl ${getAvatarSize(actualRank)}`}>
-                      <span className="leading-none">{student.avatar}</span>
-                    </div>
+                    return (
+                      <div
+                        key={student.user_id}
+                        className={`flex flex-col items-center ${getPodiumBottom(actualRank)} transition-all animate-fade-in w-1/3 max-w-[220px]`}
+                        style={{ animationDelay: `${idx * 200}ms` }}
+                      >
+                        {/* Crown for first place */}
+                        {actualRank === 1 && (
+                          <Crown className="h-10 w-10 md:h-12 md:w-12 text-yellow-400 mb-1 drop-shadow-lg animate-pulse" />
+                        )}
 
-                    {/* Smaller circular rank badge positioned at the avatar's top-right */}
-                    <div className={`absolute -top-2 -right-2 ${getRankBadge(actualRank)} flex items-center justify-center border-2 border-white font-bold text-white ${
-                      actualRank === 1 ? 'w-9 h-9 text-sm md:w-10 md:h-10 md:text-base' : actualRank === 2 ? 'w-8 h-8 text-sm' : 'w-7 h-7 text-xs'
-                    } rounded-full`}>
-                      {actualRank}
-                    </div>
-                  </div>
+                        {/* Avatar with rank badge */}
+                        <div className="relative mb-3 animate-float" style={{ animationDelay: `${idx * 0.5}s` }}>
+                          <div className={`rounded-full ${getRankBadge(actualRank)} flex items-center justify-center border-4 border-white shadow-2xl ${getAvatarSize(actualRank)}`}>
+                            <span className="leading-none">{student.avatar}</span>
+                          </div>
+                          <div className={`absolute -bottom-1 -right-1 ${getRankBadge(actualRank)} flex items-center justify-center border-2 border-white font-bold text-white ${
+                            actualRank === 1 ? 'w-8 h-8 text-sm' : 'w-7 h-7 text-xs'
+                          } rounded-full`}>
+                            {actualRank}
+                          </div>
+                        </div>
 
-                  {/* Student info - with float animation */}
-                  <div className="text-center mb-1 px-2 animate-float" style={{ animationDelay: `${idx * 0.5}s` }}>
-                    <h3 className="font-heading font-bold text-base md:text-lg text-white drop-shadow-md mb-1">
-                      {student.name}
-                    </h3>
-                    
-                    {/* Points Badge */}
-                    <div className={`inline-block px-4 py-1.5 rounded-full mb-2 ${
-                      actualRank === 1 
-                        ? 'bg-gradient-to-r from-yellow-400 to-yellow-500 shadow-[0_0_15px_rgba(234,179,8,0.6)]' 
-                        : actualRank === 2 
-                        ? 'bg-gradient-to-r from-orange-400 to-orange-500 shadow-[0_0_12px_rgba(249,115,22,0.5)]' 
-                        : 'bg-gradient-to-r from-amber-500 to-amber-600 shadow-[0_0_12px_rgba(217,119,6,0.5)]'
-                    }`}>
-                      <span className="font-bold text-lg md:text-xl text-white drop-shadow-md">
-                        {student.points.toLocaleString()}
-                      </span>
-                      <span className="text-xs md:text-sm text-white/90 ml-1">
-                        {selectedGrade === 'tat-ca' ? 'XP' : 'điểm'}
-                      </span>
-                    </div>
-                    
-                    <p className="text-xs md:text-sm text-white/80 drop-shadow">
-                      {student.school || 'Chưa cập nhật trường'}
-                    </p>
-                  </div>
+                        {/* Name + school */}
+                        <div className="text-center mb-2 px-1">
+                          <h3 className="font-heading font-bold text-sm md:text-base text-white drop-shadow-md leading-tight">
+                            {student.name}
+                          </h3>
+                          <p className="text-[11px] md:text-xs text-white/75 drop-shadow mt-0.5 leading-tight">
+                            {student.school || 'Chưa cập nhật trường'}
+                          </p>
+                        </div>
 
-                  {/* Floating Island platform */}
-                  <div className="relative animate-float -mt-6" style={{ animationDelay: `${idx * 0.5}s` }}>
-                    <img 
-                      src="/assets/floating-island.png" 
-                      alt="Floating Island" 
-                      className={`${getIslandSize(actualRank)} object-contain drop-shadow-2xl`}
-                    />
-                    <div className="absolute inset-x-0 top-1/3 text-center">
-                      <span className="font-bold text-5xl md:text-6xl text-white drop-shadow-[0_4px_8px_rgba(0,0,0,0.6)]">
-                        {actualRank}
-                      </span>
-                    </div>
-                  </div>
+                        {/* Floating Island */}
+                        <div className="relative animate-float" style={{ animationDelay: `${idx * 0.5}s` }}>
+                          <img
+                            src="/assets/floating-island.png"
+                            alt="Floating Island"
+                            className={`${getIslandSize(actualRank)} object-contain drop-shadow-2xl`}
+                          />
+                          <div className="absolute inset-x-0 top-1/3 text-center">
+                            <span className="font-bold text-5xl md:text-6xl text-white drop-shadow-[0_4px_8px_rgba(0,0,0,0.6)]">
+                              {actualRank}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
-              );
-            })}
-          </div>
-        )}
+              )}
 
         {/* Remaining ranks (4-10) */}
         {remaining.length > 0 && (
