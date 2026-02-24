@@ -46,6 +46,7 @@ const Leaderboard = () => {
           'tuan': 'week',
           'thang': 'month',
           'nam': 'year',
+          'tat-ca': 'all',
         };
 
         const p_grade = gradeMap[selectedGrade] ?? null;
@@ -193,6 +194,7 @@ const Leaderboard = () => {
                 <SelectItem value="tuan">Tuần này</SelectItem>
                 <SelectItem value="thang">Tháng này</SelectItem>
                 <SelectItem value="nam">Năm này</SelectItem>
+                <SelectItem value="tat-ca">Tất cả thời gian</SelectItem>
               </SelectContent>
             </Select>
           </div>
