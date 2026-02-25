@@ -2,7 +2,7 @@ import { useState, useRef } from 'react';
 import { Loader2, Send, MessageCircle, Trash2, Heart, Reply, ChevronDown, ChevronUp, Smile } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useTopicComments, CommentWithProfile } from '@/hooks/useTopicComments';
 import { formatDistanceToNow } from 'date-fns';
 import { vi } from 'date-fns/locale';
@@ -80,11 +80,14 @@ const CommentItem = ({
             "h-10 w-10 md:h-12 md:w-12 border-2",
             comment.is_admin_reply ? "border-success/40" : "border-primary/20"
           )}>
+            {!comment.is_admin_reply && comment.avatar?.startsWith("http") ? (
+              <AvatarImage src={comment.avatar} alt={comment.display_name} className="object-cover" />
+            ) : null}
             <AvatarFallback className={cn(
               "font-bold text-lg",
               comment.is_admin_reply ? "bg-success/20 text-success" : "bg-primary/10 text-primary"
             )}>
-              {comment.is_admin_reply ? "👨‍🏫" : comment.avatar}
+              {comment.is_admin_reply ? "👨‍🏫" : (comment.avatar?.startsWith("http") ? "👤" : comment.avatar)}
             </AvatarFallback>
           </Avatar>
           
