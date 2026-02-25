@@ -22,27 +22,23 @@ const MatchingPairsGameComponent = ({ pairs, onComplete, title }: MatchingPairsG
   const [matched, setMatched] = useState<Set<string>>(new Set());
   const [incorrect, setIncorrect] = useState<Set<string>>(new Set());
   const [shuffledRight, setShuffledRight] = useState<MatchPair[]>([]);
+  const [isChecking, setIsChecking] = useState(false);
   
-  // Use ref to avoid dependency issues
   const onCompleteRef = useRef(onComplete);
   onCompleteRef.current = onComplete;
-  const matchedRef = useRef(matched);
-  matchedRef.current = matched;
 
   useEffect(() => {
-    // Shuffle right side items only once on mount
     const shuffled = [...pairs].sort(() => Math.random() - 0.5);
     setShuffledRight(shuffled);
   }, [pairs]);
 
   const checkMatch = useCallback((left: string, right: string) => {
-    const leftPair = pairs.find(p => p.id === left);
-    const isMatch = leftPair?.id === right;
+    setIsChecking(true);
+    const isMatch = left === right;
 
     if (isMatch) {
       setMatched(prev => {
         const newMatched = new Set([...prev, left]);
-        // Check if all matched after this
         if (newMatched.size === pairs.length) {
           setTimeout(() => onCompleteRef.current(true), 500);
         }
@@ -51,31 +47,41 @@ const MatchingPairsGameComponent = ({ pairs, onComplete, title }: MatchingPairsG
       setTimeout(() => {
         setLeftSelected(null);
         setRightSelected(null);
-      }, 800);
+        setIsChecking(false);
+      }, 600);
     } else {
       setIncorrect(new Set([left, right]));
       setTimeout(() => {
         setLeftSelected(null);
         setRightSelected(null);
         setIncorrect(new Set());
-      }, 1000);
+        setIsChecking(false);
+      }, 800);
     }
   }, [pairs]);
 
-  useEffect(() => {
-    if (leftSelected && rightSelected) {
-      checkMatch(leftSelected, rightSelected);
-    }
-  }, [leftSelected, rightSelected, checkMatch]);
-
   const handleLeftClick = (id: string) => {
-    if (matched.has(id)) return;
+    if (matched.has(id) || isChecking) return;
+    if (leftSelected === id) {
+      setLeftSelected(null);
+      return;
+    }
     setLeftSelected(id);
+    if (rightSelected) {
+      checkMatch(id, rightSelected);
+    }
   };
 
   const handleRightClick = (id: string) => {
-    if (matched.has(id)) return;
+    if (matched.has(id) || isChecking) return;
+    if (rightSelected === id) {
+      setRightSelected(null);
+      return;
+    }
     setRightSelected(id);
+    if (leftSelected) {
+      checkMatch(leftSelected, id);
+    }
   };
 
   const getCardStyle = (id: string, isLeft: boolean) => {
