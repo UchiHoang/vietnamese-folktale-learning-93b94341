@@ -1,4 +1,4 @@
-import { Play, CheckCircle, Lock, BookOpen } from "lucide-react";
+import { Play, CheckCircle, Lock, BookOpen, Star, Zap, Trophy, TrendingUp } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { motion } from "framer-motion";
 
 interface GameProgress {
   total_xp: number;
@@ -22,12 +23,13 @@ interface Course {
   id: string;
   name: string;
   description: string;
-  grade: number; // 0 = Mầm non, 1-5 = Lớp 1-5
+  grade: number;
   gradeDisplay: string;
   totalLessons: number;
   image: string;
   route: string;
   color: string;
+  bgLight: string;
 }
 
 const ALL_COURSES: Course[] = [
@@ -41,6 +43,7 @@ const ALL_COURSES: Course[] = [
     image: "🌙",
     route: "/classroom/preschool",
     color: "from-pink-500 to-rose-500",
+    bgLight: "bg-pink-50 dark:bg-pink-950/20",
   },
   {
     id: "grade1-zodiac",
@@ -52,6 +55,7 @@ const ALL_COURSES: Course[] = [
     image: "🐭",
     route: "/classroom/grade1",
     color: "from-blue-500 to-cyan-500",
+    bgLight: "bg-blue-50 dark:bg-blue-950/20",
   },
   {
     id: "grade2-trangquynh",
@@ -59,10 +63,11 @@ const ALL_COURSES: Course[] = [
     description: "Rèn luyện tư duy logic cùng Trạng Quỳnh",
     grade: 2,
     gradeDisplay: "Lớp 2",
-    totalLessons: 20,
+    totalLessons: 15,
     image: "🎭",
     route: "/classroom/trangquynh",
     color: "from-green-500 to-emerald-500",
+    bgLight: "bg-green-50 dark:bg-green-950/20",
   },
   {
     id: "grade3-songhong",
@@ -74,6 +79,7 @@ const ALL_COURSES: Course[] = [
     image: "⚡",
     route: "/classroom/songhong",
     color: "from-orange-500 to-amber-500",
+    bgLight: "bg-orange-50 dark:bg-orange-950/20",
   },
   {
     id: "grade4-giong",
@@ -81,10 +87,11 @@ const ALL_COURSES: Course[] = [
     description: "Theo chân Thánh Gióng chiến đấu cứu dân",
     grade: 4,
     gradeDisplay: "Lớp 4",
-    totalLessons: 20,
+    totalLessons: 15,
     image: "🐎",
     route: "/classroom/grade4",
     color: "from-purple-500 to-violet-500",
+    bgLight: "bg-purple-50 dark:bg-purple-950/20",
   },
   {
     id: "grade5-trangnguyen",
@@ -92,10 +99,11 @@ const ALL_COURSES: Course[] = [
     description: "Cùng Trạng Nguyên bảo vệ đất nước bằng trí tuệ",
     grade: 5,
     gradeDisplay: "Lớp 5",
-    totalLessons: 25,
+    totalLessons: 15,
     image: "🏛️",
     route: "/classroom/grade5",
     color: "from-red-500 to-pink-500",
+    bgLight: "bg-red-50 dark:bg-red-950/20",
   },
 ];
 
@@ -105,70 +113,41 @@ interface CourseProgressData {
   total_xp: number;
   total_stars: number;
   current_node: number;
-  extra_data?: any;
 }
 
 const CoursesTab = ({ gameProgress }: CoursesTabProps) => {
   const navigate = useNavigate();
-  const [userGrade, setUserGrade] = useState<number>(2); // Default: Lớp 2
+  const [userGrade, setUserGrade] = useState<number>(2);
   const [loading, setLoading] = useState(true);
   const [coursesProgress, setCoursesProgress] = useState<Record<string, CourseProgressData>>({});
-  
-  const completedNodes = (gameProgress?.completed_nodes as string[]) || [];
 
-  // Load user's current grade and all courses progress
   useEffect(() => {
     const loadUserData = async () => {
       try {
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) return;
 
-        // Load profile grade
-        const { data: profile } = await supabase
-          .from("profiles")
-          .select("grade")
-          .eq("id", user.id)
-          .single();
+        const [profileRes, coursesRes] = await Promise.all([
+          supabase.from("profiles").select("grade").eq("id", user.id).single(),
+          supabase.from("course_progress").select("*").eq("user_id", user.id),
+        ]);
 
-        if (profile?.grade) {
-          // Parse grade string like "Lớp 2" -> 2, "Mầm non" -> 0
-          const gradeStr = profile.grade.toLowerCase();
+        if (profileRes.data?.grade) {
+          const gradeStr = profileRes.data.grade.toLowerCase();
           if (gradeStr.includes("mầm") || gradeStr.includes("mam")) {
             setUserGrade(0);
           } else {
             const match = gradeStr.match(/(\d+)/);
-            if (match) {
-              setUserGrade(parseInt(match[1]));
-            }
+            if (match) setUserGrade(parseInt(match[1]));
           }
-        } else {
-          // Fallback: estimate grade from level
-          const level = gameProgress?.level || 1;
-          if (level < 5) setUserGrade(0);
-          else if (level < 10) setUserGrade(1);
-          else if (level < 15) setUserGrade(2);
-          else if (level < 20) setUserGrade(3);
-          else if (level < 25) setUserGrade(4);
-          else setUserGrade(5);
         }
 
-        // Load all course progress
-        const { data: coursesData } = await supabase
-          .from("course_progress")
-          .select("*")
-          .eq("user_id", user.id);
-
-        if (coursesData) {
+        if (coursesRes.data) {
           const progressMap: Record<string, CourseProgressData> = {};
-          coursesData.forEach((course: any) => {
-            // completed_nodes can be array of numbers or strings
-            const completedNodes = Array.isArray(course.completed_nodes) 
-              ? course.completed_nodes 
-              : [];
-            
+          coursesRes.data.forEach((course: any) => {
             progressMap[course.course_id] = {
               course_id: course.course_id,
-              completed_nodes: completedNodes,
+              completed_nodes: Array.isArray(course.completed_nodes) ? course.completed_nodes : [],
               total_xp: course.total_xp || 0,
               total_stars: course.total_stars || 0,
               current_node: course.current_node || 0,
@@ -186,70 +165,46 @@ const CoursesTab = ({ gameProgress }: CoursesTabProps) => {
     loadUserData();
   }, [gameProgress]);
 
-  // Determine course status based on ACTUAL progress from database
   const getCourseStatus = (courseId: string, courseGrade: number, totalLessons: number) => {
     const courseData = coursesProgress[courseId];
-    
     if (courseData) {
       const completedCount = courseData.completed_nodes.length;
-      
-      // Nếu đã hoàn thành tất cả các màn
-      if (completedCount >= totalLessons) {
-        return "completed";
-      }
-      
-      // Nếu đã chơi ít nhất 1 màn
-      if (completedCount > 0) {
-        return "in-progress";
-      }
+      if (completedCount >= totalLessons) return "completed";
+      if (completedCount > 0) return "in-progress";
     }
-    
-    // Chưa có progress: check nếu grade cao hơn user grade thì lock
-    if (courseGrade > userGrade) {
-      return "locked";
-    }
-    
-    // Grade thấp hơn hoặc bằng user grade nhưng chưa chơi → available to start
+    if (courseGrade > userGrade) return "locked";
     return "available";
   };
 
-  // Calculate level from XP (200 XP per level)
-  const calculateLevel = (xp: number) => {
-    return Math.floor(xp / 200) + 1;
-  };
-
-  // Get progress for a specific course
   const getCourseProgress = (courseId: string, totalLessons: number) => {
-    // Use courseId directly from database format
     const courseData = coursesProgress[courseId];
-
     if (courseData) {
       const completed = courseData.completed_nodes.length;
       const percentage = Math.min((completed / totalLessons) * 100, 100);
-      const courseLevel = calculateLevel(courseData.total_xp);
-      
       return {
         completed,
         total: totalLessons,
         percentage: Math.round(percentage),
         xp: courseData.total_xp,
         stars: courseData.total_stars,
-        level: courseLevel,
         currentNode: courseData.current_node,
       };
     }
-
-    // Fallback to default
-    return {
-      completed: 0,
-      total: totalLessons,
-      percentage: 0,
-      xp: 0,
-      stars: 0,
-      level: 1,
-      currentNode: 0,
-    };
+    return { completed: 0, total: totalLessons, percentage: 0, xp: 0, stars: 0, currentNode: 0 };
   };
+
+  // Aggregate stats from all courses
+  const totalCompletedLessons = Object.values(coursesProgress).reduce(
+    (sum, c) => sum + (Array.isArray(c.completed_nodes) ? c.completed_nodes.length : 0), 0
+  );
+  const totalStars = Object.values(coursesProgress).reduce((sum, c) => sum + c.total_stars, 0);
+  const totalXpAllCourses = Object.values(coursesProgress).reduce((sum, c) => sum + c.total_xp, 0);
+  const completedCourseCount = ALL_COURSES.filter(
+    c => getCourseStatus(c.id, c.grade, c.totalLessons) === "completed"
+  ).length;
+  const inProgressCourseCount = ALL_COURSES.filter(
+    c => getCourseStatus(c.id, c.grade, c.totalLessons) === "in-progress"
+  ).length;
 
   if (loading) {
     return (
@@ -262,244 +217,213 @@ const CoursesTab = ({ gameProgress }: CoursesTabProps) => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <div>
-          <h2 className="text-2xl font-bold">Lộ trình học tập</h2>
-          <p className="text-sm text-muted-foreground">
-            Bạn đang học: <span className="font-semibold text-primary">
-              {ALL_COURSES.find(c => c.grade === userGrade)?.gradeDisplay}
-            </span>
-          </p>
-        </div>
-        <Badge variant="outline" className="text-sm">
-          <BookOpen className="h-4 w-4 mr-1" />
-          {completedNodes.length} bài đã hoàn thành
-        </Badge>
+      <div>
+        <h2 className="text-2xl font-bold mb-1">Lộ trình học tập</h2>
+        <p className="text-sm text-muted-foreground">
+          Bạn đang học:{" "}
+          <span className="font-semibold text-primary">
+            {ALL_COURSES.find(c => c.grade === userGrade)?.gradeDisplay || "Chưa chọn"}
+          </span>
+        </p>
+      </div>
+
+      {/* Overview Stats */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        {[
+          { icon: BookOpen, label: "Bài hoàn thành", value: totalCompletedLessons, color: "text-primary", bg: "bg-primary/10" },
+          { icon: Star, label: "Tổng sao", value: totalStars, color: "text-amber-500", bg: "bg-amber-500/10" },
+          { icon: Zap, label: "Tổng XP", value: totalXpAllCourses, color: "text-blue-500", bg: "bg-blue-500/10" },
+          { icon: Trophy, label: "Khóa hoàn thành", value: `${completedCourseCount}/${ALL_COURSES.length}`, color: "text-green-500", bg: "bg-green-500/10" },
+        ].map((stat, i) => (
+          <motion.div
+            key={stat.label}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: i * 0.05 }}
+          >
+            <Card className="p-3 text-center">
+              <div className={`mx-auto w-9 h-9 rounded-full ${stat.bg} flex items-center justify-center mb-1.5`}>
+                <stat.icon className={`h-4 w-4 ${stat.color}`} />
+              </div>
+              <div className={`text-xl font-bold ${stat.color}`}>{stat.value}</div>
+              <div className="text-[11px] text-muted-foreground leading-tight">{stat.label}</div>
+            </Card>
+          </motion.div>
+        ))}
       </div>
 
       {/* Courses List */}
-      <div className="grid gap-4">
-        {ALL_COURSES.map((course) => {
+      <div className="space-y-3">
+        {ALL_COURSES.map((course, index) => {
           const progress = getCourseProgress(course.id, course.totalLessons);
           const status = getCourseStatus(course.id, course.grade, course.totalLessons);
           const isLocked = status === "locked";
           const isCompleted = status === "completed";
           const isInProgress = status === "in-progress";
-          const isAvailable = status === "available";
 
           return (
-            <Card
+            <motion.div
               key={course.id}
-              className={`p-5 transition-all ${
-                !isLocked
-                  ? "hover:shadow-lg cursor-pointer"
-                  : "opacity-60"
-              }`}
-              onClick={() => !isLocked && navigate(course.route)}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.04 }}
             >
-              <div className="flex flex-col sm:flex-row items-start gap-4">
-                {/* Course Icon */}
-                <div className={`w-16 h-16 rounded-xl bg-gradient-to-br ${course.color} flex items-center justify-center text-3xl shrink-0 relative`}>
-                  {course.image}
-                  {isCompleted && (
-                    <div className="absolute -top-1 -right-1 w-6 h-6 rounded-full bg-green-500 flex items-center justify-center">
-                      <CheckCircle className="h-4 w-4 text-white" />
-                    </div>
-                  )}
-                  {isLocked && (
-                    <div className="absolute inset-0 rounded-xl bg-black/50 flex items-center justify-center">
-                      <Lock className="h-6 w-6 text-white" />
-                    </div>
-                  )}
-                </div>
+              <Card
+                className={`overflow-hidden transition-all border ${
+                  isInProgress
+                    ? "border-primary/30 shadow-md"
+                    : isCompleted
+                    ? "border-green-300 dark:border-green-800"
+                    : isLocked
+                    ? "opacity-50"
+                    : "hover:shadow-md"
+                } ${!isLocked ? "cursor-pointer" : ""}`}
+                onClick={() => !isLocked && navigate(course.route)}
+              >
+                <div className="flex items-stretch">
+                  {/* Left color bar */}
+                  <div className={`w-1.5 shrink-0 bg-gradient-to-b ${course.color}`} />
 
-                {/* Course Info */}
-                <div className="flex-1 min-w-0">
-                  <div className="flex flex-wrap items-center gap-2 mb-1">
-                    <h3 className="font-bold text-lg">{course.name}</h3>
-                    <Badge variant="secondary" className="shrink-0">
-                      {course.gradeDisplay}
-                    </Badge>
-                    {isCompleted && (
-                      <Badge className="bg-green-500 hover:bg-green-600 shrink-0">
-                        ✓ Đã hoàn thành
-                      </Badge>
-                    )}
-                    {isInProgress && (
-                      <Badge className="bg-blue-500 hover:bg-blue-600 shrink-0">
-                        📚 Đang học
-                      </Badge>
-                    )}
-                    {isLocked && (
-                      <Badge variant="outline" className="shrink-0">
-                        🔒 Chưa mở
-                      </Badge>
-                    )}
-                  </div>
-                  <p className="text-sm text-muted-foreground mb-3">
-                    {course.description}
-                  </p>
-
-                  {/* Progress Bar for in-progress and completed courses */}
-                  {(isInProgress || isCompleted || (isAvailable && progress.completed > 0)) && (
-                    <div className="space-y-2">
-                      <div className="flex items-center justify-between text-sm">
-                        <span className="text-muted-foreground">
-                          <span className="font-semibold">{progress.completed}/{course.totalLessons}</span> màn đã hoàn thành
-                        </span>
-                        <span className={`font-medium ${isCompleted ? 'text-green-600' : 'text-primary'}`}>
-                          {progress.percentage}%
-                        </span>
+                  <div className="flex-1 p-4">
+                    <div className="flex items-start gap-3">
+                      {/* Course Icon */}
+                      <div className={`w-14 h-14 rounded-xl bg-gradient-to-br ${course.color} flex items-center justify-center text-2xl shrink-0 relative shadow-sm`}>
+                        {course.image}
+                        {isCompleted && (
+                          <div className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-green-500 flex items-center justify-center shadow-sm">
+                            <CheckCircle className="h-3.5 w-3.5 text-white" />
+                          </div>
+                        )}
+                        {isLocked && (
+                          <div className="absolute inset-0 rounded-xl bg-black/40 flex items-center justify-center">
+                            <Lock className="h-5 w-5 text-white/80" />
+                          </div>
+                        )}
                       </div>
-                      <Progress 
-                        value={progress.percentage} 
-                        className={`h-2 ${isCompleted ? 'bg-green-100' : ''}`}
-                      />
-                      {(progress.xp > 0 || progress.level > 1 || progress.stars > 0) && (
-                        <div className="flex items-center gap-4 text-xs text-muted-foreground mt-1">
-                          <span className="flex items-center gap-1">
-                            <span className="font-semibold text-primary">Lv.{progress.level}</span>
-                          </span>
-                          {progress.xp > 0 && (
-                            <span className="flex items-center gap-1">
-                              ⚡ <span className="font-medium">{progress.xp}</span> XP
-                            </span>
-                          )}
-                          {progress.stars > 0 && (
-                            <span className="flex items-center gap-1">
-                              ⭐ <span className="font-medium">{progress.stars}</span> sao
-                            </span>
-                          )}
+
+                      {/* Course Info */}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex flex-wrap items-center gap-1.5 mb-0.5">
+                          <h3 className="font-bold text-base leading-tight">{course.name}</h3>
+                          <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-5 shrink-0">
+                            {course.gradeDisplay}
+                          </Badge>
                         </div>
-                      )}
+                        <p className="text-xs text-muted-foreground mb-2 line-clamp-1">
+                          {course.description}
+                        </p>
+
+                        {/* Progress for active courses */}
+                        {(isInProgress || isCompleted) && (
+                          <div className="space-y-1.5">
+                            <div className="flex items-center justify-between text-xs">
+                              <span className="text-muted-foreground">
+                                <span className="font-semibold text-foreground">{progress.completed}</span>/{progress.total} màn
+                              </span>
+                              <span className={`font-bold ${isCompleted ? "text-green-600" : "text-primary"}`}>
+                                {progress.percentage}%
+                              </span>
+                            </div>
+                            <Progress
+                              value={progress.percentage}
+                              className="h-1.5"
+                            />
+                            {/* Stats chips */}
+                            <div className="flex items-center gap-3 text-[11px] text-muted-foreground">
+                              {progress.stars > 0 && (
+                                <span className="flex items-center gap-0.5">
+                                  <Star className="h-3 w-3 text-amber-500 fill-amber-500" />
+                                  <span className="font-medium">{progress.stars}</span>
+                                </span>
+                              )}
+                              {progress.xp > 0 && (
+                                <span className="flex items-center gap-0.5">
+                                  <Zap className="h-3 w-3 text-blue-500" />
+                                  <span className="font-medium">{progress.xp}</span> XP
+                                </span>
+                              )}
+                              {isInProgress && (
+                                <span className="flex items-center gap-0.5">
+                                  <TrendingUp className="h-3 w-3 text-primary" />
+                                  Màn {progress.currentNode + 1}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Status messages for non-active courses */}
+                        {status === "available" && progress.completed === 0 && (
+                          <p className="text-[11px] text-muted-foreground">
+                            Sẵn sàng bắt đầu • {course.totalLessons} màn chơi
+                          </p>
+                        )}
+                        {isLocked && (
+                          <p className="text-[11px] text-muted-foreground">
+                            🔒 Hoàn thành{" "}
+                            {ALL_COURSES.find(c => c.grade === course.grade - 1)?.gradeDisplay || "khóa trước"}{" "}
+                            để mở khóa
+                          </p>
+                        )}
+                      </div>
+
+                      {/* Action Button */}
+                      <div className="shrink-0 self-center">
+                        {isCompleted ? (
+                          <Button
+                            onClick={(e) => { e.stopPropagation(); navigate(course.route); }}
+                            variant="outline"
+                            size="sm"
+                            className="gap-1.5 text-xs border-green-200 text-green-700 hover:bg-green-50 dark:border-green-800 dark:text-green-400 dark:hover:bg-green-950/30"
+                          >
+                            Ôn lại
+                          </Button>
+                        ) : isInProgress ? (
+                          <Button
+                            onClick={(e) => { e.stopPropagation(); navigate(course.route); }}
+                            size="sm"
+                            className="gap-1.5 text-xs"
+                          >
+                            Tiếp tục <Play className="h-3.5 w-3.5" />
+                          </Button>
+                        ) : status === "available" ? (
+                          <Button
+                            onClick={(e) => { e.stopPropagation(); navigate(course.route); }}
+                            size="sm"
+                            variant="outline"
+                            className="gap-1.5 text-xs"
+                          >
+                            Bắt đầu <Play className="h-3.5 w-3.5" />
+                          </Button>
+                        ) : (
+                          <Button variant="ghost" size="sm" disabled className="gap-1 text-xs">
+                            <Lock className="h-3.5 w-3.5" />
+                          </Button>
+                        )}
+                      </div>
                     </div>
-                  )}
-
-                  {isLocked && (
-                    <p className="text-xs text-muted-foreground italic">
-                      {course.grade > 0 ? (
-                        <>🔒 Hoàn thành {ALL_COURSES.find(c => c.grade === course.grade - 1)?.gradeDisplay || "khóa trước"} để mở khóa</>
-                      ) : (
-                        <>🔒 Khóa học chưa mở</>
-                      )}
-                    </p>
-                  )}
-                  
-                  {isAvailable && progress.completed === 0 && (
-                    <p className="text-xs text-muted-foreground italic">
-                      📚 Sẵn sàng để bắt đầu hành trình mới!
-                    </p>
-                  )}
+                  </div>
                 </div>
-
-                {/* Action Button */}
-                <div className="shrink-0 sm:self-center w-full sm:w-auto">
-                  {isCompleted ? (
-                    <Button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        navigate(course.route);
-                      }}
-                      variant="outline"
-                      size="sm"
-                      className="gap-2 w-full sm:w-auto bg-green-50 hover:bg-green-100 border-green-200 text-green-700"
-                    >
-                      Xem lại <CheckCircle className="h-4 w-4" />
-                    </Button>
-                  ) : isInProgress ? (
-                    <Button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        navigate(course.route);
-                      }}
-                      size="sm"
-                      className="gap-2 w-full sm:w-auto"
-                    >
-                      Tiếp tục <Play className="h-4 w-4" />
-                    </Button>
-                  ) : isAvailable ? (
-                    <Button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        navigate(course.route);
-                      }}
-                      size="sm"
-                      variant="default"
-                      className="gap-2 w-full sm:w-auto"
-                    >
-                      Bắt đầu <Play className="h-4 w-4" />
-                    </Button>
-                  ) : (
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      disabled 
-                      className="gap-2 w-full sm:w-auto"
-                    >
-                      <Lock className="h-4 w-4" />
-                      Chưa mở
-                    </Button>
-                  )}
-                </div>
-              </div>
-            </Card>
+              </Card>
+            </motion.div>
           );
         })}
       </div>
 
-      {/* Learning Stats */}
-      <Card className="p-6 bg-gradient-to-r from-primary/5 to-secondary/5">
-        <h3 className="font-bold text-lg mb-4">Tổng quan tiến độ</h3>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="text-center p-3 bg-background/50 rounded-xl">
-            <div className="text-2xl font-bold text-primary">{completedNodes.length}</div>
-            <div className="text-xs text-muted-foreground">Bài đã hoàn thành</div>
-          </div>
-          <div className="text-center p-3 bg-background/50 rounded-xl">
-            <div className="text-2xl font-bold text-green-500">
-              {ALL_COURSES.filter(c => getCourseStatus(c.id, c.grade, c.totalLessons) === "completed").length}
-            </div>
-            <div className="text-xs text-muted-foreground">Khóa hoàn thành</div>
-          </div>
-          <div className="text-center p-3 bg-background/50 rounded-xl">
-            <div className="text-2xl font-bold text-blue-500">
-              {ALL_COURSES.filter(c => getCourseStatus(c.id, c.grade, c.totalLessons) === "in-progress").length}
-            </div>
-            <div className="text-xs text-muted-foreground">Khóa đang học</div>
-          </div>
-          <div className="text-center p-3 bg-background/50 rounded-xl">
-            <div className="text-2xl font-bold text-orange-500">{gameProgress?.level || 1}</div>
-            <div className="text-xs text-muted-foreground">Cấp độ hiện tại</div>
-          </div>
-        </div>
-      </Card>
-
-      {/* Motivation Card */}
-      <Card className="p-6 bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-950/30 dark:to-pink-950/30 border-purple-200 dark:border-purple-800">
-        <h3 className="font-bold text-lg text-purple-700 dark:text-purple-300 mb-2">
-          🌟 Tiếp tục phấn đấu!
-        </h3>
-        <p className="text-sm text-purple-600/80 dark:text-purple-400/80">
-          {(() => {
-            const inProgressCourses = ALL_COURSES.filter(c => 
-              getCourseStatus(c.id, c.grade, c.totalLessons) === "in-progress"
-            );
-            const completedCount = ALL_COURSES.filter(c => 
-              getCourseStatus(c.id, c.grade, c.totalLessons) === "completed"
-            ).length;
-            
-            if (completedCount === ALL_COURSES.length) {
-              return <>🎉 Chúc mừng! Bạn đã hoàn thành tất cả {ALL_COURSES.length} khóa học. Hãy tiếp tục ôn luyện để củng cố kiến thức nhé!</>;
-            }
-            
-            if (inProgressCourses.length > 0) {
-              return <>Bạn đang học rất tốt! Hãy hoàn thành <strong>{inProgressCourses[0].name}</strong> để tiếp tục hành trình.</>;
-            }
-            
-            return <>Hãy bắt đầu khóa học đầu tiên để bắt đầu hành trình toán học thú vị!</>;
-          })()}
-        </p>
-      </Card>
+      {/* Motivation */}
+      {inProgressCourseCount > 0 && (
+        <Card className="p-4 bg-gradient-to-r from-primary/5 to-accent/5 border-primary/20">
+          <p className="text-sm text-muted-foreground">
+            💪 Bạn đang học{" "}
+            <strong className="text-foreground">
+              {ALL_COURSES.filter(c => getCourseStatus(c.id, c.grade, c.totalLessons) === "in-progress")
+                .map(c => c.name)
+                .join(", ")}
+            </strong>
+            . Hãy tiếp tục để hoàn thành hành trình!
+          </p>
+        </Card>
+      )}
     </div>
   );
 };
