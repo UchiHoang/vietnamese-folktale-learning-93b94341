@@ -17,7 +17,11 @@ import {
   Line,
   Legend,
 } from "recharts";
-import { TrendingUp, Users, Award, BookOpen, Loader2, Calendar } from "lucide-react";
+import { TrendingUp, Users, Award, BookOpen, Loader2, Calendar, Download, FileSpreadsheet, FileText } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import * as XLSX from "xlsx";
+import jsPDF from "jspdf";
+import "jspdf-autotable";
 
 interface GradeDistribution {
   name: string;
@@ -289,6 +293,103 @@ const ReportsTab = () => {
     }));
   }, [dailyActivity]);
 
+  const buildExportData = () => {
+    const summary = [
+      ["Bao cao & Thong ke - " + periodLabel(period)],
+      ["Ngay xuat", new Date().toLocaleDateString("vi-VN")],
+      [],
+      ["Tong hoc sinh", totalStudents],
+      ["So lop hoc", totalClasses],
+      ["Bai hoan thanh", totalLessonsCompleted],
+      ["Thoi gian hoc TB (phut)", averageStudyTime],
+    ];
+    const gradeRows = gradeCompletions.map((gc) => ({
+      "Khoi lop": gc.grade, "So HS hoat dong": gc.activeStudents,
+      "Tong luot choi": gc.totalStages, "Do chinh xac TB (%)": gc.avgAccuracy,
+    }));
+    const topRows = topStudents.map((s, i) => ({
+      "Hang": i + 1, "Ten": s.name, "XP": s.xp, "Level": s.level,
+    }));
+    const distRows = gradeDistribution.map((g) => ({
+      "Khoi": g.name, "So hoc sinh": g.value,
+    }));
+    const trendRows = trendData.map((t) => ({
+      "Ngay": t.date, "XP": t.XP, "Bai hoan thanh": t["Bài hoàn thành"],
+      "Phut hoc": t["Phút học"], "Hoc sinh": t["Học sinh"],
+    }));
+    return { summary, gradeRows, topRows, distRows, trendRows };
+  };
+
+  const exportExcel = () => {
+    const { summary, gradeRows, topRows, distRows, trendRows } = buildExportData();
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(summary), "Tong quan");
+    if (gradeRows.length) XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(gradeRows), "Theo khoi");
+    if (topRows.length) XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(topRows), "Top HS");
+    if (distRows.length) XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(distRows), "Phan bo");
+    if (trendRows.length) XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(trendRows), "Xu huong");
+    XLSX.writeFile(wb, `bao-cao-${period}-${new Date().toISOString().split("T")[0]}.xlsx`);
+  };
+
+  const exportPDF = () => {
+    const { gradeRows, topRows, distRows } = buildExportData();
+    const doc = new jsPDF();
+    doc.setFontSize(18);
+    doc.text("Bao cao & Thong ke", 14, 20);
+    doc.setFontSize(11);
+    doc.text("Thoi gian: " + periodLabel(period), 14, 28);
+    doc.text("Ngay xuat: " + new Date().toLocaleDateString("vi-VN"), 14, 34);
+
+    doc.setFontSize(13);
+    doc.text("Tong quan", 14, 46);
+    (doc as any).autoTable({
+      startY: 50,
+      head: [["Chi so", "Gia tri"]],
+      body: [
+        ["Tong hoc sinh", String(totalStudents)],
+        ["So lop hoc", String(totalClasses)],
+        ["Bai hoan thanh", String(totalLessonsCompleted)],
+        ["Thoi gian hoc TB", averageStudyTime + " phut"],
+      ],
+      theme: "grid", headStyles: { fillColor: [59, 130, 246] },
+    });
+
+    if (gradeRows.length) {
+      const y1 = (doc as any).lastAutoTable.finalY + 10;
+      doc.text("Theo khoi lop", 14, y1);
+      (doc as any).autoTable({
+        startY: y1 + 4,
+        head: [["Khoi", "HS", "Luot choi", "Chinh xac (%)"]],
+        body: gradeRows.map((r) => [r["Khoi lop"], r["So HS hoat dong"], r["Tong luot choi"], r["Do chinh xac TB (%)"]]),
+        theme: "grid", headStyles: { fillColor: [34, 197, 94] },
+      });
+    }
+
+    if (topRows.length) {
+      const y2 = (doc as any).lastAutoTable.finalY + 10;
+      doc.text("Top hoc sinh", 14, y2);
+      (doc as any).autoTable({
+        startY: y2 + 4,
+        head: [["Hang", "Ten", "XP", "Level"]],
+        body: topRows.map((r) => [r["Hang"], r["Ten"], r["XP"], r["Level"]]),
+        theme: "grid", headStyles: { fillColor: [245, 158, 11] },
+      });
+    }
+
+    if (distRows.length) {
+      const y3 = (doc as any).lastAutoTable.finalY + 10;
+      doc.text("Phan bo hoc sinh", 14, y3);
+      (doc as any).autoTable({
+        startY: y3 + 4,
+        head: [["Khoi", "So hoc sinh"]],
+        body: distRows.map((r) => [r["Khoi"], r["So hoc sinh"]]),
+        theme: "grid", headStyles: { fillColor: [139, 92, 246] },
+      });
+    }
+
+    doc.save("bao-cao-" + period + "-" + new Date().toISOString().split("T")[0] + ".pdf");
+  };
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-12">
@@ -299,11 +400,19 @@ const ReportsTab = () => {
 
   return (
     <div className="space-y-6">
-      {/* Header with filter */}
+      {/* Header with filter & export */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <h2 className="text-2xl font-bold">Báo cáo & Thống kê</h2>
         <div className="flex items-center gap-2">
-          <Calendar className="h-4 w-4 text-muted-foreground" />
+          <Button variant="outline" size="sm" onClick={exportExcel} className="gap-1.5">
+            <FileSpreadsheet className="h-4 w-4" />
+            Excel
+          </Button>
+          <Button variant="outline" size="sm" onClick={exportPDF} className="gap-1.5">
+            <FileText className="h-4 w-4" />
+            PDF
+          </Button>
+          <Calendar className="h-4 w-4 text-muted-foreground ml-2" />
           <Select value={period} onValueChange={(v) => setPeriod(v as TimePeriod)}>
             <SelectTrigger className="w-[160px]">
               <SelectValue />
