@@ -71,19 +71,15 @@ const PersonalInfoTab = ({ profile, isAdmin, onUpdate }: PersonalInfoTabProps) =
     <div className="bg-card rounded-2xl shadow-lg p-6">
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-2xl font-bold text-primary">Thông tin cá nhân</h2>
-        <Button
-          variant="outline"
-          onClick={() => editing ? handleSave() : setEditing(true)}
-          className="flex items-center gap-2"
-        >
-          {editing ? (
-            "Lưu"
-          ) : (
-            <>
-              Cập nhật <Pencil className="h-4 w-4" />
-            </>
-          )}
-        </Button>
+        {!editing && (
+          <Button
+            variant="outline"
+            onClick={() => setEditing(true)}
+            className="flex items-center gap-2"
+          >
+            Cập nhật <Pencil className="h-4 w-4" />
+          </Button>
+        )}
       </div>
 
       {editing ? (
