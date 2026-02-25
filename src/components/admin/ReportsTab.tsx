@@ -21,7 +21,7 @@ import { TrendingUp, Users, Award, BookOpen, Loader2, Calendar, Download, FileSp
 import { Button } from "@/components/ui/button";
 import * as XLSX from "xlsx";
 import jsPDF from "jspdf";
-import "jspdf-autotable";
+import autoTable from "jspdf-autotable";
 
 interface GradeDistribution {
   name: string;
@@ -342,7 +342,7 @@ const ReportsTab = () => {
 
     doc.setFontSize(13);
     doc.text("Tong quan", 14, 46);
-    (doc as any).autoTable({
+    autoTable(doc, {
       startY: 50,
       head: [["Chi so", "Gia tri"]],
       body: [
@@ -354,32 +354,36 @@ const ReportsTab = () => {
       theme: "grid", headStyles: { fillColor: [59, 130, 246] },
     });
 
+    let lastY = (doc as any).lastAutoTable?.finalY ?? 70;
+
     if (gradeRows.length) {
-      const y1 = (doc as any).lastAutoTable.finalY + 10;
+      const y1 = lastY + 10;
       doc.text("Theo khoi lop", 14, y1);
-      (doc as any).autoTable({
+      autoTable(doc, {
         startY: y1 + 4,
         head: [["Khoi", "HS", "Luot choi", "Chinh xac (%)"]],
         body: gradeRows.map((r) => [r["Khoi lop"], r["So HS hoat dong"], r["Tong luot choi"], r["Do chinh xac TB (%)"]]),
         theme: "grid", headStyles: { fillColor: [34, 197, 94] },
       });
+      lastY = (doc as any).lastAutoTable?.finalY ?? lastY + 40;
     }
 
     if (topRows.length) {
-      const y2 = (doc as any).lastAutoTable.finalY + 10;
+      const y2 = lastY + 10;
       doc.text("Top hoc sinh", 14, y2);
-      (doc as any).autoTable({
+      autoTable(doc, {
         startY: y2 + 4,
         head: [["Hang", "Ten", "XP", "Level"]],
         body: topRows.map((r) => [r["Hang"], r["Ten"], r["XP"], r["Level"]]),
         theme: "grid", headStyles: { fillColor: [245, 158, 11] },
       });
+      lastY = (doc as any).lastAutoTable?.finalY ?? lastY + 40;
     }
 
     if (distRows.length) {
-      const y3 = (doc as any).lastAutoTable.finalY + 10;
+      const y3 = lastY + 10;
       doc.text("Phan bo hoc sinh", 14, y3);
-      (doc as any).autoTable({
+      autoTable(doc, {
         startY: y3 + 4,
         head: [["Khoi", "So hoc sinh"]],
         body: distRows.map((r) => [r["Khoi"], r["So hoc sinh"]]),
