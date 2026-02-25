@@ -55,8 +55,7 @@ const AvatarUploadModal = ({ open, onClose, currentAvatar, onSave }: AvatarUploa
       if (!session) throw new Error("Chưa đăng nhập");
 
       const userId = session.user.id;
-      const ext = file.name.split(".").pop();
-      const filePath = `${userId}/avatar.${ext}`;
+      const filePath = `${userId}/avatar`;
 
       const { error: uploadError } = await supabase.storage
         .from("avatars")

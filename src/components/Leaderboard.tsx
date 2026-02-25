@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Crown, Trophy, Medal } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import UserAvatar from "@/components/ui/UserAvatar";
 import {
   Select,
   SelectContent,
@@ -247,8 +248,8 @@ const Leaderboard = () => {
 
                   {/* Avatar with rank badge - with float animation */}
                   <div className="relative mb-2 animate-float" style={{ animationDelay: `${idx * 0.5}s` }}>
-                    <div className={`rounded-full ${getRankBadge(actualRank)} flex items-center justify-center border-4 border-white shadow-2xl ${getAvatarSize(actualRank)}`}>
-                      <span className="leading-none">{student.avatar}</span>
+                    <div className={`rounded-full ${getRankBadge(actualRank)} flex items-center justify-center border-4 border-white shadow-2xl ${getAvatarSize(actualRank)} overflow-hidden`}>
+                      <UserAvatar avatar={student.avatar} displayName={student.name} size={actualRank === 1 ? "xl" : actualRank === 2 ? "lg" : "md"} className={`${getAvatarSize(actualRank)} bg-transparent`} />
                     </div>
 
                     {/* Smaller circular rank badge positioned at the avatar's top-right */}
@@ -318,9 +319,7 @@ const Leaderboard = () => {
                   {String(student.rank).padStart(2, '0')}
                 </div>
 
-                <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center text-2xl">
-                  {student.avatar}
-                </div>
+                <UserAvatar avatar={student.avatar} displayName={student.name} size="md" />
 
                 <div className="flex-1">
                   <h4 className="font-heading font-bold text-base md:text-lg">

@@ -12,7 +12,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface HeaderProps {
   onRoleChange?: (role: "student" | "teacher" | "admin") => void;
@@ -177,8 +177,11 @@ const scrollToSection = useCallback((sectionId: string) => {
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="hidden md:flex items-center gap-2">
                   <Avatar className="h-8 w-8">
-                    <AvatarFallback>
-                      {profile?.avatar || "👤"}
+                    {profile?.avatar?.startsWith("http") ? (
+                      <AvatarImage src={profile.avatar} alt={profile.display_name} className="object-cover" />
+                    ) : null}
+                    <AvatarFallback className="text-sm">
+                      {profile?.avatar?.startsWith("http") ? "👤" : (profile?.avatar || "👤")}
                     </AvatarFallback>
                   </Avatar>
                   <span>{profile?.display_name || user.email?.split("@")[0]}</span>
