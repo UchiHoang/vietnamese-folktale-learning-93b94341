@@ -171,13 +171,14 @@ const AnalyticsTab = ({ gameProgress, streak }: AnalyticsTabProps) => {
       groups[g].count += 1;
       groups[g].maxScore = Math.max(groups[g].maxScore, Number(r.score));
     }
-    // Also from stage_history
+    // Also from stage_history - calculate accuracy from correct_answers/total_questions
     for (const r of stageHistory) {
       const g = getCourseGroup(r.course_id);
       if (g === "other") continue;
       if (!groups[g]) groups[g] = { totalScore: 0, count: 0, maxScore: 0 };
-      if (r.accuracy != null) {
-        groups[g].totalScore += Number(r.accuracy);
+      if (r.total_questions > 0) {
+        const calcAcc = (r.correct_answers / r.total_questions) * 100;
+        groups[g].totalScore += calcAcc;
         groups[g].count += 1;
         groups[g].maxScore = Math.max(groups[g].maxScore, 100);
       }
@@ -230,9 +231,9 @@ const AnalyticsTab = ({ gameProgress, streak }: AnalyticsTabProps) => {
       evening: { totalAcc: 0, count: 0 },
     };
     for (const r of stageHistory) {
+      if (r.total_questions <= 0) continue;
       const hour = new Date(r.created_at).getHours();
-      const acc = r.accuracy != null ? Number(r.accuracy) : null;
-      if (acc == null) continue;
+      const acc = (r.correct_answers / r.total_questions) * 100;
       if (hour >= 6 && hour < 12) {
         buckets.morning.totalAcc += acc;
         buckets.morning.count += 1;
@@ -278,8 +279,9 @@ const AnalyticsTab = ({ gameProgress, streak }: AnalyticsTabProps) => {
     const twLessons = thisWeekLevel.length + thisWeekStage.length;
     const lwLessons = lastWeekLevel.length + lastWeekStage.length;
 
-    const twAccArr = thisWeekStage.filter(r => r.accuracy != null).map(r => Number(r.accuracy));
-    const lwAccArr = lastWeekStage.filter(r => r.accuracy != null).map(r => Number(r.accuracy));
+    const calcAcc = (r: StageHistoryRow) => r.total_questions > 0 ? (r.correct_answers / r.total_questions) * 100 : null;
+    const twAccArr = thisWeekStage.map(calcAcc).filter((v): v is number => v !== null);
+    const lwAccArr = lastWeekStage.map(calcAcc).filter((v): v is number => v !== null);
     const twAcc = twAccArr.length > 0 ? Math.round(twAccArr.reduce((a, b) => a + b, 0) / twAccArr.length) : 0;
     const lwAcc = lwAccArr.length > 0 ? Math.round(lwAccArr.reduce((a, b) => a + b, 0) / lwAccArr.length) : 0;
 
