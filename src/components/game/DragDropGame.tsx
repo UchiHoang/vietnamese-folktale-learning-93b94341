@@ -1,4 +1,4 @@
-import { useState, memo, useRef } from "react";
+import { useState, useEffect, memo, useRef } from "react";
 import { CheckCircle2, X } from "lucide-react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -27,8 +27,14 @@ const DragDropGameComponent = ({ items, slots, onComplete, title }: DragDropGame
   const [draggedItem, setDraggedItem] = useState<string | null>(null);
   const [droppedItems, setDroppedItems] = useState<Record<string, string>>({});
   const [showFeedback, setShowFeedback] = useState(false);
+  const [shuffledItems, setShuffledItems] = useState<DragItem[]>([]);
   const onCompleteRef = useRef(onComplete);
   onCompleteRef.current = onComplete;
+
+  useEffect(() => {
+    const shuffled = [...items].sort(() => Math.random() - 0.5);
+    setShuffledItems(shuffled);
+  }, [items]);
 
   const handleDragStart = (itemId: string) => {
     setDraggedItem(itemId);
@@ -159,7 +165,7 @@ const DragDropGameComponent = ({ items, slots, onComplete, title }: DragDropGame
         <div className="space-y-4">
           <div className="text-sm font-medium text-center">Kéo các mục từ đây:</div>
           <div className="flex flex-wrap justify-center gap-3">
-            {items.map((item) => {
+            {shuffledItems.map((item) => {
               if (isItemPlaced(item.id)) return null;
 
               return (
