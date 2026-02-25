@@ -440,6 +440,7 @@ export type Database = {
           display_name: string
           district: string | null
           email: string | null
+          gender: string | null
           grade: string | null
           id: string
           phone: string | null
@@ -458,6 +459,7 @@ export type Database = {
           display_name: string
           district?: string | null
           email?: string | null
+          gender?: string | null
           grade?: string | null
           id: string
           phone?: string | null
@@ -476,6 +478,7 @@ export type Database = {
           display_name?: string
           district?: string | null
           email?: string | null
+          gender?: string | null
           grade?: string | null
           id?: string
           phone?: string | null
