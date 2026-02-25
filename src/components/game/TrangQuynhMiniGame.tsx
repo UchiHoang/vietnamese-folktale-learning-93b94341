@@ -8,7 +8,9 @@ import { BadgeModal } from "./BadgeModal";
 import { LevelSelection } from "./LevelSelection";
 import { StoryIntro } from "./StoryIntro";
 import { findActivityByRef as findActivityByRefLegacy, loadStory as loadStoryLegacy } from "@/utils/storyLoader";
-import { useGameProgress, type CourseState, type GlobalState } from "@/hooks/useGameProgress";
+import { useGameProgressWithAchievements } from "@/hooks/useGameProgressWithAchievements";
+import { type CourseState, type GlobalState } from "@/hooks/useGameProgress";
+import { AchievementNotification } from "@/components/achievements/AchievementNotification";
 import { ArrowLeft, RotateCcw, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -145,8 +147,9 @@ export const TrangQuynhMiniGame = ({ grade, courseId = "grade2-trangquynh", stor
     error: queryError,
     completeStage: completeStageMutation,
     refetch,
-    updateCurrentNode: updateCurrentNodeMutation
-  } = useGameProgress(courseId || "grade2-trangquynh");
+    updateCurrentNode: updateCurrentNodeMutation,
+    achievements: { newlyUnlocked, dismissNewAchievement },
+  } = useGameProgressWithAchievements(courseId || "grade2-trangquynh");
 
   // 5. Tính toán derived values (sau khi có hooks)
   const gradeFromUrl = urlParams.grade?.replace("grade", "");
@@ -915,7 +918,11 @@ export const TrangQuynhMiniGame = ({ grade, courseId = "grade2-trangquynh", stor
               <p className="text-sm text-muted-foreground">Vui lòng đợi trong giây lát</p>
             </div>
           </div>
-        )}
+         )}
+        <AchievementNotification
+          achievement={newlyUnlocked}
+          onDismiss={dismissNewAchievement}
+        />
       </div>
     );
   }

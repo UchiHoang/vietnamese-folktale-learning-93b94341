@@ -67,7 +67,10 @@ export interface CompleteStageResult {
 // Hook: useGameProgress
 // ============================================
 
-export const useGameProgress = (courseId: string) => {
+export const useGameProgress = (
+  courseId: string,
+  options?: { onStageComplete?: (result: CompleteStageResult) => void }
+) => {
   const queryClient = useQueryClient();
 
   // Query: Lấy full game state
@@ -280,10 +283,15 @@ export const useGameProgress = (courseId: string) => {
 
       // Invalidate và refetch state nền để đồng bộ server
       queryClient.invalidateQueries({ queryKey: ["game-state", courseId] });
+
+      // Trigger achievement check callback
+      if (options?.onStageComplete) {
+        options.onStageComplete(result);
+      }
     },
   });
 
-  // Helper: Update current node (không cần complete stage)
+
   const updateCurrentNode = useMutation({
     mutationFn: async (nodeIndex: number) => {
       // TODO: Có thể tạo RPC riêng nếu cần

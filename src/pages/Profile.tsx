@@ -85,23 +85,37 @@ const Profile = () => {
   ) => {
     if (!gp && !sk) return;
 
-    // Build user stats from loaded data
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) return;
+    const userId = session.user.id;
+
+    // Query real stats from database
+    const [coursesRes, historyRes, activityRes] = await Promise.all([
+      supabase.from("course_progress").select("total_stars").eq("user_id", userId),
+      supabase.from("level_history").select("stars").eq("user_id", userId),
+      supabase.from("daily_activity").select("time_spent_minutes").eq("user_id", userId),
+    ]);
+
+    const starsEarned = (coursesRes.data || []).reduce((s, c) => s + (c.total_stars || 0), 0);
+    const perfectLessons = (historyRes.data || []).filter(h => h.stars === 3).length;
+    const timeSpentMinutes = (activityRes.data || []).reduce((s, a) => s + (a.time_spent_minutes || 0), 0);
+
     const stats: UserStats = {
       lessonsCompleted: gp?.completed_nodes?.length || 0,
       streakDays: sk?.current_streak || 0,
       totalXp: gp?.total_xp || 0,
       totalPoints: gp?.total_points || 0,
       levelReached: gp?.level || 1,
-      perfectLessons: 0, // Would need separate tracking
+      perfectLessons,
       totalLearningDays: sk?.total_learning_days || 0,
       levelsCompleted: gp?.completed_nodes?.length || 0,
-      starsEarned: 0, // Would need to aggregate from level_history
-      badgesEarned: gp?.earned_badges?.length || 0,
-      timeSpentMinutes: 0, // Would need to aggregate from daily_activity
+      starsEarned,
+      badgesEarned: earnedAchievements.length,
+      timeSpentMinutes,
     };
 
     await checkAndUnlockAchievements(stats);
-  }, [checkAndUnlockAchievements]);
+  }, [checkAndUnlockAchievements, earnedAchievements.length]);
 
   useEffect(() => {
     checkUser();
