@@ -1,74 +1,39 @@
 
-# Sửa hệ thống Thành tựu & Huy hiệu
 
-## Vấn đề phát hiện
+## Vấn đề hiện tại
 
-1. **Bảng `user_badges` không tồn tại**: Hàm `unlock_badge` trong database ghi vào bảng `user_badges` nhưng bảng này không có trong hệ thống. Bảng thực tế là `user_achievements`. Vì vậy mỗi lần mở khóa huy hiệu đều thất bại.
+Khi người chơi ghép sai cặp trong trò **Matching Pairs**, hệ thống hiển thị ngay lập tức:
+- Card chuyển **đỏ** (`bg-red-500`) với icon **X**
+- Điều này **lộ đáp án** vì người chơi biết ngay cặp nào sai
 
-2. **Thành tựu chỉ được kiểm tra ở trang Hồ sơ**: Sau khi chơi game xong, hệ thống không tự động kiểm tra thành tựu. Người chơi phải vào trang Profile mới trigger được.
+Tương tự, khi ghép đúng, card chuyển **xanh** ngay lập tức - cho phép người chơi dùng phương pháp loại trừ.
 
-3. **Nhiều chỉ số luôn bằng 0**: `perfectLessons`, `starsEarned`, `timeSpentMinutes` đều bị gán cứng = 0, khiến nhiều thành tựu không bao giờ mở khóa được.
+## Giải pháp
 
-## Kế hoạch sửa
+Thay đổi logic gameplay: **không tiết lộ đúng/sai ngay**, chỉ hiển thị kết quả sau khi người chơi đã nối hết tất cả các cặp.
 
-### Buoc 1: Sửa hàm `unlock_badge` trong database
-- Tạo migration sửa RPC `unlock_badge` để ghi vào bảng `user_achievements` thay vì `user_badges`
-- Map cột cho đúng: `badge_id` -> `achievement_id`, `badge_name` -> `achievement_name`, v.v.
+### Luồng gameplay mới:
+1. Người chơi chọn trái -> chọn phải -> cặp được **ghim lại** (hiển thị màu trung tính, ví dụ màu cam/primary)
+2. Người chơi có thể **bỏ ghép** (nhấn X) để thử lại cặp khác
+3. Khi đã nối đủ tất cả các cặp, hiện nút **"Kiểm tra đáp án"**
+4. Khi bấm kiểm tra: mới hiển thị xanh (đúng) / đỏ (sai) cho từng cặp
+5. Sau 2 giây, gọi `onComplete` với kết quả
 
-### Buoc 2: Thu thập stats đầy đủ từ database
-- Sửa hàm `checkAchievements` trong `Profile.tsx` để query thêm dữ liệu thực:
-  - `starsEarned`: tổng `total_stars` từ `course_progress`
-  - `timeSpentMinutes`: tổng `time_spent_minutes` từ `daily_activity`
-  - `perfectLessons`: đếm số stage có `accuracy = 100` từ `level_history`
+### Chi tiết kỹ thuật
 
-### Buoc 3: Tích hợp kiểm tra thành tựu sau khi chơi game
-- Thêm logic gọi `checkAndUnlockAchievements` sau khi `completeStage` thành công trong `useGameProgress.ts`
-- Hiển thị thông báo huy hiệu mới ngay sau khi chơi xong
+**File chỉnh sửa:** `src/components/game/MatchingPairsGame.tsx`
 
----
+1. **Bỏ state `incorrect`** - không cần feedback sai ngay nữa
+2. **Đổi state `matched` thành `paired`** (`Record<string, string>`) - lưu cặp đã ghép (trái -> phải) mà chưa kiểm tra đúng sai
+3. **Thêm state `results`** (`Record<string, boolean>`) - chỉ có giá trị sau khi bấm kiểm tra
+4. **Thêm state `showResults`** (boolean) - đánh dấu đã kiểm tra chưa
+5. **Logic ghép cặp mới:**
+   - Khi chọn trái + phải: lưu vào `paired[leftId] = rightId`, reset selection
+   - Card đã ghép hiển thị màu primary (trung tính), có nút X để bỏ ghép
+   - Không hiển thị đúng/sai
+6. **Nút "Kiểm tra đáp án":** xuất hiện khi `Object.keys(paired).length === pairs.length`
+   - Khi bấm: tính `results` cho từng cặp, set `showResults = true`
+   - Hiển thị xanh/đỏ cho từng cặp
+   - Gọi `onComplete(allCorrect)` sau 2 giây
+7. **Cập nhật `getCardStyle`:** thêm trạng thái "paired" (đã ghép, chưa kiểm tra) với màu trung tính
 
-### Chi tiet ky thuat
-
-**Migration SQL** -- Sửa hàm `unlock_badge`:
-
-```text
-DROP FUNCTION IF EXISTS public.unlock_badge;
-
-CREATE FUNCTION public.unlock_badge(...)
-  -- Thay "user_badges" -> "user_achievements"
-  -- Thay "badge_id" -> "achievement_id"
-  -- Thay "badge_name" -> "achievement_name"
-  -- Thay "badge_description" -> "achievement_description"  
-  -- Thay "badge_icon" -> "achievement_icon"
-```
-
-**Profile.tsx** -- Query stats thực:
-
-```text
-// Thay vì hardcode 0:
-const { data: historyData } = await supabase
-  .from('level_history').select('stars, score, meta')
-  .eq('user_id', userId);
-
-const { data: activityData } = await supabase
-  .from('daily_activity').select('time_spent_minutes')
-  .eq('user_id', userId);
-
-stats.starsEarned = coursesData.reduce((s, c) => s + c.total_stars, 0);
-stats.timeSpentMinutes = activityData.reduce((s, a) => s + a.time_spent_minutes, 0);
-stats.perfectLessons = historyData.filter(h => h.stars === 3).length;
-```
-
-**useGameProgress.ts** -- Trigger achievements post-game:
-
-```text
-// Trong onSuccess của completeStage mutation:
-// 1. Thu thập stats mới từ result
-// 2. Gọi checkAndUnlockAchievements(stats)
-```
-
-Cac file can thay doi:
-- `supabase/migrations/` -- migration mới sửa `unlock_badge`
-- `src/pages/Profile.tsx` -- query stats đầy đủ
-- `src/hooks/useGameProgress.ts` -- trigger check achievements sau game
-- `src/hooks/useAchievements.ts` -- nhận callback từ game context
