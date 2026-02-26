@@ -1,6 +1,7 @@
 import { useState, useEffect, memo, useRef, useCallback } from "react";
-import { CheckCircle2, XCircle } from "lucide-react";
+import { CheckCircle2, XCircle, X } from "lucide-react";
 import { motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
 
 interface MatchPair {
   id: string;
@@ -19,11 +20,13 @@ interface MatchingPairsGameProps {
 const MatchingPairsGameComponent = ({ pairs, onComplete, title }: MatchingPairsGameProps) => {
   const [leftSelected, setLeftSelected] = useState<string | null>(null);
   const [rightSelected, setRightSelected] = useState<string | null>(null);
-  const [matched, setMatched] = useState<Set<string>>(new Set());
-  const [incorrect, setIncorrect] = useState<Set<string>>(new Set());
+  // paired: leftId -> rightId (chưa kiểm tra đúng sai)
+  const [paired, setPaired] = useState<Record<string, string>>({});
+  // results: leftId -> boolean (chỉ có sau khi bấm kiểm tra)
+  const [results, setResults] = useState<Record<string, boolean>>({});
+  const [showResults, setShowResults] = useState(false);
   const [shuffledRight, setShuffledRight] = useState<MatchPair[]>([]);
-  const [isChecking, setIsChecking] = useState(false);
-  
+
   const onCompleteRef = useRef(onComplete);
   onCompleteRef.current = onComplete;
 
@@ -32,67 +35,87 @@ const MatchingPairsGameComponent = ({ pairs, onComplete, title }: MatchingPairsG
     setShuffledRight(shuffled);
   }, [pairs]);
 
-  const checkMatch = useCallback((left: string, right: string) => {
-    setIsChecking(true);
-    const isMatch = left === right;
-
-    if (isMatch) {
-      setMatched(prev => {
-        const newMatched = new Set([...prev, left]);
-        if (newMatched.size === pairs.length) {
-          setTimeout(() => onCompleteRef.current(true), 500);
-        }
-        return newMatched;
-      });
-      setTimeout(() => {
-        setLeftSelected(null);
-        setRightSelected(null);
-        setIsChecking(false);
-      }, 600);
-    } else {
-      setIncorrect(new Set([left, right]));
-      setTimeout(() => {
-        setLeftSelected(null);
-        setRightSelected(null);
-        setIncorrect(new Set());
-        setIsChecking(false);
-      }, 800);
+  // Tìm leftId đã ghép với rightId
+  const getLeftForRight = useCallback((rightId: string): string | null => {
+    for (const [left, right] of Object.entries(paired)) {
+      if (right === rightId) return left;
     }
-  }, [pairs]);
+    return null;
+  }, [paired]);
+
+  const isLeftPaired = (id: string) => id in paired;
+  const isRightPaired = (id: string) => getLeftForRight(id) !== null;
 
   const handleLeftClick = (id: string) => {
-    if (matched.has(id) || isChecking) return;
-    if (leftSelected === id) {
-      setLeftSelected(null);
-      return;
-    }
+    if (showResults) return;
+    if (isLeftPaired(id)) return; // đã ghép rồi
+    if (leftSelected === id) { setLeftSelected(null); return; }
     setLeftSelected(id);
     if (rightSelected) {
-      checkMatch(id, rightSelected);
+      // Ghép cặp
+      setPaired(prev => ({ ...prev, [id]: rightSelected }));
+      setLeftSelected(null);
+      setRightSelected(null);
     }
   };
 
   const handleRightClick = (id: string) => {
-    if (matched.has(id) || isChecking) return;
-    if (rightSelected === id) {
-      setRightSelected(null);
-      return;
-    }
+    if (showResults) return;
+    if (isRightPaired(id)) return;
+    if (rightSelected === id) { setRightSelected(null); return; }
     setRightSelected(id);
     if (leftSelected) {
-      checkMatch(leftSelected, id);
+      setPaired(prev => ({ ...prev, [leftSelected]: id }));
+      setLeftSelected(null);
+      setRightSelected(null);
     }
   };
 
-  const getCardStyle = (id: string, isLeft: boolean) => {
-    const isMatched = matched.has(id);
-    const isSelected = isLeft ? leftSelected === id : rightSelected === id;
-    const isIncorrect = incorrect.has(id);
+  const handleUnpair = (leftId: string) => {
+    if (showResults) return;
+    setPaired(prev => {
+      const next = { ...prev };
+      delete next[leftId];
+      return next;
+    });
+  };
 
-    if (isMatched) return "bg-green-500 text-white border-green-600 cursor-not-allowed";
-    if (isIncorrect) return "bg-red-500 text-white border-red-600 animate-shake";
+  const handleCheckResults = () => {
+    const newResults: Record<string, boolean> = {};
+    for (const [leftId, rightId] of Object.entries(paired)) {
+      newResults[leftId] = leftId === rightId;
+    }
+    setResults(newResults);
+    setShowResults(true);
+    const allCorrect = Object.values(newResults).every(Boolean);
+    setTimeout(() => onCompleteRef.current(allCorrect), 2000);
+  };
+
+  const allPaired = Object.keys(paired).length === pairs.length;
+
+  const getCardStyle = (id: string, isLeft: boolean) => {
+    const isPaired = isLeft ? isLeftPaired(id) : isRightPaired(id);
+    const isSelected = isLeft ? leftSelected === id : rightSelected === id;
+
+    if (showResults && isPaired) {
+      const leftId = isLeft ? id : getLeftForRight(id)!;
+      const correct = results[leftId];
+      if (correct) return "bg-green-500 text-white border-green-600";
+      return "bg-red-500 text-white border-red-600";
+    }
+    if (isPaired) return "bg-primary/20 text-primary border-primary/50";
     if (isSelected) return "bg-primary text-primary-foreground border-primary ring-4 ring-primary/50";
     return "bg-card border-border hover:border-primary/50 hover:scale-105 cursor-pointer";
+  };
+
+  const getResultIcon = (id: string, isLeft: boolean) => {
+    if (!showResults) return null;
+    const isPaired = isLeft ? isLeftPaired(id) : isRightPaired(id);
+    if (!isPaired) return null;
+    const leftId = isLeft ? id : getLeftForRight(id)!;
+    return results[leftId]
+      ? <CheckCircle2 className="w-5 h-5 flex-shrink-0 text-white" />
+      : <XCircle className="w-5 h-5 flex-shrink-0 text-white" />;
   };
 
   return (
@@ -102,9 +125,11 @@ const MatchingPairsGameComponent = ({ pairs, onComplete, title }: MatchingPairsG
           {title}
         </h2>
       )}
-      
+
       <div className="text-center text-sm text-muted-foreground mb-4">
-        Nhấn vào một ô bên trái, sau đó nhấn vào ô tương ứng bên phải để nối cặp
+        {showResults
+          ? "Kết quả đáp án của bạn"
+          : "Nhấn vào một ô bên trái, sau đó nhấn vào ô tương ứng bên phải để nối cặp"}
       </div>
 
       <div className="grid grid-cols-2 gap-8">
@@ -114,17 +139,25 @@ const MatchingPairsGameComponent = ({ pairs, onComplete, title }: MatchingPairsG
             <motion.button
               key={pair.id}
               onClick={() => handleLeftClick(pair.id)}
-              disabled={matched.has(pair.id)}
-              className={`w-full p-4 rounded-xl border-2 transition-all duration-300 ${getCardStyle(pair.id, true)}`}
-              whileTap={{ scale: matched.has(pair.id) ? 1 : 0.95 }}
+              disabled={isLeftPaired(pair.id) || showResults}
+              className={`w-full p-4 rounded-xl border-2 transition-all duration-300 relative ${getCardStyle(pair.id, true)}`}
+              whileTap={{ scale: (isLeftPaired(pair.id) || showResults) ? 1 : 0.95 }}
             >
               <div className="flex items-center gap-3">
                 {pair.leftImage && (
                   <img src={pair.leftImage} alt="" className="w-12 h-12 object-contain" />
                 )}
                 <span className="text-lg font-semibold flex-1 text-left">{pair.left}</span>
-                {matched.has(pair.id) && <CheckCircle2 className="w-5 h-5 flex-shrink-0" />}
-                {incorrect.has(pair.id) && <XCircle className="w-5 h-5 flex-shrink-0" />}
+                {getResultIcon(pair.id, true)}
+                {isLeftPaired(pair.id) && !showResults && (
+                  <button
+                    onClick={(e) => { e.stopPropagation(); handleUnpair(pair.id); }}
+                    className="p-1 rounded-full hover:bg-destructive/20 transition-colors"
+                    aria-label="Bỏ ghép"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                )}
               </div>
             </motion.button>
           ))}
@@ -136,25 +169,31 @@ const MatchingPairsGameComponent = ({ pairs, onComplete, title }: MatchingPairsG
             <motion.button
               key={pair.id}
               onClick={() => handleRightClick(pair.id)}
-              disabled={matched.has(pair.id)}
+              disabled={isRightPaired(pair.id) || showResults}
               className={`w-full p-4 rounded-xl border-2 transition-all duration-300 ${getCardStyle(pair.id, false)}`}
-              whileTap={{ scale: matched.has(pair.id) ? 1 : 0.95 }}
+              whileTap={{ scale: (isRightPaired(pair.id) || showResults) ? 1 : 0.95 }}
             >
               <div className="flex items-center gap-3">
                 {pair.rightImage && (
                   <img src={pair.rightImage} alt="" className="w-12 h-12 object-contain" />
                 )}
                 <span className="text-lg font-semibold flex-1 text-left">{pair.right}</span>
-                {matched.has(pair.id) && <CheckCircle2 className="w-5 h-5 flex-shrink-0" />}
-                {incorrect.has(pair.id) && <XCircle className="w-5 h-5 flex-shrink-0" />}
+                {getResultIcon(pair.id, false)}
               </div>
             </motion.button>
           ))}
         </div>
       </div>
 
-      <div className="text-center text-sm font-medium">
-        Đã nối: {matched.size} / {pairs.length}
+      <div className="text-center space-y-3">
+        <div className="text-sm font-medium">
+          Đã nối: {Object.keys(paired).length} / {pairs.length}
+        </div>
+        {allPaired && !showResults && (
+          <Button onClick={handleCheckResults} size="lg" className="animate-fade-in">
+            ✅ Kiểm tra đáp án
+          </Button>
+        )}
       </div>
     </div>
   );
