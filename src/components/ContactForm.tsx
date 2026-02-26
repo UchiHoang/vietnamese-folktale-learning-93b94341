@@ -3,6 +3,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
+import { useRecaptcha } from "@/hooks/useRecaptcha";
+import { supabase } from "@/integrations/supabase/client";
 import { z } from "zod";
 import { motion } from "framer-motion";
 import { Send, MessageCircle, Mail, User, FileText, Phone, MapPin, Star, Heart, Sparkles, BookOpen, Pencil } from "lucide-react";
@@ -26,6 +28,7 @@ const ContactForm = () => {
   const [errors, setErrors] = useState<Partial<Record<keyof ContactFormData, string>>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
+  const { executeRecaptcha, isReady: recaptchaReady } = useRecaptcha();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -54,23 +57,36 @@ const ContactForm = () => {
     setIsSubmitting(true);
     
     try {
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
+      // Get reCAPTCHA token
+      let recaptchaToken = "";
+      if (recaptchaReady) {
+        const token = await executeRecaptcha("contact_form");
+        recaptchaToken = token || "";
+      }
+
+      const { data, error } = await supabase.functions.invoke("send-contact-email", {
+        body: {
+          name: result.data.name,
+          email: result.data.email,
+          subject: result.data.subject,
+          message: result.data.message,
+          recaptchaToken,
+        },
+      });
+
+      if (error) throw error;
+
       toast({
-        title: "Gửi thành công!",
-        description: "Chúng mình sẽ liên hệ với bạn sớm nhất có thể.",
+        title: "Gửi thành công! 🎉",
+        description: "Chúng mình đã nhận được tin nhắn và sẽ phản hồi sớm nhất.",
       });
       
-      setFormData({
-        name: "",
-        email: "",
-        subject: "",
-        message: ""
-      });
+      setFormData({ name: "", email: "", subject: "", message: "" });
     } catch (error) {
+      console.error("Contact form error:", error);
       toast({
         title: "Có lỗi xảy ra",
-        description: "Vui lòng thử lại sau.",
+        description: "Vui lòng thử lại sau hoặc liên hệ qua email trực tiếp.",
         variant: "destructive",
       });
     } finally {
