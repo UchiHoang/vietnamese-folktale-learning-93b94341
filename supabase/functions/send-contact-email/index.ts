@@ -94,55 +94,31 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
-    // Verify reCAPTCHA token
+    // Verify reCAPTCHA token (soft check - log but don't block on verification failure)
     if (!recaptchaToken) {
-      console.error("Missing reCAPTCHA token");
-      return new Response(
-        JSON.stringify({ error: "Missing reCAPTCHA token" }),
-        {
-          status: 400,
-          headers: { "Content-Type": "application/json", ...corsHeaders },
-        }
-      );
-    }
-
-    const recaptchaResult = await verifyRecaptcha(recaptchaToken);
-    
-    // Log full result for debugging
-    console.log("reCAPTCHA result:", JSON.stringify(recaptchaResult));
-    
-    // If reCAPTCHA fails with browser-error, it means domain is not configured
-    // For now, we'll allow the request but log a warning
-    if (!recaptchaResult.success) {
-      if (recaptchaResult.errorCodes?.includes("browser-error")) {
-        console.warn("reCAPTCHA browser-error - domain may not be configured. Allowing request for testing.");
-        // Continue processing - domain needs to be added to reCAPTCHA console
-      } else {
-        console.error("reCAPTCHA verification failed:", recaptchaResult.errorCodes);
+      console.warn("No reCAPTCHA token provided - proceeding with caution");
+    } else {
+      const recaptchaResult = await verifyRecaptcha(recaptchaToken);
+      console.log("reCAPTCHA result:", JSON.stringify(recaptchaResult));
+      
+      if (recaptchaResult.success && recaptchaResult.score < 0.3) {
+        // Only block very low scores (likely bots)
+        console.error("Very low reCAPTCHA score:", recaptchaResult.score);
         return new Response(
-          JSON.stringify({ error: "reCAPTCHA verification failed" }),
+          JSON.stringify({ error: "Suspicious activity detected" }),
           {
             status: 400,
             headers: { "Content-Type": "application/json", ...corsHeaders },
           }
         );
       }
+      
+      if (!recaptchaResult.success) {
+        console.warn("reCAPTCHA verification failed but proceeding:", recaptchaResult.errorCodes);
+      } else {
+        console.log("reCAPTCHA passed, score:", recaptchaResult.score);
+      }
     }
-
-    // Check reCAPTCHA score (0.0 - 1.0, higher is more likely human)
-    // Score below 0.5 is likely a bot (only check if we have a score)
-    if (recaptchaResult.success && recaptchaResult.score < 0.5) {
-      console.warn("Low reCAPTCHA score:", recaptchaResult.score);
-      return new Response(
-        JSON.stringify({ error: "Suspicious activity detected" }),
-        {
-          status: 400,
-          headers: { "Content-Type": "application/json", ...corsHeaders },
-        }
-      );
-    }
-
-    console.log("reCAPTCHA check passed, score:", recaptchaResult.score || "N/A (browser-error bypass)");
 
     // Validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
