@@ -1,5 +1,5 @@
 import { useState, useEffect, memo, useRef, useCallback } from "react";
-import { CheckCircle2, XCircle, X } from "lucide-react";
+import { CheckCircle2, XCircle, X, ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 
@@ -20,9 +20,7 @@ interface MatchingPairsGameProps {
 const MatchingPairsGameComponent = ({ pairs, onComplete, title }: MatchingPairsGameProps) => {
   const [leftSelected, setLeftSelected] = useState<string | null>(null);
   const [rightSelected, setRightSelected] = useState<string | null>(null);
-  // paired: leftId -> rightId (chưa kiểm tra đúng sai)
   const [paired, setPaired] = useState<Record<string, string>>({});
-  // results: leftId -> boolean (chỉ có sau khi bấm kiểm tra)
   const [results, setResults] = useState<Record<string, boolean>>({});
   const [showResults, setShowResults] = useState(false);
   const [shuffledRight, setShuffledRight] = useState<MatchPair[]>([]);
@@ -35,7 +33,6 @@ const MatchingPairsGameComponent = ({ pairs, onComplete, title }: MatchingPairsG
     setShuffledRight(shuffled);
   }, [pairs]);
 
-  // Tìm leftId đã ghép với rightId
   const getLeftForRight = useCallback((rightId: string): string | null => {
     for (const [left, right] of Object.entries(paired)) {
       if (right === rightId) return left;
@@ -48,11 +45,10 @@ const MatchingPairsGameComponent = ({ pairs, onComplete, title }: MatchingPairsG
 
   const handleLeftClick = (id: string) => {
     if (showResults) return;
-    if (isLeftPaired(id)) return; // đã ghép rồi
+    if (isLeftPaired(id)) return;
     if (leftSelected === id) { setLeftSelected(null); return; }
     setLeftSelected(id);
     if (rightSelected) {
-      // Ghép cặp
       setPaired(prev => ({ ...prev, [id]: rightSelected }));
       setLeftSelected(null);
       setRightSelected(null);
@@ -80,6 +76,12 @@ const MatchingPairsGameComponent = ({ pairs, onComplete, title }: MatchingPairsG
     });
   };
 
+  // Find the correct right-side text for a given left id
+  const getCorrectRightText = (leftId: string): string => {
+    const pair = pairs.find(p => p.id === leftId);
+    return pair?.right || "";
+  };
+
   const handleCheckResults = () => {
     const newResults: Record<string, boolean> = {};
     for (const [leftId, rightId] of Object.entries(paired)) {
@@ -87,8 +89,11 @@ const MatchingPairsGameComponent = ({ pairs, onComplete, title }: MatchingPairsG
     }
     setResults(newResults);
     setShowResults(true);
-    const allCorrect = Object.values(newResults).every(Boolean);
-    setTimeout(() => onCompleteRef.current(allCorrect), 2000);
+  };
+
+  const handleContinue = () => {
+    const allCorrect = Object.values(results).every(Boolean);
+    onCompleteRef.current(allCorrect);
   };
 
   const allPaired = Object.keys(paired).length === pairs.length;
@@ -159,6 +164,12 @@ const MatchingPairsGameComponent = ({ pairs, onComplete, title }: MatchingPairsG
                   </button>
                 )}
               </div>
+              {/* Show correct answer below wrong pairs */}
+              {showResults && results[pair.id] === false && (
+                <div className="mt-2 pt-2 border-t border-white/30 text-sm text-left text-white/90">
+                  ✅ Đáp án đúng: <strong>{getCorrectRightText(pair.id)}</strong>
+                </div>
+              )}
             </motion.button>
           ))}
         </div>
@@ -192,6 +203,11 @@ const MatchingPairsGameComponent = ({ pairs, onComplete, title }: MatchingPairsG
         {allPaired && !showResults && (
           <Button onClick={handleCheckResults} size="lg" className="animate-fade-in">
             ✅ Kiểm tra đáp án
+          </Button>
+        )}
+        {showResults && (
+          <Button onClick={handleContinue} size="lg" className="animate-fade-in gap-2">
+            Tiếp tục <ArrowRight className="w-5 h-5" />
           </Button>
         )}
       </div>
