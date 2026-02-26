@@ -1,5 +1,5 @@
 import { useState, useEffect, memo, useRef } from "react";
-import { CheckCircle2, X } from "lucide-react";
+import { CheckCircle2, X, ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 
@@ -26,7 +26,7 @@ interface DragDropGameProps {
 const DragDropGameComponent = ({ items, slots, onComplete, title }: DragDropGameProps) => {
   const [draggedItem, setDraggedItem] = useState<string | null>(null);
   const [droppedItems, setDroppedItems] = useState<Record<string, string>>({});
-  const [showFeedback, setShowFeedback] = useState(false);
+  const [showResults, setShowResults] = useState(false);
   const [shuffledItems, setShuffledItems] = useState<DragItem[]>([]);
   const onCompleteRef = useRef(onComplete);
   onCompleteRef.current = onComplete;
@@ -41,6 +41,7 @@ const DragDropGameComponent = ({ items, slots, onComplete, title }: DragDropGame
   };
 
   const handleDrop = (slotId: string) => {
+    if (showResults) return;
     if (draggedItem) {
       setDroppedItems(prev => ({
         ...prev,
@@ -55,6 +56,7 @@ const DragDropGameComponent = ({ items, slots, onComplete, title }: DragDropGame
   };
 
   const handleRemove = (slotId: string) => {
+    if (showResults) return;
     setDroppedItems(prev => {
       const newItems = { ...prev };
       delete newItems[slotId];
@@ -62,16 +64,16 @@ const DragDropGameComponent = ({ items, slots, onComplete, title }: DragDropGame
     });
   };
 
-  const checkAnswers = () => {
+  const handleCheckResults = () => {
+    setShowResults(true);
+  };
+
+  const handleContinue = () => {
     const isCorrect = items.every(item => {
       const placedSlot = Object.entries(droppedItems).find(([_, itemId]) => itemId === item.id)?.[0];
       return placedSlot === item.correctSlot;
     });
-
-    setShowFeedback(true);
-    setTimeout(() => {
-      onCompleteRef.current(isCorrect);
-    }, 2000);
+    onCompleteRef.current(isCorrect);
   };
 
   const isItemPlaced = (itemId: string) => {
@@ -85,6 +87,11 @@ const DragDropGameComponent = ({ items, slots, onComplete, title }: DragDropGame
     return item?.correctSlot === slotId;
   };
 
+  const getCorrectItemForSlot = (slotId: string): string => {
+    const correctItem = items.find(i => i.correctSlot === slotId);
+    return correctItem?.content || "";
+  };
+
   const allItemsPlaced = items.length === Object.keys(droppedItems).length;
 
   return (
@@ -96,7 +103,9 @@ const DragDropGameComponent = ({ items, slots, onComplete, title }: DragDropGame
       )}
 
       <div className="text-center text-sm text-muted-foreground mb-4">
-        Kéo các mục vào ô phù hợp
+        {showResults
+          ? "Kết quả đáp án của bạn"
+          : "Kéo các mục vào ô phù hợp"}
       </div>
 
       {/* Drop Slots */}
@@ -104,7 +113,7 @@ const DragDropGameComponent = ({ items, slots, onComplete, title }: DragDropGame
         {slots.map((slot) => {
           const itemId = droppedItems[slot.id];
           const item = items.find(i => i.id === itemId);
-          const isCorrect = showFeedback ? isSlotCorrect(slot.id) : null;
+          const isCorrect = showResults ? isSlotCorrect(slot.id) : null;
 
           return (
             <div
@@ -113,10 +122,11 @@ const DragDropGameComponent = ({ items, slots, onComplete, title }: DragDropGame
               onDragOver={handleDragOver}
               className={`
                 relative min-h-[120px] border-2 border-dashed rounded-xl p-4 transition-all duration-300
-                ${draggedItem ? "border-primary bg-primary/5" : "border-border"}
-                ${itemId ? "bg-secondary" : "bg-card"}
-                ${showFeedback && isCorrect === true ? "border-green-500 bg-green-50" : ""}
-                ${showFeedback && isCorrect === false ? "border-red-500 bg-red-50" : ""}
+                ${!showResults && draggedItem ? "border-primary bg-primary/5" : ""}
+                ${!showResults && !draggedItem && itemId ? "bg-primary/10 border-primary/50" : ""}
+                ${!showResults && !draggedItem && !itemId ? "border-border bg-card" : ""}
+                ${showResults && isCorrect === true ? "border-green-500 bg-green-50" : ""}
+                ${showResults && isCorrect === false ? "border-red-500 bg-red-50" : ""}
               `}
             >
               <div className="text-sm font-medium text-center mb-2">{slot.label}</div>
@@ -135,7 +145,7 @@ const DragDropGameComponent = ({ items, slots, onComplete, title }: DragDropGame
                   )}
                   <span className="text-sm font-semibold text-center">{item.content}</span>
                   
-                  {!showFeedback && (
+                  {!showResults && (
                     <button
                       onClick={() => handleRemove(slot.id)}
                       className="absolute top-2 right-2 p-1 rounded-full bg-background hover:bg-destructive hover:text-destructive-foreground transition-colors"
@@ -144,7 +154,7 @@ const DragDropGameComponent = ({ items, slots, onComplete, title }: DragDropGame
                     </button>
                   )}
 
-                  {showFeedback && (
+                  {showResults && (
                     <div className="absolute top-2 right-2">
                       {isCorrect ? (
                         <CheckCircle2 className="w-6 h-6 text-green-600" />
@@ -155,13 +165,20 @@ const DragDropGameComponent = ({ items, slots, onComplete, title }: DragDropGame
                   )}
                 </motion.div>
               )}
+
+              {/* Show correct answer for wrong slots */}
+              {showResults && isCorrect === false && (
+                <div className="mt-2 pt-2 border-t border-red-300 text-xs text-red-700">
+                  ✅ Đáp án đúng: <strong>{getCorrectItemForSlot(slot.id)}</strong>
+                </div>
+              )}
             </div>
           );
         })}
       </div>
 
       {/* Draggable Items */}
-      {!showFeedback && (
+      {!showResults && (
         <div className="space-y-4">
           <div className="text-sm font-medium text-center">Kéo các mục từ đây:</div>
           <div className="flex flex-wrap justify-center gap-3">
@@ -190,29 +207,41 @@ const DragDropGameComponent = ({ items, slots, onComplete, title }: DragDropGame
         </div>
       )}
 
-      {/* Submit Button */}
-      {allItemsPlaced && !showFeedback && (
-        <div className="text-center">
-          <Button onClick={checkAnswers} size="lg" className="px-8">
-            Kiểm tra đáp án
+      {/* Actions */}
+      <div className="text-center space-y-3">
+        <div className="text-sm font-medium">
+          Đã xếp: {Object.keys(droppedItems).length} / {items.length}
+        </div>
+        {allItemsPlaced && !showResults && (
+          <Button onClick={handleCheckResults} size="lg" className="animate-fade-in">
+            ✅ Kiểm tra đáp án
           </Button>
-        </div>
-      )}
-
-      {/* Feedback */}
-      {showFeedback && (
-        <div className={`p-4 rounded-lg text-center animate-fade-in ${
-          items.every(item => isSlotCorrect(item.correctSlot)) 
-            ? "bg-green-100 text-green-800" 
-            : "bg-orange-100 text-orange-800"
-        }`}>
-          <p className="font-semibold">
-            {items.every(item => isSlotCorrect(item.correctSlot)) 
-              ? "🎉 Xuất sắc! Tất cả đều đúng!" 
-              : "💡 Hãy thử lại lần nữa nhé!"}
-          </p>
-        </div>
-      )}
+        )}
+        {showResults && (
+          <div className="space-y-3">
+            <div className={`p-4 rounded-lg animate-fade-in ${
+              items.every(item => {
+                const placedSlot = Object.entries(droppedItems).find(([_, itemId]) => itemId === item.id)?.[0];
+                return placedSlot === item.correctSlot;
+              })
+                ? "bg-green-100 text-green-800" 
+                : "bg-orange-100 text-orange-800"
+            }`}>
+              <p className="font-semibold">
+                {items.every(item => {
+                  const placedSlot = Object.entries(droppedItems).find(([_, itemId]) => itemId === item.id)?.[0];
+                  return placedSlot === item.correctSlot;
+                })
+                  ? "🎉 Xuất sắc! Tất cả đều đúng!" 
+                  : "💡 Xem lại đáp án đúng nhé!"}
+              </p>
+            </div>
+            <Button onClick={handleContinue} size="lg" className="animate-fade-in gap-2">
+              Tiếp tục <ArrowRight className="w-5 h-5" />
+            </Button>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

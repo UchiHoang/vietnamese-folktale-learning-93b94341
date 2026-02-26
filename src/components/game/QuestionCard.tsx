@@ -1,6 +1,6 @@
 import { useState, memo, useCallback } from "react";
 import { Button } from "@/components/ui/button";
-import { CheckCircle2, XCircle, Lightbulb } from "lucide-react";
+import { CheckCircle2, XCircle, Lightbulb, ArrowRight } from "lucide-react";
 import { Question } from "@/utils/storyLoader";
 import { MatchingPairsGame } from "./MatchingPairsGame";
 import { DragDropGame } from "./DragDropGame";
@@ -29,15 +29,14 @@ const QuestionCardComponent = ({
     
     setSelectedAnswer(index);
     setShowFeedback(true);
-    
-    const isCorrect = index === question.correctAnswer;
-    
-    setTimeout(() => {
-      onAnswer(isCorrect);
-      setSelectedAnswer(null);
-      setShowFeedback(false);
-      setShowHint(false);
-    }, 2000);
+  };
+
+  const handleContinue = () => {
+    const isCorrect = selectedAnswer === question.correctAnswer;
+    onAnswer(isCorrect);
+    setSelectedAnswer(null);
+    setShowFeedback(false);
+    setShowHint(false);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent, index: number) => {
@@ -180,6 +179,15 @@ const QuestionCardComponent = ({
               {isCorrect ? "🎉 Chính xác!" : "💡 Gần đúng rồi!"}
             </p>
             <p className="text-sm">{question.explanation}</p>
+          </div>
+        )}
+
+        {/* Continue button */}
+        {showFeedback && (
+          <div className="text-center mt-4">
+            <Button onClick={handleContinue} size="lg" className="animate-fade-in gap-2">
+              Tiếp tục <ArrowRight className="w-5 h-5" />
+            </Button>
           </div>
         )}
       </div>

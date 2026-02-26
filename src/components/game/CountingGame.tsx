@@ -1,6 +1,6 @@
 import { useState, memo, useRef, useMemo } from "react";
 import { Button } from "@/components/ui/button";
-import { CheckCircle2, XCircle } from "lucide-react";
+import { CheckCircle2, XCircle, ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
 
 interface CountingGameProps {
@@ -22,20 +22,17 @@ const CountingGameComponent = ({ items, correctAnswer, question, explanation, on
 
   const handleAnswer = (answer: number) => {
     if (showFeedback) return;
-    
     setSelectedAnswer(answer);
     setShowFeedback(true);
-    
-    const isCorrect = answer === correctAnswer;
-    
-    setTimeout(() => {
-      onCompleteRef.current(isCorrect);
-    }, 2500);
+  };
+
+  const handleContinue = () => {
+    const isCorrect = selectedAnswer === correctAnswer;
+    onCompleteRef.current(isCorrect);
   };
 
   const isCorrect = selectedAnswer === correctAnswer;
 
-  // Memoize options to prevent recalculation on every render
   const options = useMemo(() => {
     const opts = Array.from({ length: 4 }, (_, i) => {
       const offset = i - 2;
@@ -134,6 +131,15 @@ const CountingGameComponent = ({ items, correctAnswer, question, explanation, on
               </p>
             )}
           </motion.div>
+        )}
+
+        {/* Continue button */}
+        {showFeedback && (
+          <div className="text-center mt-4">
+            <Button onClick={handleContinue} size="lg" className="animate-fade-in gap-2">
+              Tiếp tục <ArrowRight className="w-5 h-5" />
+            </Button>
+          </div>
         )}
       </div>
     </div>

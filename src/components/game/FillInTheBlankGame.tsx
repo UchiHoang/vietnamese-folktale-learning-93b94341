@@ -1,7 +1,7 @@
 import { useState, memo, useRef, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { CheckCircle2, XCircle } from "lucide-react";
+import { CheckCircle2, XCircle, ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
 
 interface BlankQuestion {
@@ -34,10 +34,10 @@ const FillInTheBlankGameComponent = ({ question, onComplete }: FillInTheBlankGam
 
     setIsCorrect(correct);
     setShowFeedback(true);
+  };
 
-    setTimeout(() => {
-      onCompleteRef.current(correct);
-    }, 2500);
+  const handleContinue = () => {
+    onCompleteRef.current(isCorrect);
   };
 
   // Parse text và chèn ô trống. Hỗ trợ 2 kiểu dữ liệu:
@@ -87,13 +87,11 @@ const FillInTheBlankGameComponent = ({ question, onComplete }: FillInTheBlankGam
       );
     };
 
-    // Chấp nhận chuỗi gạch dưới dài >=2 (__, ___) làm marker
     const markerRegex = /_{2,}/g;
     const hasMarkers = markerRegex.test(text);
 
     if (hasMarkers) {
-      // Cách dùng marker: tìm mọi cụm __ hoặc ___
-      markerRegex.lastIndex = 0; // reset
+      markerRegex.lastIndex = 0;
       let currentIndex = 0;
       let blankIndex = 0;
       let match: RegExpExecArray | null;
@@ -116,7 +114,6 @@ const FillInTheBlankGameComponent = ({ question, onComplete }: FillInTheBlankGam
         parts.push(<span key="text-end">{text.slice(currentIndex)}</span>);
       }
     } else {
-      // Không có marker: dùng vị trí position đã cho
       const sortedBlanks = [...question.blanks].map((b, idx) => ({ ...b, idx })).sort((a, b) => a.position - b.position);
       let currentIndex = 0;
 
@@ -155,7 +152,7 @@ const FillInTheBlankGameComponent = ({ question, onComplete }: FillInTheBlankGam
         {!showFeedback && allBlanksFilled && (
           <div className="text-center mt-6">
             <Button onClick={handleSubmit} size="lg">
-              Kiểm tra đáp án
+              ✅ Kiểm tra đáp án
             </Button>
           </div>
         )}
@@ -185,6 +182,14 @@ const FillInTheBlankGameComponent = ({ question, onComplete }: FillInTheBlankGam
               </div>
             )}
           </motion.div>
+        )}
+
+        {showFeedback && (
+          <div className="text-center mt-4">
+            <Button onClick={handleContinue} size="lg" className="animate-fade-in gap-2">
+              Tiếp tục <ArrowRight className="w-5 h-5" />
+            </Button>
+          </div>
         )}
       </div>
     </div>
