@@ -16,6 +16,7 @@ import { AchievementNotification } from "@/components/achievements/AchievementNo
 import { useAchievements, UserStats } from "@/hooks/useAchievements";
 import { EarnedAchievement } from "@/data/achievements";
 import { toast } from "@/hooks/use-toast";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface Profile {
   id: string;
@@ -55,6 +56,7 @@ interface StreakData {
 
 const Profile = () => {
   const navigate = useNavigate();
+  const { t } = useLanguage();
   const [loading, setLoading] = useState(true);
   const [searchParams] = useSearchParams();
   const [activeTab, setActiveTab] = useState(() => {
@@ -150,8 +152,8 @@ const Profile = () => {
     } catch (error) {
       console.error("Error checking user:", error);
       toast({
-        title: "Lỗi",
-        description: "Không thể tải thông tin người dùng",
+        title: t.profilePage.error,
+        description: t.profilePage.cannotLoadUser,
         variant: "destructive",
       });
     } finally {
@@ -300,16 +302,16 @@ const Profile = () => {
 
     if (error) {
       toast({
-        title: "Lỗi",
-        description: "Không thể cập nhật thông tin",
+        title: t.profilePage.error,
+        description: t.profilePage.cannotUpdate,
         variant: "destructive",
       });
       return;
     }
 
     toast({
-      title: "Thành công",
-      description: "Đã cập nhật thông tin cá nhân",
+      title: t.profilePage.success,
+      description: t.profilePage.profileUpdated,
     });
 
     await loadProfile(profile.id);
@@ -330,16 +332,16 @@ const Profile = () => {
 
     if (error) {
       toast({
-        title: "Lỗi",
-        description: "Không thể cập nhật avatar",
+        title: t.profilePage.error,
+        description: t.profilePage.cannotUpdateAvatar,
         variant: "destructive",
       });
       return;
     }
 
     toast({
-      title: "Thành công",
-      description: "Đã cập nhật avatar",
+      title: t.profilePage.success,
+      description: t.profilePage.avatarUpdated,
     });
 
     await loadProfile(profile.id);
@@ -350,7 +352,7 @@ const Profile = () => {
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-          <p className="mt-4 text-muted-foreground">Đang tải...</p>
+          <p className="mt-4 text-muted-foreground">{t.profilePage.loading}</p>
         </div>
       </div>
     );
