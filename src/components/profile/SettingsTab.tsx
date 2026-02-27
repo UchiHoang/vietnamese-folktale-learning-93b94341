@@ -3,12 +3,13 @@ import { Card } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Progress } from "@/components/ui/progress";
 import { useStudyTimeLimit } from "@/hooks/useStudyTimeLimit";
 import { useEffect, useState } from "react";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const SettingsTab = () => {
+  const { t, language, setLanguage } = useLanguage();
   const { settings, todayTimeSpent, dailyLimit, updateSettings, loading } = useStudyTimeLimit();
   const [limitEnabled, setLimitEnabled] = useState(false);
   const [limitMinutes, setLimitMinutes] = useState<number>(60);
@@ -33,6 +34,13 @@ const SettingsTab = () => {
 
   const progressPercent = dailyLimit ? Math.min(100, (todayTimeSpent / dailyLimit) * 100) : 0;
 
+  const timeOptions = [
+    { mins: 30, emoji: "⏱️", label: t.settingsTab.time30m },
+    { mins: 60, emoji: "🕐", label: t.settingsTab.time1h },
+    { mins: 90, emoji: "🕜", label: t.settingsTab.time1h30 },
+    { mins: 120, emoji: "🕑", label: t.settingsTab.time2h },
+  ];
+
   return (
     <div className="space-y-6">
       {/* Time Control Card */}
@@ -42,37 +50,26 @@ const SettingsTab = () => {
             <Clock className="h-5 w-5 text-primary" />
           </div>
           <div>
-            <h3 className="font-bold text-xl">Đồng hồ sức khỏe</h3>
-            <p className="text-sm text-muted-foreground">Bảo vệ mắt bé bằng cách giới hạn thời gian online mỗi ngày</p>
+            <h3 className="font-bold text-xl">{t.settingsTab.healthClock}</h3>
+            <p className="text-sm text-muted-foreground">{t.settingsTab.healthClockDesc}</p>
           </div>
         </div>
 
         <div className="space-y-5">
-          {/* Toggle */}
           <div className="flex items-center justify-between">
             <div>
-              <Label className="font-medium">Bật giới hạn thời gian</Label>
-              <p className="text-sm text-muted-foreground">Nhắc nhở bé nghỉ ngơi khi hết giờ</p>
+              <Label className="font-medium">{t.settingsTab.enableTimeLimit}</Label>
+              <p className="text-sm text-muted-foreground">{t.settingsTab.enableTimeLimitDesc}</p>
             </div>
-            <Switch
-              checked={limitEnabled}
-              onCheckedChange={handleToggleLimit}
-              disabled={loading}
-            />
+            <Switch checked={limitEnabled} onCheckedChange={handleToggleLimit} disabled={loading} />
           </div>
 
-          {/* Radio options */}
           {limitEnabled && (
             <>
               <div className="bg-muted/50 rounded-xl p-4">
-                <Label className="font-medium text-sm mb-3 block">Thời gian tối đa mỗi ngày</Label>
+                <Label className="font-medium text-sm mb-3 block">{t.settingsTab.maxTimePerDay}</Label>
                 <div className="flex gap-2">
-                  {[
-                    { mins: 30, emoji: "⏱️", label: "30p" },
-                    { mins: 60, emoji: "🕐", label: "1 giờ" },
-                    { mins: 90, emoji: "🕜", label: "1.5 giờ" },
-                    { mins: 120, emoji: "🕑", label: "2 giờ" },
-                  ].map(({ mins, emoji, label }) => (
+                  {timeOptions.map(({ mins, emoji, label }) => (
                     <button
                       key={mins}
                       type="button"
@@ -92,20 +89,19 @@ const SettingsTab = () => {
                 </div>
               </div>
 
-              {/* Progress bar */}
               <div className="space-y-2">
                 <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Hôm nay đã học</span>
+                  <span className="text-muted-foreground">{t.settingsTab.todayLearned}</span>
                   <span className="font-semibold">
-                    {todayTimeSpent}/{dailyLimit ?? limitMinutes} phút
+                    {todayTimeSpent}/{dailyLimit ?? limitMinutes} {t.settingsTab.minutes}
                   </span>
                 </div>
                 <Progress value={progressPercent} className="h-3" />
                 {progressPercent >= 80 && progressPercent < 100 && (
-                  <p className="text-xs text-amber-600">⚠️ Sắp hết thời gian học hôm nay!</p>
+                  <p className="text-xs text-amber-600">{t.settingsTab.almostDone}</p>
                 )}
                 {progressPercent >= 100 && (
-                  <p className="text-xs text-red-500">🎉 Đã đạt giới hạn thời gian hôm nay!</p>
+                  <p className="text-xs text-red-500">{t.settingsTab.limitReached}</p>
                 )}
               </div>
             </>
@@ -115,65 +111,61 @@ const SettingsTab = () => {
 
       {/* Original settings */}
       <Card className="p-6">
-        <h3 className="font-bold text-xl mb-6">Cài đặt ứng dụng</h3>
+        <h3 className="font-bold text-xl mb-6">{t.settingsTab.appSettings}</h3>
         
         <div className="space-y-6">
-          {/* Notifications */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
                 <Bell className="h-5 w-5 text-primary" />
               </div>
               <div>
-                <Label className="font-medium">Thông báo</Label>
-                <p className="text-sm text-muted-foreground">Nhận thông báo nhắc nhở học tập</p>
+                <Label className="font-medium">{t.settingsTab.notifications}</Label>
+                <p className="text-sm text-muted-foreground">{t.settingsTab.notificationsDesc}</p>
               </div>
             </div>
             <Switch defaultChecked />
           </div>
 
-          {/* Sound */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-secondary/10 flex items-center justify-center">
                 <Volume2 className="h-5 w-5 text-secondary" />
               </div>
               <div>
-                <Label className="font-medium">Âm thanh</Label>
-                <p className="text-sm text-muted-foreground">Bật âm thanh trong game</p>
+                <Label className="font-medium">{t.settingsTab.sound}</Label>
+                <p className="text-sm text-muted-foreground">{t.settingsTab.soundDesc}</p>
               </div>
             </div>
             <Switch defaultChecked />
           </div>
 
-          {/* Dark Mode */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-purple-500/10 flex items-center justify-center">
                 <Moon className="h-5 w-5 text-purple-500" />
               </div>
               <div>
-                <Label className="font-medium">Chế độ tối</Label>
-                <p className="text-sm text-muted-foreground">Sử dụng giao diện tối</p>
+                <Label className="font-medium">{t.settingsTab.darkMode}</Label>
+                <p className="text-sm text-muted-foreground">{t.settingsTab.darkModeDesc}</p>
               </div>
             </div>
             <Switch />
           </div>
 
-          {/* Language */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-green-500/10 flex items-center justify-center">
                 <Globe className="h-5 w-5 text-green-500" />
               </div>
               <div>
-                <Label className="font-medium">Ngôn ngữ</Label>
-                <p className="text-sm text-muted-foreground">Chọn ngôn ngữ hiển thị</p>
+                <Label className="font-medium">{t.settingsTab.language}</Label>
+                <p className="text-sm text-muted-foreground">{t.settingsTab.languageDesc}</p>
               </div>
             </div>
-            <Select defaultValue="vi">
+            <Select value={language} onValueChange={(v) => setLanguage(v as "vi" | "en")}>
               <SelectTrigger className="w-32">
-                <SelectValue placeholder="Chọn ngôn ngữ" />
+                <SelectValue placeholder={t.settingsTab.selectLanguage} />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="vi">Tiếng Việt</SelectItem>
@@ -185,13 +177,13 @@ const SettingsTab = () => {
       </Card>
 
       <Card className="p-6">
-        <h3 className="font-bold text-xl mb-4">Về ứng dụng</h3>
+        <h3 className="font-bold text-xl mb-4">{t.settingsTab.aboutApp}</h3>
         <div className="space-y-3 text-sm text-muted-foreground">
-          <p>Phiên bản: 1.0.0</p>
-          <p>© 2024 Toán học vui. Tất cả quyền được bảo lưu.</p>
+          <p>{t.settingsTab.version}</p>
+          <p>{t.settingsTab.copyright}</p>
           <div className="flex gap-4">
-            <a href="#" className="text-primary hover:underline">Điều khoản sử dụng</a>
-            <a href="#" className="text-primary hover:underline">Chính sách bảo mật</a>
+            <a href="#" className="text-primary hover:underline">{t.settingsTab.termsOfService}</a>
+            <a href="#" className="text-primary hover:underline">{t.settingsTab.privacyPolicy}</a>
           </div>
         </div>
       </Card>
