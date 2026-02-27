@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Loader2, Upload, BookOpen, Search, Sparkles, ArrowUpDown } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { motion } from "framer-motion";
+import { useLanguage } from "@/contexts/LanguageContext";
 import {
   Select,
   SelectContent,
@@ -38,6 +39,7 @@ const SORT_OPTIONS = [
 
 const Library = () => {
   const navigate = useNavigate();
+  const { t } = useLanguage();
   const [isLoading, setIsLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isTeacher, setIsTeacher] = useState(false);
@@ -100,7 +102,7 @@ const Library = () => {
             <Loader2 className="h-16 w-16 animate-spin text-primary" />
             <Sparkles className="absolute -top-2 -right-2 h-6 w-6 text-secondary animate-pulse" />
           </div>
-          <p className="text-muted-foreground font-medium">Đang tải thư viện...</p>
+          <p className="text-muted-foreground font-medium">{t.libraryPage.loading}</p>
         </motion.div>
       </div>
     );
@@ -128,10 +130,10 @@ const Library = () => {
             </div>
           </div>
           <h1 className="text-4xl md:text-5xl font-heading font-bold bg-gradient-to-r from-primary via-primary/80 to-secondary bg-clip-text text-transparent mb-3">
-            Thư viện Tài liệu
+            {t.libraryPage.title}
           </h1>
           <p className="text-muted-foreground max-w-2xl mx-auto text-lg">
-            Kho tài liệu học tập phong phú theo từng cấp lớp. Xem trực tiếp hoặc tải về để học tập.
+            {t.libraryPage.description}
           </p>
         </motion.div>
 
@@ -145,7 +147,7 @@ const Library = () => {
           <div className="relative max-w-2xl mx-auto">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground z-10 pointer-events-none" />
             <Input
-              placeholder="Tìm kiếm tài liệu theo tên, mô tả..."
+              placeholder={t.libraryPage.searchPlaceholder}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-12 pr-4 py-6 text-base rounded-xl border-2 border-muted/50 focus:border-primary/50 bg-card/80 backdrop-blur-sm shadow-sm transition-all duration-300"
@@ -188,7 +190,7 @@ const Library = () => {
             <Select value={sortBy} onValueChange={setSortBy}>
               <SelectTrigger className="w-[160px] gap-2 rounded-full border-2 bg-card/80 hover:bg-muted/50 transition-colors">
                 <ArrowUpDown className="h-4 w-4 text-muted-foreground" />
-                <SelectValue placeholder="Sắp xếp" />
+                <SelectValue placeholder={t.libraryPage.sortPlaceholder} />
               </SelectTrigger>
               <SelectContent>
                 {SORT_OPTIONS.map((option) => (
@@ -206,7 +208,7 @@ const Library = () => {
                 className="gap-2 rounded-full px-6 py-5 bg-gradient-to-r from-secondary to-secondary/80 hover:from-secondary/90 hover:to-secondary/70 text-secondary-foreground shadow-lg shadow-secondary/25 transition-all duration-300 hover:scale-105"
               >
                 <Upload className="h-5 w-5" />
-                <span className="font-semibold">Tải lên tài liệu</span>
+                <span className="font-semibold">{t.libraryPage.uploadButton}</span>
               </Button>
             )}
           </div>

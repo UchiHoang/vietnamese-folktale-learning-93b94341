@@ -20,6 +20,7 @@ import { LessonProgressBadge } from "@/components/lesson/LessonProgressBadge";
 import { NotesTab } from "@/components/lesson/NotesTab";
 import { CommentsTab } from "@/components/lesson/CommentsTab";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 /* ==================================================================================
    KHU VỰC ĐỊNH NGHĨA KIỂU DỮ LIỆU
@@ -1695,6 +1696,7 @@ const topicsData: Topic[] = [
    LOGIC GIAO DIỆN
    ================================================================================== */
 const Lessons = () => {
+  const { t } = useLanguage();
   // Hook lấy dữ liệu từ Supabase
   const {
     lessons: dbLessons,
@@ -1827,7 +1829,7 @@ const Lessons = () => {
         {/* 1. Chọn Lớp */}
         <div>
           <label className="text-sm font-black text-foreground uppercase mb-1.5 block tracking-wider">
-            Lớp Học
+            {t.lessonsPage.classLabel}
           </label>
           <Select
             value={selectedLessonId}
@@ -1838,7 +1840,7 @@ const Lessons = () => {
             }}
           >
             <SelectTrigger className="w-full font-bold h-11 bg-background border-2 hover:border-primary/50 transition-colors">
-              <SelectValue placeholder="Chọn lớp..." />
+              <SelectValue placeholder={t.lessonsPage.selectClass} />
             </SelectTrigger>
             <SelectContent>
               {activeLessons.map((lesson) => {
@@ -1863,9 +1865,9 @@ const Lessons = () => {
           {currentLessonProgress && currentLessonProgress.total_topics > 0 && (
             <div className="mt-2 space-y-1">
               <div className="flex justify-between text-xs">
-                <span className="text-muted-foreground font-medium">Tiến độ</span>
+                <span className="text-muted-foreground font-medium">{t.lessonsPage.progress}</span>
                 <span className="text-primary font-bold">
-                  {currentLessonProgress.completed_topics}/{currentLessonProgress.total_topics} bài
+                  {currentLessonProgress.completed_topics}/{currentLessonProgress.total_topics} {t.lessonsPage.lessons}
                 </span>
               </div>
               <Progress 
@@ -1887,7 +1889,7 @@ const Lessons = () => {
                   : "text-muted-foreground hover:bg-white/70 font-bold"
               }`}
             >
-              Học kì 1
+              {t.lessonsPage.semester1}
             </button>
             <button
               onClick={() => setSelectedSemester(2)}
@@ -1897,7 +1899,7 @@ const Lessons = () => {
                   : "text-muted-foreground hover:bg-white/70 font-bold"
               }`}
             >
-              Học kì 2
+              {t.lessonsPage.semester2}
             </button>
           </div>
         </div>
@@ -1906,7 +1908,7 @@ const Lessons = () => {
         <div className="relative">
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="Tìm bài học..."
+            placeholder={t.lessonsPage.searchPlaceholder}
             className="pl-9 bg-background border-2 font-semibold h-11 focus:border-primary/50 transition-colors"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
@@ -1920,12 +1922,12 @@ const Lessons = () => {
       <div className="flex-1 flex flex-col bg-gradient-to-b from-muted/20 to-muted/5 min-h-0 overflow-hidden">
         {/* Header danh sách */}
         <div className="px-4 py-3 bg-gradient-to-r from-primary/10 to-primary/5 text-sm font-black text-foreground uppercase tracking-wider border-b-2 border-primary/30 flex justify-between items-center flex-shrink-0">
-          <span className="text-base">DANH SÁCH BÀI HỌC</span>
+          <span className="text-base">{t.lessonsPage.lessonList}</span>
           <Badge
             variant="outline"
             className="text-xs h-6 px-2.5 bg-background/90 font-black border-primary/40 text-primary"
           >
-            {filteredTopics.length} BÀI
+            {filteredTopics.length} {t.lessonsPage.lessonCount}
           </Badge>
         </div>
 
@@ -1989,7 +1991,7 @@ const Lessons = () => {
                       <div className="flex items-center gap-2">
                         {completed ? (
                           <span className="text-xs px-2.5 py-1 bg-primary/15 text-primary rounded-lg font-bold inline-flex items-center gap-1.5">
-                            <CheckCircle className="h-3 w-3" /> Hoàn thành
+                            <CheckCircle className="h-3 w-3" /> {t.lessonsPage.completed}
                           </span>
                         ) : (
                           <span className="text-xs text-muted-foreground inline-flex items-center gap-1.5 px-2.5 py-1 bg-muted/60 rounded-lg font-bold">
@@ -2004,7 +2006,7 @@ const Lessons = () => {
             ) : (
               <div className="text-center py-12 px-4 text-muted-foreground">
                 <FileText className="h-10 w-10 mx-auto mb-2 opacity-20" />
-                <p className="text-xs">Không tìm thấy bài học nào cho Học kì {selectedSemester}.</p>
+                <p className="text-xs">{t.lessonsPage.noLessonsFound} {selectedSemester}.</p>
               </div>
             )}
           </div>
@@ -2077,7 +2079,7 @@ const Lessons = () => {
               className="flex items-center gap-2"
             >
               <Menu className="h-4 w-4" />
-              <span className="font-bold">Bài học</span>
+              <span className="font-bold">{t.lessonsPage.lessonButton}</span>
             </Button>
             {selectedTopic && (
               <div className="flex-1 min-w-0">
@@ -2085,7 +2087,7 @@ const Lessons = () => {
                   {selectedTopic.title}
                 </p>
                 <p className="text-xs text-muted-foreground">
-                  {selectedLesson?.title} • Học kì {selectedSemester}
+                  {selectedLesson?.title} • {t.lessonsPage.semester} {selectedSemester}
                 </p>
               </div>
             )}
@@ -2094,9 +2096,9 @@ const Lessons = () => {
           {!selectedTopic ? (
             <div className="flex-1 flex flex-col items-center justify-center text-muted-foreground p-8 text-center bg-muted/5">
               <BookOpen className="h-16 w-16 mb-4 opacity-20" />
-              <h2 className="text-xl font-semibold mb-2">Chưa chọn bài học</h2>
-              <p className="hidden lg:block">Vui lòng chọn một bài học từ danh sách bên trái.</p>
-              <p className="lg:hidden">Nhấn nút "Bài học" để chọn bài học.</p>
+              <h2 className="text-xl font-semibold mb-2">{t.lessonsPage.noTopicSelected}</h2>
+              <p className="hidden lg:block">{t.lessonsPage.selectFromLeft}</p>
+              <p className="lg:hidden">{t.lessonsPage.tapToSelect}</p>
             </div>
           ) : (
             <ScrollArea className="flex-1">
@@ -2110,7 +2112,7 @@ const Lessons = () => {
                     </span>
                     <span className="text-muted-foreground font-semibold">/</span>
                     <span className="bg-muted px-3 py-1.5 rounded-lg text-xs md:text-sm font-semibold">
-                      Học kì {selectedSemester}
+                      {t.lessonsPage.semester} {selectedSemester}
                     </span>
                   </div>
                   <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-foreground leading-tight tracking-tight">
@@ -2135,7 +2137,7 @@ const Lessons = () => {
                     <div className="px-5 pt-5 pb-3">
                       <h3 className="font-bold text-xl flex items-center gap-3 text-foreground">
                         <BookOpen className="h-5 w-5 text-primary" />
-                        Nội dung bài học
+                        {t.lessonsPage.lessonContent}
                       </h3>
                     </div>
                     
@@ -2145,8 +2147,7 @@ const Lessons = () => {
                         {selectedTopic.title}
                       </h4>
                       <p className="text-muted-foreground leading-relaxed">
-                        Hãy xem kỹ video và ghi chép lại các công thức quan trọng. 
-                        Sau khi xem xong, bạn có thể ghi chú bên dưới hoặc đặt câu hỏi trong phần Hỏi đáp.
+                        {t.lessonsPage.lessonContentDesc}
                       </p>
                     </div>
                   </div>
@@ -2155,13 +2156,13 @@ const Lessons = () => {
                   <div className="lg:col-span-1 bg-gradient-to-br from-primary/10 to-primary/5 rounded-xl p-4 md:p-6 border border-primary/20 flex flex-col items-center justify-center text-center gap-3">
                     <div className="text-4xl">🎯</div>
                     <div className="text-lg md:text-xl font-bold text-primary">
-                      Hoàn thành bài học
+                      {t.lessonsPage.completeLesson}
                     </div>
                     <div className="text-2xl md:text-3xl font-black text-primary">
                       +20 XP
                     </div>
                     <p className="text-sm text-muted-foreground">
-                      Xem video và hoàn thành để nhận điểm kinh nghiệm
+                      {t.lessonsPage.watchToEarn}
                     </p>
                   </div>
                 </div>
@@ -2176,13 +2177,13 @@ const Lessons = () => {
                           value="notes" 
                           className="flex-1 text-xs sm:text-sm md:text-lg font-bold px-2 sm:px-4 md:px-8 py-2 md:py-3 rounded-full data-[state=active]:bg-background data-[state=active]:text-primary data-[state=inactive]:text-primary-foreground/90 transition-all"
                         >
-                          <span className="hidden sm:inline">📝 </span>Ghi chú
+                          <span className="hidden sm:inline">📝 </span>{t.lessonsPage.notes}
                         </TabsTrigger>
                         <TabsTrigger 
                           value="qa" 
                           className="flex-1 text-xs sm:text-sm md:text-lg font-bold px-2 sm:px-4 md:px-8 py-2 md:py-3 rounded-full data-[state=active]:bg-background data-[state=active]:text-primary data-[state=inactive]:text-primary-foreground/90 transition-all"
                         >
-                          <span className="hidden sm:inline">💬 </span>Hỏi đáp
+                          <span className="hidden sm:inline">💬 </span>{t.lessonsPage.qa}
                         </TabsTrigger>
                       </TabsList>
                     </div>

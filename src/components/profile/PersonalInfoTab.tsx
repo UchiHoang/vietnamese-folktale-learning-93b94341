@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Pencil } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface ProfileData {
   display_name: string;
@@ -35,14 +36,15 @@ const GRADE_OPTIONS = [
   { value: "Lớp 5", label: "Lớp 5" },
 ];
 
-const InfoField = ({ label, value }: { label: string; value: string | undefined }) => (
+const InfoField = ({ label, value, notUpdated }: { label: string; value: string | undefined; notUpdated?: string }) => (
   <div className="space-y-1">
     <Label className="text-sm text-muted-foreground">{label}:</Label>
-    <p className="font-medium text-foreground">{value || "Chưa cập nhật"}</p>
+    <p className="font-medium text-foreground">{value || notUpdated || "N/A"}</p>
   </div>
 );
 
 const PersonalInfoTab = ({ profile, isAdmin, onUpdate }: PersonalInfoTabProps) => {
+  const { t } = useLanguage();
   const [editing, setEditing] = useState(false);
   const [formData, setFormData] = useState<Partial<ProfileData>>({
     display_name: profile?.display_name || "",
@@ -70,14 +72,10 @@ const PersonalInfoTab = ({ profile, isAdmin, onUpdate }: PersonalInfoTabProps) =
   return (
     <div className="bg-card rounded-2xl shadow-lg p-6">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-bold text-primary">Thông tin cá nhân</h2>
+        <h2 className="text-2xl font-bold text-primary">{t.personalInfo.title}</h2>
         {!editing && (
-          <Button
-            variant="outline"
-            onClick={() => setEditing(true)}
-            className="flex items-center gap-2"
-          >
-            Cập nhật <Pencil className="h-4 w-4" />
+          <Button variant="outline" onClick={() => setEditing(true)} className="flex items-center gap-2">
+            {t.personalInfo.update} <Pencil className="h-4 w-4" />
           </Button>
         )}
       </div>
@@ -85,16 +83,16 @@ const PersonalInfoTab = ({ profile, isAdmin, onUpdate }: PersonalInfoTabProps) =
       {editing ? (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-1">
-            <Label className="text-sm text-muted-foreground">Họ tên:</Label>
+            <Label className="text-sm text-muted-foreground">{t.personalInfo.fullName}:</Label>
             <Input
               value={formData.display_name || ""}
               onChange={(e) => handleChange("display_name", e.target.value)}
-              placeholder="Nhập họ tên"
+              placeholder={t.personalInfo.enterName}
               className="bg-background"
             />
           </div>
           <div className="space-y-1">
-            <Label className="text-sm text-muted-foreground">Ngày sinh:</Label>
+            <Label className="text-sm text-muted-foreground">{t.personalInfo.birthDate}:</Label>
             <Input
               type="date"
               value={formData.birth_date || ""}
@@ -103,48 +101,48 @@ const PersonalInfoTab = ({ profile, isAdmin, onUpdate }: PersonalInfoTabProps) =
             />
           </div>
           <div className="space-y-1">
-            <Label className="text-sm text-muted-foreground">Giới tính:</Label>
+            <Label className="text-sm text-muted-foreground">{t.personalInfo.gender}:</Label>
             <Select value={formData.gender || ""} onValueChange={(v) => handleChange("gender", v)}>
               <SelectTrigger className="bg-background">
-                <SelectValue placeholder="Chọn giới tính" />
+                <SelectValue placeholder={t.personalInfo.selectGender} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="Nam">Nam</SelectItem>
-                <SelectItem value="Nữ">Nữ</SelectItem>
+                <SelectItem value="Nam">{t.personalInfo.male}</SelectItem>
+                <SelectItem value="Nữ">{t.personalInfo.female}</SelectItem>
               </SelectContent>
             </Select>
           </div>
           <div className="space-y-1">
-            <Label className="text-sm text-muted-foreground">Điện Thoại:</Label>
+            <Label className="text-sm text-muted-foreground">{t.personalInfo.phone}:</Label>
             <Input
               value={formData.phone || ""}
               onChange={(e) => handleChange("phone", e.target.value)}
-              placeholder="Nhập số điện thoại"
+              placeholder={t.personalInfo.enterPhone}
               className="bg-background"
             />
           </div>
           <div className="space-y-1">
-            <Label className="text-sm text-muted-foreground">Email:</Label>
+            <Label className="text-sm text-muted-foreground">{t.personalInfo.email}:</Label>
             <Input value={profile?.email || ""} disabled className="bg-muted" />
           </div>
           <div className="space-y-1">
-            <Label className="text-sm text-muted-foreground">Loại tài khoản:</Label>
-            <Input value={isAdmin ? "Giáo viên" : "Học sinh"} disabled className="bg-muted" />
+            <Label className="text-sm text-muted-foreground">{t.personalInfo.accountType}:</Label>
+            <Input value={isAdmin ? t.personalInfo.teacher : t.personalInfo.student} disabled className="bg-muted" />
           </div>
           <div className="space-y-1">
-            <Label className="text-sm text-muted-foreground">Địa chỉ:</Label>
+            <Label className="text-sm text-muted-foreground">{t.personalInfo.address}:</Label>
             <Input
               value={formData.address || ""}
               onChange={(e) => handleChange("address", e.target.value)}
-              placeholder="Nhập địa chỉ"
+              placeholder={t.personalInfo.enterAddress}
               className="bg-background"
             />
           </div>
           <div className="space-y-1">
-            <Label className="text-sm text-muted-foreground">Khối:</Label>
+            <Label className="text-sm text-muted-foreground">{t.personalInfo.grade}:</Label>
             <Select value={formData.grade || ""} onValueChange={(v) => handleChange("grade", v)}>
               <SelectTrigger className="bg-background">
-                <SelectValue placeholder="Chọn khối lớp" />
+                <SelectValue placeholder={t.personalInfo.selectGrade} />
               </SelectTrigger>
               <SelectContent>
                 {GRADE_OPTIONS.map(opt => (
@@ -154,71 +152,71 @@ const PersonalInfoTab = ({ profile, isAdmin, onUpdate }: PersonalInfoTabProps) =
             </Select>
           </div>
           <div className="space-y-1">
-            <Label className="text-sm text-muted-foreground">Xã/Phường:</Label>
+            <Label className="text-sm text-muted-foreground">{t.personalInfo.ward}:</Label>
             <Input
               value={formData.ward || ""}
               onChange={(e) => handleChange("ward", e.target.value)}
-              placeholder="Nhập xã/phường"
+              placeholder={t.personalInfo.enterWard}
               className="bg-background"
             />
           </div>
           <div className="space-y-1">
-            <Label className="text-sm text-muted-foreground">Lớp:</Label>
+            <Label className="text-sm text-muted-foreground">{t.personalInfo.class}:</Label>
             <Input
               value={formData.class_name || ""}
               onChange={(e) => handleChange("class_name", e.target.value)}
-              placeholder="VD: 2A1"
+              placeholder={t.personalInfo.classPlaceholder}
               className="bg-background"
             />
           </div>
           <div className="space-y-1">
-            <Label className="text-sm text-muted-foreground">Quận:</Label>
+            <Label className="text-sm text-muted-foreground">{t.personalInfo.district}:</Label>
             <Input
               value={formData.district || ""}
               onChange={(e) => handleChange("district", e.target.value)}
-              placeholder="Nhập quận/huyện"
+              placeholder={t.personalInfo.enterDistrict}
               className="bg-background"
             />
           </div>
           <div className="space-y-1">
-            <Label className="text-sm text-muted-foreground">Trường học:</Label>
+            <Label className="text-sm text-muted-foreground">{t.personalInfo.school}:</Label>
             <Input
               value={formData.school || ""}
               onChange={(e) => handleChange("school", e.target.value)}
-              placeholder="Tên trường học"
+              placeholder={t.personalInfo.schoolPlaceholder}
               className="bg-background"
             />
           </div>
           <div className="space-y-1">
-            <Label className="text-sm text-muted-foreground">Tỉnh:</Label>
+            <Label className="text-sm text-muted-foreground">{t.personalInfo.province}:</Label>
             <Input
               value={formData.province || ""}
               onChange={(e) => handleChange("province", e.target.value)}
-              placeholder="Nhập tỉnh/thành phố"
+              placeholder={t.personalInfo.enterProvince}
               className="bg-background"
             />
           </div>
           
           <div className="md:col-span-2 flex gap-3 justify-end mt-4">
-            <Button variant="outline" onClick={() => setEditing(false)}>Hủy</Button>
-            <Button onClick={handleSave}>Lưu thay đổi</Button>
+            <Button variant="outline" onClick={() => setEditing(false)}>{t.personalInfo.cancel}</Button>
+            <Button onClick={handleSave}>{t.personalInfo.saveChanges}</Button>
           </div>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <InfoField label="Họ tên" value={profile?.display_name} />
-          <InfoField label="Ngày sinh" value={profile?.birth_date} />
-          <InfoField label="Giới tính" value={profile?.gender} />
-          <InfoField label="Điện Thoại" value={profile?.phone} />
-          <InfoField label="Email" value={profile?.email} />
-          <InfoField label="Loại tài khoản" value={isAdmin ? "Giáo viên" : "Học sinh"} />
-          <InfoField label="Địa chỉ" value={profile?.address} />
-          <InfoField label="Khối" value={profile?.grade} />
-          <InfoField label="Xã/Phường" value={profile?.ward} />
-          <InfoField label="Lớp" value={profile?.class_name} />
-          <InfoField label="Quận" value={profile?.district} />
-          <InfoField label="Trường học" value={profile?.school} />
-          <InfoField label="Tỉnh" value={profile?.province} />
+          <InfoField label={t.personalInfo.fullName} value={profile?.display_name} notUpdated={t.personalInfo.notUpdated} />
+          <InfoField label={t.personalInfo.birthDate} value={profile?.birth_date} notUpdated={t.personalInfo.notUpdated} />
+          <InfoField label={t.personalInfo.gender} value={profile?.gender} notUpdated={t.personalInfo.notUpdated} />
+          <InfoField label={t.personalInfo.phone} value={profile?.phone} notUpdated={t.personalInfo.notUpdated} />
+          <InfoField label={t.personalInfo.email} value={profile?.email} notUpdated={t.personalInfo.notUpdated} />
+          <InfoField label={t.personalInfo.accountType} value={isAdmin ? t.personalInfo.teacher : t.personalInfo.student} notUpdated={t.personalInfo.notUpdated} />
+          <InfoField label={t.personalInfo.address} value={profile?.address} notUpdated={t.personalInfo.notUpdated} />
+          <InfoField label={t.personalInfo.grade} value={profile?.grade} notUpdated={t.personalInfo.notUpdated} />
+          <InfoField label={t.personalInfo.ward} value={profile?.ward} notUpdated={t.personalInfo.notUpdated} />
+          <InfoField label={t.personalInfo.class} value={profile?.class_name} notUpdated={t.personalInfo.notUpdated} />
+          <InfoField label={t.personalInfo.district} value={profile?.district} notUpdated={t.personalInfo.notUpdated} />
+          <InfoField label={t.personalInfo.school} value={profile?.school} notUpdated={t.personalInfo.notUpdated} />
+          <InfoField label={t.personalInfo.province} value={profile?.province} notUpdated={t.personalInfo.notUpdated} />
         </div>
       )}
     </div>
