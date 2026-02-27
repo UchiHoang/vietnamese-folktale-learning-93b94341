@@ -1,75 +1,60 @@
 
 
-# Theo doi thoi gian online thuc te cho kiem soat thoi gian hoc
+# Track thoi gian online tren tat ca cac trang website
 
-## Van de hien tai
+## Muc tieu
 
-Hien tai, `time_spent_minutes` trong `daily_activity` chi duoc cap nhat khi be **hoan thanh 1 man choi** (qua ham `complete_stage`). Nghia la neu be mo trang web 2 tieng nhung khong hoan thanh man nao, thoi gian ghi nhan la 0 phut. Dieu nay khong phan anh dung thuc te.
+Hien tai, thoi gian chi duoc tinh khi be o trang `/classroom/` hoac `/lessons`. Yeu cau moi: tinh thoi gian tren **tat ca cac trang** cua website (trang chu, profile, library, v.v.) de bao ve mat cho tre toan dien hon.
 
-## Giai phap
+## Thay doi
 
-Them **online time tracker** chay tren client, moi phut se tu dong cong 1 phut vao `daily_activity.time_spent_minutes` khi be dang o trang game/lesson. Ket hop ca thoi gian online va thoi gian choi game.
+### 1. `src/components/game/StudyTimeLimitWrapper.tsx`
 
-## Thiet ke ky thuat
+- Bo dieu kien loc `isGamePage` cho tracker: `useOnlineTimeTracker(true)` thay vi `useOnlineTimeTracker(isGamePage)` -- nghia la bat cu khi nao user dang nhap va o bat ky trang nao, thoi gian deu duoc tinh.
+- Giu nguyen `isGamePage` cho viec hien thi `StudyBreakReminder` -- popup nhac nho van chi hien khi be dang o trang hoc/choi, vi o trang chu/profile thi khong can chan.
+- Tuy nhien, them logic: khi `isLimitReached` va be **khong** o trang game, van hien thi 1 banner nho (toast/notification) de nhac nhe thay vi popup toan man hinh.
 
-### 1. Tao hook `useOnlineTimeTracker` (src/hooks/useOnlineTimeTracker.ts)
+### 2. Chi tiet thay doi code
 
-Hook nay se:
-- Chay khi user dang o trang game/lesson (cac path `/classroom/` va `/lessons`)
-- Moi 60 giay, goi upsert vao `daily_activity` de cong them 1 phut
-- Tu dong dung khi user chuyen sang tab khac (document.hidden) hoac roi khoi trang game
-- Su dung `visibilitychange` event de khong tinh thoi gian khi tab bi an
+**StudyTimeLimitWrapper.tsx:**
 
-Logic chinh:
 ```text
-- Bat dau interval 60 giay khi vao trang game
-- Moi 60 giay:
-  + Kiem tra tab co dang active khong (document.hidden === false)
-  + Neu active: upsert daily_activity, cong 1 phut
-- Khi tab bi an: tam dung interval
-- Khi tab active lai: tiep tuc interval
-- Khi roi khoi trang game: dung hoan toan
+Truoc: useOnlineTimeTracker(isGamePage)
+Sau:   useOnlineTimeTracker(true)  // Track tren moi trang
+
+Truoc: if (loading || !isGamePage) return null;
+Sau:   if (loading) return null;
+       if (!isGamePage && isLimitReached && !dismissed) {
+         // Hien toast nhe nhang thay vi popup toan man hinh
+         return <StudyBreakReminder ... softMode={true} />
+       }
+       if (!isGamePage) return null;
+       // Giu nguyen popup cho trang game
 ```
 
-### 2. Cap nhat `StudyTimeLimitWrapper` (src/components/game/StudyTimeLimitWrapper.tsx)
-
-- Tich hop `useOnlineTimeTracker` vao day (vi no da biet user dang o game page)
-- Hook se tu dong chay khi `isGamePage = true`
+**StudyBreakReminder.tsx:**
+- Them prop `softMode?: boolean`
+- Khi `softMode=true`: hien thi dang banner nho o goc duoi man hinh thay vi overlay toan man hinh, de tre van co the xem trang chu nhung van biet da het thoi gian
 
 ### 3. Khong can thay doi database
 
-Bang `daily_activity` da co san cot `time_spent_minutes` va RLS policies phu hop (user co the insert va update cua minh). Khong can migration.
+Hook `useOnlineTimeTracker` va bang `daily_activity` khong can thay doi gi -- chi thay doi dieu kien kich hoat tren client.
 
-### 4. Xu ly xung dot voi `complete_stage`
+## Luong hoat dong moi
 
-Ham `complete_stage` trong SQL cung cong `time_spent_minutes`. De tranh cong trung:
-- Online tracker se la nguon chinh de tinh thoi gian
-- Sua logic trong `complete_stage` de **khong cong** `time_spent_minutes` nua (chi giu cong xp, points, lessons_completed)
-- Tao migration de sua ham `complete_stage`
+```text
+1. Be dang nhap va vao bat ky trang nao -> tracker bat dau chay
+2. Moi 60 giay (tab active) -> daily_activity.time_spent_minutes += 1
+3. Khi het thoi gian:
+   - Neu dang o trang game/lesson -> popup toan man hinh voi Trau Vang
+   - Neu dang o trang khac (home, profile) -> banner nho o goc duoi nhac nho
+4. Be van co the "xin them 5 phut" nhu binh thuong
+```
 
-### Files thay doi
+## Tom tat files thay doi
 
 | File | Thay doi |
 |---|---|
-| `src/hooks/useOnlineTimeTracker.ts` | **Moi** - Hook theo doi thoi gian online |
-| `src/components/game/StudyTimeLimitWrapper.tsx` | Tich hop useOnlineTimeTracker |
-| `supabase/migrations/xxx.sql` | Sua ham complete_stage: bo phan cong time_spent_minutes |
-
-### Luong hoat dong moi
-
-```text
-1. Be vao trang /classroom/grade1 -> useOnlineTimeTracker bat dau chay
-2. Moi 60 giay (neu tab active): upsert daily_activity += 1 phut
-3. Be chuyen tab sang YouTube -> tracker tam dung (khong tinh)
-4. Be quay lai tab -> tracker tiep tuc
-5. useStudyTimeLimit poll moi 60 giay -> doc daily_activity.time_spent_minutes
-6. Khi time >= limit -> hien StudyBreakReminder voi Trau Vang
-```
-
-### Chi tiet xu ly edge case
-
-- **Tab bi an**: Dung `document.addEventListener('visibilitychange')` de tam dung/tiep tuc
-- **User chua dang nhap**: Khong track (kiem tra session truoc)
-- **Ngay moi**: `activity_date = CURRENT_DATE` trong upsert, tu dong tao row moi
-- **Nhieu tab**: Moi tab se track doc lap, nhung vi cong don vao cung row nen van chinh xac
+| `src/components/game/StudyTimeLimitWrapper.tsx` | Bo dieu kien `isGamePage` cho tracker, them logic hien thi soft mode |
+| `src/components/game/StudyBreakReminder.tsx` | Them prop `softMode` voi giao dien banner nho |
 
