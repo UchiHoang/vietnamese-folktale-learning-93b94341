@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Users, Lock } from "lucide-react";
+import { ArrowRight, Users } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface ClassCardProps {
   level: string;
@@ -12,10 +13,11 @@ interface ClassCardProps {
 }
 
 const ClassCard = ({ level, title, ageRange, image, description, gameRoute }: ClassCardProps) => {
+  const { t } = useLanguage();
   const isAvailable = gameRoute !== null;
+
   return (
     <div className="group relative bg-card rounded-2xl overflow-hidden card-shadow hover-lift transition-all duration-300 flex flex-col h-full">
-      {/* Image - keep aspect-square like original (responsive) */}
       <div className="aspect-square overflow-hidden">
         <img
           src={image}
@@ -24,13 +26,12 @@ const ClassCard = ({ level, title, ageRange, image, description, gameRoute }: Cl
         />
       </div>
 
-      {/* Content - stretch to push button to bottom for consistent heights */}
       <div className="p-6 flex-1 flex flex-col justify-between">
         <div>
           <div className="flex items-center justify-between">
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-semibold">
               <Users className="h-3.5 w-3.5" />
-              {ageRange} tuổi
+              {ageRange} {t.classes.age}
             </span>
             <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
               {level}
@@ -50,14 +51,14 @@ const ClassCard = ({ level, title, ageRange, image, description, gameRoute }: Cl
           {isAvailable && gameRoute ? (
             <Button className="w-full group/btn" asChild>
               <Link to={gameRoute}>
-                Vào lớp
+                {t.classes.enterClass}
                 <ArrowRight className="ml-2 h-4 w-4 group-hover/btn:translate-x-1 transition-transform" />
               </Link>
             </Button>
           ) : (
             <Button className="w-full group/btn" asChild>
               <Link to="/coming-soon">
-                Vào lớp
+                {t.classes.enterClass}
                 <ArrowRight className="ml-2 h-4 w-4 group-hover/btn:translate-x-1 transition-transform" />
               </Link>
             </Button>
@@ -65,7 +66,6 @@ const ClassCard = ({ level, title, ageRange, image, description, gameRoute }: Cl
         </div>
       </div>
 
-      {/* Decorative corner */}
       <div className="absolute top-4 right-4 w-12 h-12 bg-secondary/20 rounded-full blur-xl group-hover:bg-primary/30 transition-colors" />
     </div>
   );

@@ -21,11 +21,13 @@ import Grade4Game from "./pages/Grade4Game";
 import Grade5Game from "./pages/Grade5Game";
 import DataPage from "./pages/data";
 import StudyTimeLimitWrapper from "./components/game/StudyTimeLimitWrapper";
+import { LanguageProvider } from "./contexts/LanguageContext";
 
 const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
+    <LanguageProvider>
     <TooltipProvider>
       <Toaster />
       <Sonner />
@@ -52,6 +54,7 @@ const App = () => (
         </Routes>
       </BrowserRouter>
     </TooltipProvider>
+    </LanguageProvider>
   </QueryClientProvider>
 );
 

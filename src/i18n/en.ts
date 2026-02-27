@@ -1,0 +1,272 @@
+import type { Translations } from "./vi";
+
+const en: Translations = {
+  // Header
+  header: {
+    home: "Home",
+    about: "About",
+    lessons: "Lessons",
+    classes: "Classes",
+    library: "Library",
+    leaderboard: "Leaderboard",
+    contact: "Contact",
+    login: "Login",
+    myAccount: "My Account",
+    profile: "Profile",
+    adminPanel: "Teacher Admin",
+    logout: "Logout",
+    logoutSuccess: "Logged out",
+    logoutSuccessDesc: "See you again!",
+    logoutError: "Error",
+    logoutErrorDesc: "Unable to logout",
+  },
+
+  // Hero
+  hero: {
+    badge: "Learn through play - Fun first!",
+    title1: "A magical",
+    title2: "learning",
+    title3: "journey with",
+    title4: "Vietnamese culture",
+    description: "Discover math and language through colorful and exciting Vietnamese folk tales",
+    startLearning: "Start Learning",
+    exploreClasses: "Explore Classes",
+    students: "Students",
+    teachers: "Teachers",
+    schools: "Schools",
+  },
+
+  // About
+  about: {
+    mission: "Our Mission",
+    intro: "VietEdu Odyssey is a unique online learning platform that combines modern education with Vietnamese folk culture. We believe learning is a joyful journey, and every child can reach their potential when taught in the right way.",
+    unifiedTitle: "A place for everyone's vibrant learning journey",
+    tabs: {
+      parent: "Parents",
+      student: "Students",
+      teacher: "Teachers",
+      school: "Schools",
+    },
+    parent: [
+      { title: "Visual Reports", desc: "Track your child's progress, strengths and weaknesses across lessons and games." },
+      { title: "Smart Management", desc: "Smart health clock feature, parents can easily manage daily study time." },
+      { title: "Cost Savings", desc: "Diverse video & game library replaces many extra tutoring classes." },
+      { title: "Safe Content", desc: "Children learn independently with carefully curated, age-appropriate videos and games aligned with the curriculum." },
+    ],
+    student: [
+      { title: "Flexible & Independent", desc: "Watch videos anytime; replay unclear parts, practice games for better retention." },
+      { title: "Competitive & Engaging", desc: "Minigames, score challenges, and leaderboards encourage learning." },
+      { title: "Personalized Path", desc: "Video and game recommendations tailored to ability, boosting progress 30-50%." },
+      { title: "Vietnamese Stories", desc: "Learn in a colorful world of Vietnamese fairy tales and legends." },
+    ],
+    teacher: [
+      { title: "Save Time", desc: "Ready-made video & game library with automatic assignment and grading." },
+      { title: "Management Support", desc: "Reports by class/lesson, tracking completion and comprehension levels." },
+      { title: "Effective Teaching", desc: "Combine illustrative videos + interactive games for warm-up and review." },
+      { title: "Reduce Pressure", desc: "Synchronized tools and standard materials reduce lesson preparation workload." },
+    ],
+    school: [
+      { title: "Comprehensive Management", desc: "Track teaching and learning activities school-wide by grade, class, and subject." },
+      { title: "Improve Quality", desc: "Learning data helps evaluate and adjust training plans." },
+      { title: "Optimize Time", desc: "Reduce time on statistics and reports; increase time for professional development." },
+      { title: "Standardize Content", desc: "Unified video & game library aligned with curriculum, rich in Vietnamese identity." },
+    ],
+  },
+
+  // Classes Section
+  classes: {
+    title: "Start your child's learning journey here",
+    description: "Each level is a new journey with its own story and exciting challenges, helping children discover math naturally and develop holistically.",
+    enterClass: "Enter Class",
+    age: "years old",
+  },
+
+  // Class levels
+  classLevels: {
+    preschool: { level: "Preschool", title: "Cuội's Journey to the Moon", description: "Discover counting through folk tales" },
+    grade1: { level: "Grade 1", title: "Tí and the Zodiac Race", description: "Learn math through the 12 Zodiac animals story" },
+    grade2: { level: "Grade 2", title: "Scholar Quỳnh's Exam", description: "Practice logical thinking with Trạng Quỳnh" },
+    grade3: { level: "Grade 3", title: "Mountain God vs Water God", description: "The contest between Sơn Tinh and Thủy Tinh" },
+    grade4: { level: "Grade 4", title: "Gióng Flies to Heaven", description: "Help Gióng grow strong and defeat the Ân invaders" },
+    grade5: { level: "Grade 5", title: "Defend the Nation with the Scholar", description: "Advanced math with patriotic spirit" },
+  },
+
+  // Leaderboard
+  leaderboard: {
+    title: "Leaderboard",
+    subtitle: "Honoring the most outstanding students",
+    loading: "Loading...",
+    loadingDesc: "Loading leaderboard...",
+    noData: "No ranking data yet",
+    noDataDesc: "Be the first to participate!",
+    points: "points",
+    noSchool: "School not updated",
+    anonymousPlayer: "Anonymous Player",
+    allGrades: "All Grades",
+    preschool: "Preschool",
+    grade1: "Grade 1",
+    grade2: "Grade 2",
+    grade3: "Grade 3",
+    grade4: "Grade 4",
+    grade5: "Grade 5",
+    thisWeek: "This Week",
+    thisMonth: "This Month",
+    thisYear: "This Year",
+    allTime: "All Time",
+    selectGrade: "Select Grade",
+    selectPeriod: "Time Period",
+  },
+
+  // Achievements
+  achievements: {
+    badge: "Achievements",
+    title: "Badges & Rewards",
+    description: "Complete missions and collect special badges",
+  },
+
+  // Contact
+  contact: {
+    badge: "Contact",
+    title: "Get in Touch",
+    description: "Have questions or need support? We're always ready to help!",
+    contactInfo: "Contact Information",
+    email: "Email",
+    phone: "Phone",
+    address: "Address",
+    responseTime: "We'll respond within 24 hours!",
+    nameLabel: "Full Name",
+    namePlaceholder: "Enter your full name",
+    emailPlaceholder: "email@example.com",
+    subjectLabel: "Subject",
+    subjectPlaceholder: "What would you like to ask about?",
+    messageLabel: "Message",
+    messagePlaceholder: "Write your message...",
+    submit: "Send Message",
+    submitting: "Sending...",
+    successTitle: "Sent Successfully! 🎉",
+    successDesc: "We've received your message and will respond as soon as possible.",
+    errorTitle: "An Error Occurred",
+    errorDesc: "Please try again later or contact us directly via email.",
+    validation: {
+      name: "Please enter your name",
+      nameMax: "Name must not exceed 100 characters",
+      email: "Invalid email address",
+      emailMax: "Email must not exceed 255 characters",
+      subject: "Please enter a subject",
+      subjectMax: "Subject must not exceed 200 characters",
+      message: "Please enter a message",
+      messageMax: "Message must not exceed 1000 characters",
+    },
+  },
+
+  // Footer
+  footer: {
+    tagline: "Learn through play with Vietnamese culture. The leading interactive education platform for primary school students.",
+    links: "Links",
+    home: "Home",
+    about: "About",
+    classes: "Classes",
+    leaderboard: "Leaderboard",
+    support: "Support",
+    userGuide: "User Guide",
+    faq: "FAQ",
+    privacy: "Privacy Policy",
+    terms: "Terms of Service",
+    contactTitle: "Contact",
+  },
+
+  // Auth
+  auth: {
+    backToHome: "Back to Home",
+    welcome: "Welcome to VietEdu Odyssey",
+    welcomeDesc: "An exciting learning journey awaits you!",
+    effectiveLearning: "Effective Learning",
+    effectiveLearningDesc: "Modern, easy-to-understand teaching methods",
+    trackProgress: "Track Progress",
+    trackProgressDesc: "Detailed evaluation and ranking system",
+    earnBadges: "Earn Badges",
+    earnBadgesDesc: "Achievements to encourage learning",
+    forgotPassword: "Forgot Password",
+    login: "Login",
+    createAccount: "Create Account",
+    forgotPasswordDesc: "Enter your email to receive a password reset link 📧",
+    loginDesc: "Welcome back! 👋",
+    createAccountDesc: "Start your learning journey 🚀",
+    youAre: "I am a",
+    student: "Student",
+    teacher: "Teacher",
+    displayName: "Display Name",
+    displayNamePlaceholder: "Enter display name",
+    email: "Email",
+    emailPlaceholder: "Enter email address",
+    password: "Password",
+    confirmPassword: "Confirm Password",
+    rememberMe: "Remember me",
+    forgotPasswordLink: "Forgot password?",
+    loginButton: "Login",
+    registerButton: "Register",
+    sendResetLink: "Send Reset Link",
+    orLoginWith: "Or login with",
+    google: "Google",
+    noAccount: "Don't have an account?",
+    registerNow: "Register now",
+    hasAccount: "Already have an account?",
+    loginNow: "Login now",
+    backToLogin: "Back to login",
+    loginSuccess: "Login Successful!",
+    loginSuccessDesc: "Welcome back!",
+    registerSuccess: "Registration Successful!",
+    registerSuccessDesc: "Your account has been created. Please check your email to confirm.",
+    emailSent: "Email Sent!",
+    emailSentDesc: "Please check your email to reset your password.",
+    error: "Error",
+    passwordMismatch: "Passwords do not match",
+    genericError: "An error occurred. Please try again.",
+    googleError: "Unable to login with Google",
+  },
+
+  // NotFound
+  notFound: {
+    title: "404",
+    description: "Page not found",
+    backHome: "Return to Home",
+  },
+
+  // Admin Settings
+  adminSettings: {
+    title: "Settings",
+    notifications: "Notifications",
+    emailNotifications: "Email Notifications",
+    emailNotificationsDesc: "Receive email notifications about student activity",
+    weeklyReports: "Weekly Reports",
+    weeklyReportsDesc: "Receive weekly summary reports",
+    studentAlerts: "Student Alerts",
+    studentAlertsDesc: "Get notified when students struggle",
+    appearance: "Appearance",
+    darkMode: "Dark Mode",
+    darkModeDesc: "Enable dark theme for comfortable viewing",
+    language: "Language",
+    displayLanguage: "Display Language",
+    security: "Security",
+    twoFactor: "Two-Factor Authentication",
+    twoFactorDesc: "Protect your account with two-factor authentication",
+  },
+
+  // Badges (mock data)
+  badges: {
+    brave: { name: "Brave", description: "Complete 10 lessons" },
+    mathSmall: { name: "Math Whiz", description: "Score high in math" },
+    explorer: { name: "Explorer", description: "Discover 5 new topics" },
+    persistent: { name: "Persistent", description: "Study 7 days straight" },
+    speedy: { name: "Speedy", description: "Fastest completion" },
+    creative: { name: "Creative", description: "Solve creative math problems" },
+  },
+
+  // Language
+  lang: {
+    vi: "Tiếng Việt",
+    en: "English",
+  },
+};
+
+export default en;
