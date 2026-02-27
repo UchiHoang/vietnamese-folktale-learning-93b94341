@@ -1,85 +1,39 @@
 
-# Fix Star Calculation Logic + Add Failure Sound Effects
 
-## Problems Found
+# Thay doi logic het gio: Luu ket qua hien tai thay vi that bai
 
-### 1. Star Calculation Too Harsh
-Current formula: `Math.floor((correct / total) * 3)`
-- Requires **100% accuracy** for 3 stars (practically impossible for kids)
-- 66% accuracy = only 1 star
-- This misaligns with the performance thresholds (excellent >= 90%, good >= 60%)
+## Hien tai
+Khi het gio, game chi hien thong bao "Het gio!" va dat ket qua = 0 sao, 0 XP, hien modal "retry". Khong luu bat ky tien do nao.
 
-**Fix**: Use threshold-based star calculation aligned with performance:
-- >= 90% accuracy = 3 stars (excellent)
-- >= 70% accuracy = 2 stars (good)
-- >= 40% accuracy = 1 star (encouraging)
-- < 40% accuracy = 0 stars (retry)
+## Thay doi
+Khi het gio, game se **tu dong tinh diem dua tren so cau da tra loi dung** va luu ket qua nhu khi hoan thanh binh thuong. Nguoi choi van duoc tinh sao, XP, va badge dua tren ket qua hien co.
 
-### 2. Stars Not Reset on Time Up
-`handleTimeUp()` sets `performance = "retry"` but does NOT reset `starsThisLevel` to 0. This means the BadgeModal shows leftover stars from a previous attempt -- causing the mismatch visible in the screenshot (2 stars + "retry" message).
+## Chi tiet ky thuat
 
-**Fix**: Add `setStarsThisLevel(0)` and `setEarnedXpThisLevel(0)` in `handleTimeUp`.
+### File: `src/components/game/TrangQuynhMiniGame.tsx`
 
-### 3. Performance Thresholds Misaligned with Stars
-Current: performance uses 90%/60% thresholds but stars use a different formula. After fixing stars, align performance to match:
-- 3 stars = "excellent"
-- 2 stars = "good"  
-- 0-1 stars = "retry"
+**Sua `handleTimeUp`** (dong ~417-423):
+- Thay vi dat 0 sao va "retry", goi logic tuong tu nhu khi tra loi cau cuoi cung:
+  1. Lay `correctThisLevel`, `incorrectThisLevel`, `totalQuestions` hien tai
+  2. Tinh accuracy, stars, XP dua tren so cau da tra loi dung
+  3. Goi `completeStageMutation.mutateAsync(...)` de luu ket qua len server
+  4. Hien BadgeModal voi ket qua tuong ung (co the "excellent", "good", hoac "retry" tuy so cau dung)
 
-### 4. No Failure Sound Effect
-Currently there is no sad/failure sound when:
-- Time runs out
-- Player gets 0 stars
-- Player performs poorly
+- Thong bao se doi tu "Het gio! Hay thu lai!" thanh "Het gio! Ket qua cua ban da duoc luu."
 
-**Fix**: Add a failure/sad sound effect that plays when `performance === "retry"` or when time is up.
+- Can chuyen `handleTimeUp` tu `useCallback` don gian sang mot async function co quyen truy cap cac state hien tai (`correctThisLevel`, `incorrectThisLevel`, `currentActivity`, v.v.)
 
-## Files to Change
-
-### `src/components/game/TrangQuynhMiniGame.tsx`
-- Fix star calculation formula (line ~493): replace `Math.floor((newCorrect / totalQuestions) * 3)` with threshold-based logic
-- Align performance determination to use star count instead of separate accuracy thresholds
-- Fix `handleTimeUp`: add `setStarsThisLevel(0)` and `setEarnedXpThisLevel(0)`
-- Play failure sound in `handleTimeUp`
-
-### `src/components/game/BadgeModal.tsx`
-- Add failure sound effect that plays when `performance === "retry"` on modal open
-- Use Web Audio API or a free sound URL for a gentle "aww" or "try again" tone (kid-friendly, not scary)
-
-## Technical Details
-
-Star calculation replacement:
-```typescript
-// Old
-const stars = Math.floor((newCorrect / totalQuestions) * 3);
-
-// New
-const accuracy = (newCorrect / totalQuestions) * 100;
-let stars: number;
-if (accuracy >= 90) stars = 3;
-else if (accuracy >= 70) stars = 2;
-else if (accuracy >= 40) stars = 1;
-else stars = 0;
+Logic cu the:
+```text
+handleTimeUp:
+  1. totalQuestions = currentActivity.questions.length
+  2. accuracy = (correctThisLevel / totalQuestions) * 100
+  3. Tinh stars theo threshold (>=90 -> 3, >=70 -> 2, >=40 -> 1, else 0)
+  4. Tinh XP = correctThisLevel * xpReward
+  5. Goi completeStageMutation (giong handleAnswer khi isLastQuestion)
+  6. Dat performance, starsThisLevel, earnedXpThisLevel
+  7. Hien BadgeModal
 ```
 
-Performance aligned with stars:
-```typescript
-let performance: "excellent" | "good" | "retry";
-if (stars >= 3) performance = "excellent";
-else if (stars >= 2) performance = "good";
-else performance = "retry";
-```
+Luu y: Can dung `useCallback` voi dung dependencies hoac dung ref de dam bao `handleTimeUp` luon doc duoc state moi nhat (correctThisLevel, incorrectThisLevel) tai thoi diem het gio.
 
-handleTimeUp fix:
-```typescript
-const handleTimeUp = useCallback(() => {
-  toast.error("Het gio!");
-  setStarsThisLevel(0);
-  setEarnedXpThisLevel(0);
-  setLevelPerformance("retry");
-  setShowBadgeModal(true);
-  // Play failure sound
-}, []);
-```
-
-Failure sound in BadgeModal: Play a gentle "womp womp" or descending tone via Web Audio API when `performance === "retry"` and `isOpen` becomes true.
