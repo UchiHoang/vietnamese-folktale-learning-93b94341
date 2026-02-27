@@ -779,18 +779,6 @@ export type Database = {
         }
         Returns: Json
       }
-      complete_stage_grade5: {
-        Args: {
-          p_correct_answers: number
-          p_course_id: string
-          p_max_score: number
-          p_score: number
-          p_stage_id: string
-          p_time_spent_seconds: number
-          p_total_questions: number
-        }
-        Returns: Json
-      }
       get_full_game_state: { Args: { p_course_id: string }; Returns: Json }
       get_leaderboard: {
         Args: { p_grade?: string; p_limit?: number; p_period?: string }
@@ -825,7 +813,6 @@ export type Database = {
         }[]
       }
       get_user_progress: { Args: never; Returns: Json }
-      get_user_progress_by_grade: { Args: { p_grade: string }; Returns: Json }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
