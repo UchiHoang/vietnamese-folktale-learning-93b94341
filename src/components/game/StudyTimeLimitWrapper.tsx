@@ -1,5 +1,6 @@
 import { useLocation } from "react-router-dom";
 import { useStudyTimeLimit } from "@/hooks/useStudyTimeLimit";
+import { useOnlineTimeTracker } from "@/hooks/useOnlineTimeTracker";
 import StudyBreakReminder from "./StudyBreakReminder";
 import { useState, useEffect } from "react";
 
@@ -10,10 +11,14 @@ const GAME_PATHS = [
 
 const StudyTimeLimitWrapper = () => {
   const location = useLocation();
+  const isGamePage = GAME_PATHS.some((p) => location.pathname.startsWith(p));
+  
+  // Track online time when on game/lesson pages
+  useOnlineTimeTracker(isGamePage);
+  
   const { isLimitReached, extraTimeUsed, grantExtraTime, todayTimeSpent, loading } = useStudyTimeLimit();
   const [dismissed, setDismissed] = useState(false);
 
-  const isGamePage = GAME_PATHS.some((p) => location.pathname.startsWith(p));
 
   // Reset dismissed when navigating to a new game page
   useEffect(() => {
