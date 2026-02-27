@@ -42,8 +42,8 @@ const SettingsTab = () => {
             <Clock className="h-5 w-5 text-primary" />
           </div>
           <div>
-            <h3 className="font-bold text-xl">Kiểm soát thời gian</h3>
-            <p className="text-sm text-muted-foreground">Giới hạn thời gian học mỗi ngày cho bé</p>
+            <h3 className="font-bold text-xl">Đồng hồ sức khỏe</h3>
+            <p className="text-sm text-muted-foreground">Bảo vệ mắt bé bằng cách giới hạn thời gian online mỗi ngày</p>
           </div>
         </div>
 
