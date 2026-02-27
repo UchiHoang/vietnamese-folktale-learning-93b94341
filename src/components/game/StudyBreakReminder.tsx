@@ -1,7 +1,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Moon, Clock } from "lucide-react";
+import { Moon, Clock, X } from "lucide-react";
 import ReactConfetti from "react-confetti";
 import { useState, useEffect } from "react";
 
@@ -11,6 +11,7 @@ interface StudyBreakReminderProps {
   onDismiss: () => void;
   onGrantExtraTime: () => void;
   todayTimeSpent: number;
+  softMode?: boolean;
 }
 
 const StudyBreakReminder = ({
@@ -19,18 +20,19 @@ const StudyBreakReminder = ({
   onDismiss,
   onGrantExtraTime,
   todayTimeSpent,
+  softMode = false,
 }: StudyBreakReminderProps) => {
   const navigate = useNavigate();
   const [windowSize, setWindowSize] = useState({ width: window.innerWidth, height: window.innerHeight });
   const [showConfetti, setShowConfetti] = useState(false);
 
   useEffect(() => {
-    if (isVisible) {
+    if (isVisible && !softMode) {
       setShowConfetti(true);
       const timer = setTimeout(() => setShowConfetti(false), 4000);
       return () => clearTimeout(timer);
     }
-  }, [isVisible]);
+  }, [isVisible, softMode]);
 
   useEffect(() => {
     const handleResize = () => setWindowSize({ width: window.innerWidth, height: window.innerHeight });
@@ -47,6 +49,62 @@ const StudyBreakReminder = ({
     onGrantExtraTime();
   };
 
+  // Soft mode: small banner at bottom of screen
+  if (softMode) {
+    return (
+      <AnimatePresence>
+        {isVisible && (
+          <motion.div
+            initial={{ y: 100, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: 100, opacity: 0 }}
+            transition={{ type: "spring", damping: 20, stiffness: 300 }}
+            className="fixed bottom-4 left-4 right-4 z-[9999] mx-auto max-w-lg"
+          >
+            <div className="bg-white rounded-2xl shadow-lg border border-amber-200 p-4 flex items-center gap-3">
+              <motion.img
+                src="/mascot-buffalo.png"
+                alt="Trâu Vàng"
+                className="w-12 h-12 object-contain flex-shrink-0"
+                animate={{ rotate: [0, -5, 5, 0] }}
+                transition={{ duration: 2, repeat: Infinity }}
+              />
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-semibold text-foreground">
+                  Đã online {todayTimeSpent} phút hôm nay! 👀
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  Trâu Vàng nhắc bạn nghỉ mắt nhé~
+                </p>
+              </div>
+              <div className="flex items-center gap-2 flex-shrink-0">
+                {!extraTimeUsed && (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={handleExtraTime}
+                    className="text-xs rounded-full"
+                  >
+                    +5 phút
+                  </Button>
+                )}
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={onDismiss}
+                  className="h-8 w-8 p-0 rounded-full"
+                >
+                  <X className="w-4 h-4" />
+                </Button>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    );
+  }
+
+  // Full-screen mode (game/lesson pages)
   return (
     <AnimatePresence>
       {isVisible && (
