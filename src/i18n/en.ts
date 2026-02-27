@@ -83,12 +83,12 @@ const en: Translations = {
 
   // Class levels
   classLevels: {
-    preschool: { level: "Preschool", title: "Cuội's Journey to the Moon", description: "Discover counting through folk tales" },
-    grade1: { level: "Grade 1", title: "Tí and the Zodiac Race", description: "Learn math through the 12 Zodiac animals story" },
-    grade2: { level: "Grade 2", title: "Scholar Quỳnh's Exam", description: "Practice logical thinking with Trạng Quỳnh" },
-    grade3: { level: "Grade 3", title: "Mountain God vs Water God", description: "The contest between Sơn Tinh and Thủy Tinh" },
-    grade4: { level: "Grade 4", title: "Gióng Flies to Heaven", description: "Help Gióng grow strong and defeat the Ân invaders" },
-    grade5: { level: "Grade 5", title: "Defend the Nation with the Scholar", description: "Advanced math with patriotic spirit" },
+    preschool: { level: "Preschool", title: "Hành trình chú Cuội đến Cung Trăng", description: "Discover counting through folk tales" },
+    grade1: { level: "Grade 1", title: "Tí và cuộc đua cùng 12 con giáp", description: "Learn math through the 12 Zodiac animals story" },
+    grade2: { level: "Grade 2", title: "Trạng Quỳnh đi thi", description: "Practice logical thinking with Trạng Quỳnh" },
+    grade3: { level: "Grade 3", title: "Sơn Tinh - Thủy Tinh", description: "The contest between Sơn Tinh and Thủy Tinh" },
+    grade4: { level: "Grade 4", title: "Thánh Gióng bay về trời", description: "Help Gióng grow strong and defeat the Ân invaders" },
+    grade5: { level: "Grade 5", title: "Bảo vệ đất nước cùng Trạng Nguyên", description: "Advanced math with patriotic spirit" },
   },
 
   // Leaderboard
