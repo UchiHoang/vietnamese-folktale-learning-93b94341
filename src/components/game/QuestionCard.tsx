@@ -50,10 +50,22 @@ const QuestionCardComponent = ({
 
   // Question progress indicator for special game types
   const QuestionProgress = () => (
-    <div className="text-center mb-4">
-      <span className="text-sm font-medium text-muted-foreground">
-        Câu hỏi {questionNumber} / {totalQuestions}
-      </span>
+    <div className="flex items-center justify-center mb-4">
+      <div className="relative flex items-center gap-3 px-5 py-2.5 rounded-full bg-gradient-to-r from-primary/15 via-primary/10 to-accent/15 border border-primary/20 shadow-sm">
+        <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-primary-foreground text-sm font-bold shadow-md">
+          {questionNumber}
+        </div>
+        <div className="flex flex-col items-start leading-tight">
+          <span className="text-xs text-muted-foreground font-medium">Câu hỏi</span>
+          <span className="text-sm font-bold text-foreground">{questionNumber} / {totalQuestions}</span>
+        </div>
+        <div className="w-16 h-1.5 rounded-full bg-muted overflow-hidden">
+          <div
+            className="h-full rounded-full bg-gradient-to-r from-primary to-accent transition-all duration-500 ease-out"
+            style={{ width: `${(questionNumber / totalQuestions) * 100}%` }}
+          />
+        </div>
+      </div>
     </div>
   );
 
@@ -121,11 +133,7 @@ const QuestionCardComponent = ({
   return (
     <div className="w-full max-w-3xl mx-auto space-y-6 animate-fade-in">
       {/* Progress */}
-      <div className="text-center">
-        <span className="text-sm font-medium text-muted-foreground">
-          Câu hỏi {questionNumber} / {totalQuestions}
-        </span>
-      </div>
+      <QuestionProgress />
 
       {/* Question */}
       <div className="bg-card rounded-xl p-6 md:p-8 shadow-lg border-2 border-primary/20">
