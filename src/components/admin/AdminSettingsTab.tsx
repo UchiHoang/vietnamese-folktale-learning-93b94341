@@ -2,44 +2,41 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Bell, Moon, Globe, Shield } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const AdminSettingsTab = () => {
+  const { t } = useLanguage();
+
   return (
     <div className="space-y-6">
-      <h2 className="text-2xl font-bold">Cài đặt</h2>
+      <h2 className="text-2xl font-bold">{t.adminSettings.title}</h2>
 
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Bell className="h-5 w-5" />
-            Thông báo
+            {t.adminSettings.notifications}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
-              <Label>Thông báo email</Label>
-              <p className="text-sm text-muted-foreground">
-                Nhận thông báo qua email về hoạt động học sinh
-              </p>
+              <Label>{t.adminSettings.emailNotifications}</Label>
+              <p className="text-sm text-muted-foreground">{t.adminSettings.emailNotificationsDesc}</p>
             </div>
             <Switch defaultChecked />
           </div>
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
-              <Label>Báo cáo hàng tuần</Label>
-              <p className="text-sm text-muted-foreground">
-                Nhận báo cáo tổng kết mỗi tuần
-              </p>
+              <Label>{t.adminSettings.weeklyReports}</Label>
+              <p className="text-sm text-muted-foreground">{t.adminSettings.weeklyReportsDesc}</p>
             </div>
             <Switch defaultChecked />
           </div>
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
-              <Label>Cảnh báo học sinh</Label>
-              <p className="text-sm text-muted-foreground">
-                Thông báo khi học sinh gặp khó khăn
-              </p>
+              <Label>{t.adminSettings.studentAlerts}</Label>
+              <p className="text-sm text-muted-foreground">{t.adminSettings.studentAlertsDesc}</p>
             </div>
             <Switch defaultChecked />
           </div>
@@ -50,16 +47,14 @@ const AdminSettingsTab = () => {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Moon className="h-5 w-5" />
-            Giao diện
+            {t.adminSettings.appearance}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
-              <Label>Chế độ tối</Label>
-              <p className="text-sm text-muted-foreground">
-                Bật giao diện tối cho mắt
-              </p>
+              <Label>{t.adminSettings.darkMode}</Label>
+              <p className="text-sm text-muted-foreground">{t.adminSettings.darkModeDesc}</p>
             </div>
             <Switch />
           </div>
@@ -70,16 +65,14 @@ const AdminSettingsTab = () => {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Globe className="h-5 w-5" />
-            Ngôn ngữ
+            {t.adminSettings.language}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
-              <Label>Ngôn ngữ hiển thị</Label>
-              <p className="text-sm text-muted-foreground">
-                Tiếng Việt
-              </p>
+              <Label>{t.adminSettings.displayLanguage}</Label>
+              <p className="text-sm text-muted-foreground">Tiếng Việt / English</p>
             </div>
           </div>
         </CardContent>
@@ -89,16 +82,14 @@ const AdminSettingsTab = () => {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Shield className="h-5 w-5" />
-            Bảo mật
+            {t.adminSettings.security}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
-              <Label>Xác thực 2 bước</Label>
-              <p className="text-sm text-muted-foreground">
-                Bảo vệ tài khoản với xác thực 2 bước
-              </p>
+              <Label>{t.adminSettings.twoFactor}</Label>
+              <p className="text-sm text-muted-foreground">{t.adminSettings.twoFactorDesc}</p>
             </div>
             <Switch />
           </div>

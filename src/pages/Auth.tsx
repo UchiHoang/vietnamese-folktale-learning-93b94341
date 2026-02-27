@@ -7,10 +7,12 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 type UserRole = "student" | "teacher";
 
 const Auth = () => {
+  const { t } = useLanguage();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [isLogin, setIsLogin] = useState(true);
@@ -67,8 +69,8 @@ const Auth = () => {
         if (error) throw error;
 
         toast({
-          title: "Email đã được gửi!",
-          description: "Vui lòng kiểm tra email để đặt lại mật khẩu."
+          title: t.auth.emailSent,
+          description: t.auth.emailSentDesc,
         });
         setIsForgotPassword(false);
         setIsLogin(true);
@@ -87,15 +89,15 @@ const Auth = () => {
         if (error) throw error;
 
         toast({
-          title: "Đăng nhập thành công!",
-          description: "Chào mừng bạn quay trở lại!"
+          title: t.auth.loginSuccess,
+          description: t.auth.loginSuccessDesc,
         });
         navigate("/");
       } else {
         if (formData.password !== formData.confirmPassword) {
           toast({
-            title: "Lỗi",
-            description: "Mật khẩu xác nhận không khớp",
+            title: t.auth.error,
+            description: t.auth.passwordMismatch,
             variant: "destructive"
           });
           return;
@@ -116,14 +118,14 @@ const Auth = () => {
         if (error) throw error;
 
         toast({
-          title: "Đăng ký thành công!",
-          description: "Tài khoản của bạn đã được tạo. Vui lòng kiểm tra email để xác nhận."
+          title: t.auth.registerSuccess,
+          description: t.auth.registerSuccessDesc,
         });
       }
     } catch (error: any) {
       toast({
-        title: "Lỗi",
-        description: error.message || "Đã xảy ra lỗi. Vui lòng thử lại.",
+        title: t.auth.error,
+        description: error.message || t.auth.genericError,
         variant: "destructive"
       });
     } finally {
@@ -143,8 +145,8 @@ const Auth = () => {
       if (error) throw error;
     } catch (error: any) {
       toast({
-        title: "Lỗi",
-        description: error.message || "Không thể đăng nhập bằng Google",
+        title: t.auth.error,
+        description: error.message || t.auth.googleError,
         variant: "destructive"
       });
     }
@@ -171,7 +173,7 @@ const Auth = () => {
               <div className="w-8 h-8 rounded-full bg-card flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all">
                 ←
               </div>
-              <span className="font-medium">Về trang chủ</span>
+              <span className="font-medium">{t.auth.backToHome}</span>
             </Link>
             <Link to="/" className="flex items-center gap-2 hover-scale">
               <GraduationCap className="h-8 w-8 text-primary" />
@@ -203,11 +205,11 @@ const Auth = () => {
                       <GraduationCap className="w-10 h-10" />
                     </div>
                     <div>
-                      <h2 className="text-3xl font-heading font-bold mb-3">
-                        Chào mừng đến với VietEdu Odyssey
+                    <h2 className="text-3xl font-heading font-bold mb-3">
+                        {t.auth.welcome}
                       </h2>
                       <p className="text-white/90 text-lg leading-relaxed">
-                        Hành trình học tập thú vị đang chờ đón bạn!
+                        {t.auth.welcomeDesc}
                       </p>
                     </div>
                   </div>
@@ -218,8 +220,8 @@ const Auth = () => {
                         ✓
                       </div>
                       <div>
-                        <h3 className="font-semibold mb-1">Học tập hiệu quả</h3>
-                        <p className="text-white/80 text-sm">Phương pháp giảng dạy hiện đại, dễ hiểu</p>
+                        <h3 className="font-semibold mb-1">{t.auth.effectiveLearning}</h3>
+                        <p className="text-white/80 text-sm">{t.auth.effectiveLearningDesc}</p>
                       </div>
                     </div>
                     <div className="flex items-start gap-3">
@@ -227,8 +229,8 @@ const Auth = () => {
                         ✓
                       </div>
                       <div>
-                        <h3 className="font-semibold mb-1">Theo dõi tiến độ</h3>
-                        <p className="text-white/80 text-sm">Hệ thống đánh giá và xếp hạng chi tiết</p>
+                        <h3 className="font-semibold mb-1">{t.auth.trackProgress}</h3>
+                        <p className="text-white/80 text-sm">{t.auth.trackProgressDesc}</p>
                       </div>
                     </div>
                     <div className="flex items-start gap-3">
@@ -236,8 +238,8 @@ const Auth = () => {
                         ✓
                       </div>
                       <div>
-                        <h3 className="font-semibold mb-1">Nhận huy hiệu</h3>
-                        <p className="text-white/80 text-sm">Thành tích để khích lệ học tập</p>
+                        <h3 className="font-semibold mb-1">{t.auth.earnBadges}</h3>
+                        <p className="text-white/80 text-sm">{t.auth.earnBadgesDesc}</p>
                       </div>
                     </div>
                   </div>
@@ -250,14 +252,14 @@ const Auth = () => {
                   
                   <div className="text-center space-y-2">
                     <h1 className="text-3xl md:text-4xl font-heading font-bold">
-                      {isForgotPassword ? "Quên mật khẩu" : (isLogin ? "Đăng nhập" : "Tạo tài khoản")}
+                      {isForgotPassword ? t.auth.forgotPassword : (isLogin ? t.auth.login : t.auth.createAccount)}
                     </h1>
                     <p className="text-muted-foreground text-base">
                       {isForgotPassword 
-                        ? "Nhập email để nhận liên kết đặt lại mật khẩu 📧"
+                        ? t.auth.forgotPasswordDesc
                         : (isLogin 
-                          ? "Chào mừng bạn quay trở lại! 👋" 
-                          : "Bắt đầu hành trình học tập của bạn 🚀")}
+                          ? t.auth.loginDesc 
+                          : t.auth.createAccountDesc)}
                     </p>
                   </div>
 
@@ -267,7 +269,7 @@ const Auth = () => {
                         {/* Role Selection */}
                         <div className="space-y-3">
                           <label className="text-sm font-semibold text-foreground">
-                            Bạn là
+                            {t.auth.youAre}
                           </label>
                           <div className="grid grid-cols-2 gap-3">
                             <button
@@ -281,7 +283,7 @@ const Auth = () => {
                               )}
                             >
                               <Users className="h-8 w-8" />
-                              <span className="font-semibold">Học sinh</span>
+                              <span className="font-semibold">{t.auth.student}</span>
                             </button>
                             <button
                               type="button"
@@ -294,20 +296,20 @@ const Auth = () => {
                               )}
                             >
                               <BookOpen className="h-8 w-8" />
-                              <span className="font-semibold">Giáo viên</span>
+                              <span className="font-semibold">{t.auth.teacher}</span>
                             </button>
                           </div>
                         </div>
 
                         <div className="space-y-2">
                           <label className="text-sm font-semibold text-foreground">
-                            Tên hiển thị
+                            {t.auth.displayName}
                           </label>
                           <div className="relative">
                             <User className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                             <Input
                               type="text"
-                              placeholder="Nhập tên hiển thị"
+                              placeholder={t.auth.displayNamePlaceholder}
                               value={formData.username}
                               onChange={(e) => setFormData({...formData, username: e.target.value})}
                               className="h-12 pl-12 rounded-xl border-2 focus:border-primary transition-all"
@@ -319,13 +321,13 @@ const Auth = () => {
 
                     <div className="space-y-2">
                       <label className="text-sm font-semibold text-foreground">
-                        Email
+                        {t.auth.email}
                       </label>
                       <div className="relative">
                         <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                         <Input
                           type="email"
-                          placeholder="Nhập địa chỉ email"
+                          placeholder={t.auth.emailPlaceholder}
                           value={formData.email}
                           onChange={(e) => setFormData({...formData, email: e.target.value})}
                           required
@@ -337,7 +339,7 @@ const Auth = () => {
                     {!isForgotPassword && (
                       <div className="space-y-2">
                         <label className="text-sm font-semibold text-foreground">
-                          Mật khẩu
+                          {t.auth.password}
                         </label>
                         <div className="relative">
                           <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
@@ -363,7 +365,7 @@ const Auth = () => {
                     {!isLogin && !isForgotPassword && (
                       <div className="space-y-2">
                         <label className="text-sm font-semibold text-foreground">
-                          Xác nhận mật khẩu
+                          {t.auth.confirmPassword}
                         </label>
                         <div className="relative">
                           <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
@@ -388,7 +390,7 @@ const Auth = () => {
                             onCheckedChange={(checked) => setRememberMe(checked as boolean)}
                           />
                           <label htmlFor="remember" className="text-sm font-medium cursor-pointer">
-                            Ghi nhớ đăng nhập
+                            {t.auth.rememberMe}
                           </label>
                         </div>
                         <button 
@@ -396,7 +398,7 @@ const Auth = () => {
                           onClick={() => setIsForgotPassword(true)}
                           className="text-sm text-primary hover:underline font-semibold"
                         >
-                          Quên mật khẩu?
+                          {t.auth.forgotPasswordLink}
                         </button>
                       </div>
                     )}
@@ -406,7 +408,7 @@ const Auth = () => {
                       className="w-full h-13 text-base font-bold rounded-xl bg-primary hover:bg-primary/90 shadow-lg hover:shadow-xl transition-all"
                       disabled={isLoading}
                     >
-                      {isLoading ? "Đang xử lý..." : (isForgotPassword ? "Gửi email" : (isLogin ? "Đăng nhập ngay" : "Tạo tài khoản"))}
+                      {isLoading ? "..." : (isForgotPassword ? t.auth.sendResetLink : (isLogin ? t.auth.loginButton : t.auth.registerButton))}
                     </Button>
 
                     {isForgotPassword && (
@@ -419,7 +421,7 @@ const Auth = () => {
                         }}
                         className="w-full h-12 rounded-xl border-2"
                       >
-                        Quay lại đăng nhập
+                        {t.auth.backToLogin}
                       </Button>
                     )}
                   </form>
@@ -431,7 +433,7 @@ const Auth = () => {
                           <div className="w-full border-t border-border"></div>
                         </div>
                         <div className="relative flex justify-center text-sm">
-                          <span className="px-4 bg-card text-muted-foreground font-medium">Hoặc tiếp tục với</span>
+                          <span className="px-4 bg-card text-muted-foreground font-medium">{t.auth.orLoginWith}</span>
                         </div>
                       </div>
 
@@ -459,13 +461,13 @@ const Auth = () => {
                             d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
                           />
                         </svg>
-                        <span className="font-semibold">Google</span>
+                        <span className="font-semibold">{t.auth.google}</span>
                       </Button>
 
                       {/* Toggle Login/Register */}
                       <div className="text-center pt-2">
                         <p className="text-sm text-muted-foreground">
-                          {isLogin ? "Chưa có tài khoản?" : "Đã có tài khoản?"}
+                          {isLogin ? t.auth.noAccount : t.auth.hasAccount}
                           {" "}
                           <button
                             type="button"
@@ -475,7 +477,7 @@ const Auth = () => {
                             }}
                             className="text-primary font-semibold hover:underline"
                           >
-                            {isLogin ? "Đăng ký ngay" : "Đăng nhập"}
+                            {isLogin ? t.auth.registerNow : t.auth.loginNow}
                           </button>
                         </p>
                       </div>

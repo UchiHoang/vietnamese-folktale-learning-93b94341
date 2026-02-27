@@ -3,16 +3,19 @@ import { classes } from "@/data/mockData";
 import { motion } from "framer-motion";
 import { staggerContainer, fadeInUp } from "./animations";
 import { BookOpen, Pencil } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
+
+const classKeys = ["preschool", "grade1", "grade2", "grade3", "grade4", "grade5"] as const;
 
 const ClassesSection = () => {
+  const { t } = useLanguage();
+
   return (
     <section id="classes" className="py-16 md:py-24 relative overflow-hidden">
       {/* Background decoration */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-1/3 left-0 w-96 h-96 bg-primary/5 rounded-full blur-3xl" />
         <div className="absolute bottom-1/3 right-0 w-96 h-96 bg-secondary/5 rounded-full blur-3xl" />
-
-        {/* Subtle learning icons */}
         <div className="absolute inset-0 opacity-15">
           <BookOpen className="absolute top-10 left-1/4 h-10 w-10 text-primary/70" />
           <Pencil className="absolute bottom-10 right-1/4 h-9 w-9 text-accent/70" />
@@ -31,13 +34,13 @@ const ClassesSection = () => {
             className="text-3xl md:text-4xl lg:text-5xl font-heading font-bold"
             variants={fadeInUp}
           >
-            Bắt đầu hành trình học tập của bé tại đây
+            {t.classes.title}
           </motion.h2>
           <motion.p
             className="text-lg text-muted-foreground max-w-2xl mx-auto"
             variants={fadeInUp}
           >
-            Mỗi cấp độ là một hành trình mới với câu chuyện riêng và thử thách thú vị, giúp bé khám phá toán học một cách tự nhiên và phát triển toàn diện.
+            {t.classes.description}
           </motion.p>
         </motion.div>
 
@@ -48,16 +51,27 @@ const ClassesSection = () => {
           whileInView="show"
           viewport={{ once: true, amount: 0.3 }}
         >
-          {classes.map((classItem, index) => (
-            <motion.div
-              key={index}
-              variants={fadeInUp}
-              whileHover={{ y: -6, scale: 1.02 }}
-              transition={{ type: "spring", stiffness: 220, damping: 18 }}
-            >
-              <ClassCard {...classItem} gameRoute={classItem.gameRoute} />
-            </motion.div>
-          ))}
+          {classes.map((classItem, index) => {
+            const key = classKeys[index];
+            const translated = t.classLevels[key];
+            return (
+              <motion.div
+                key={index}
+                variants={fadeInUp}
+                whileHover={{ y: -6, scale: 1.02 }}
+                transition={{ type: "spring", stiffness: 220, damping: 18 }}
+              >
+                <ClassCard
+                  level={translated.level}
+                  title={translated.title}
+                  ageRange={classItem.ageRange}
+                  image={classItem.image}
+                  description={translated.description}
+                  gameRoute={classItem.gameRoute}
+                />
+              </motion.div>
+            );
+          })}
         </motion.div>
       </div>
     </section>
