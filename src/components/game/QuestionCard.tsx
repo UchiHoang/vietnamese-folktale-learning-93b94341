@@ -51,20 +51,21 @@ const QuestionCardComponent = ({
   // Question progress indicator for special game types
   const QuestionProgress = () => (
     <div className="flex items-center justify-center mb-4">
-      <div className="relative flex items-center gap-3 px-5 py-2.5 rounded-full bg-gradient-to-r from-primary/15 via-primary/10 to-accent/15 border border-primary/20 shadow-sm">
-        <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-primary-foreground text-sm font-bold shadow-md">
+      <div className="relative flex items-center gap-3 px-5 py-2.5 rounded-full bg-gradient-to-r from-yellow-100 via-pink-50 to-sky-100 dark:from-yellow-900/30 dark:via-pink-900/20 dark:to-sky-900/30 border-2 border-dashed border-orange-300 dark:border-orange-500/50 shadow-md">
+        <div className="flex items-center justify-center w-9 h-9 rounded-full bg-gradient-to-br from-orange-400 to-pink-500 text-white text-base font-extrabold shadow-lg ring-2 ring-white dark:ring-white/20">
           {questionNumber}
         </div>
         <div className="flex flex-col items-start leading-tight">
-          <span className="text-xs text-muted-foreground font-medium">Câu hỏi</span>
-          <span className="text-sm font-bold text-foreground">{questionNumber} / {totalQuestions}</span>
+          <span className="text-[11px] text-orange-500 dark:text-orange-400 font-bold uppercase tracking-wider">Câu hỏi</span>
+          <span className="text-sm font-extrabold text-foreground">{questionNumber} <span className="text-muted-foreground font-normal">/ {totalQuestions}</span></span>
         </div>
-        <div className="w-16 h-1.5 rounded-full bg-muted overflow-hidden">
+        <div className="w-20 h-2.5 rounded-full bg-orange-100 dark:bg-orange-900/30 overflow-hidden border border-orange-200 dark:border-orange-700/50">
           <div
-            className="h-full rounded-full bg-gradient-to-r from-primary to-accent transition-all duration-500 ease-out"
+            className="h-full rounded-full bg-gradient-to-r from-yellow-400 via-orange-400 to-pink-500 transition-all duration-500 ease-out"
             style={{ width: `${(questionNumber / totalQuestions) * 100}%` }}
           />
         </div>
+        <span className="text-lg">⭐</span>
       </div>
     </div>
   );
