@@ -6,8 +6,33 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Award, Sparkles } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { StarRating } from "./StarRating";
+
+const playFailureSound = () => {
+  try {
+    const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
+    const now = ctx.currentTime;
+    
+    // Descending "womp womp" tone - gentle & kid-friendly
+    [400, 300, 200].forEach((freq, i) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = "sine";
+      osc.frequency.value = freq;
+      gain.gain.setValueAtTime(0.15, now + i * 0.25);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.25 + 0.3);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(now + i * 0.25);
+      osc.stop(now + i * 0.25 + 0.3);
+    });
+
+    setTimeout(() => ctx.close(), 2000);
+  } catch (e) {
+    // Audio not supported, silently fail
+  }
+};
 
 interface BadgeModalProps {
   isOpen: boolean;
@@ -33,6 +58,17 @@ export const BadgeModal = ({
   onRetry
 }: BadgeModalProps) => {
   const badge = badgeId && badgeInfo ? badgeInfo(badgeId) : null;
+  const hasPlayedSound = useRef(false);
+
+  useEffect(() => {
+    if (isOpen && performance === "retry" && !hasPlayedSound.current) {
+      hasPlayedSound.current = true;
+      setTimeout(() => playFailureSound(), 500);
+    }
+    if (!isOpen) {
+      hasPlayedSound.current = false;
+    }
+  }, [isOpen, performance]);
 
   const performanceConfig = {
     excellent: {

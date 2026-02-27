@@ -416,6 +416,8 @@ export const TrangQuynhMiniGame = ({ grade, courseId = "grade2-trangquynh", stor
 
   const handleTimeUp = useCallback(() => {
     toast.error("Hết giờ! Thời gian đã hết, hãy thử lại nhé!");
+    setStarsThisLevel(0);
+    setEarnedXpThisLevel(0);
     setLevelPerformance("retry");
     setShowBadgeModal(true);
   }, []);
@@ -489,8 +491,12 @@ export const TrangQuynhMiniGame = ({ grade, courseId = "grade2-trangquynh", stor
       const maxScore = totalQuestions * xpReward;
         const accuracy = (newCorrect / totalQuestions) * 100;
         
-        // Tính số sao (0-3)
-        const stars = Math.floor((newCorrect / totalQuestions) * 3);
+        // Tính số sao (0-3) theo threshold
+        let stars: number;
+        if (accuracy >= 90) stars = 3;
+        else if (accuracy >= 70) stars = 2;
+        else if (accuracy >= 40) stars = 1;
+        else stars = 0;
         setStarsThisLevel(stars);
         
         // Tính XP reward dựa trên số câu đúng
@@ -513,9 +519,9 @@ export const TrangQuynhMiniGame = ({ grade, courseId = "grade2-trangquynh", stor
         
         if (result?.success) {
         let performance: "excellent" | "good" | "retry";
-          if (accuracy >= 90) {
+          if (stars >= 3) {
           performance = "excellent";
-          } else if (accuracy >= 60) {
+          } else if (stars >= 2) {
           performance = "good";
         } else {
           performance = "retry";
