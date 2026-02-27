@@ -30,7 +30,7 @@ const About = () => {
   > = {
     parent: [
       { icon: LineChart, title: "Báo cáo trực quan", desc: "Theo dõi tiến độ, điểm mạnh/yếu của con theo từng bài giảng và trò chơi." },
-      { icon: Clock, title: "Đồng hồ sức khỏe", desc: "Tự động nhắc bé nghỉ mắt khi online quá lâu; phụ huynh cài đặt giới hạn thời gian mỗi ngày." },
+      { icon: Clock, title: "Đồng hồ sức khỏe thông minh", desc: "Con tự học chủ động với video và game; hệ thống tự nhắc nghỉ mắt khi online quá lâu, phụ huynh dễ dàng cài giới hạn thời gian mỗi ngày." },
       { icon: PiggyBank, title: "Tiết kiệm chi phí", desc: "Kho video – game đa dạng thay cho nhiều lớp học phụ thêm." },
       { icon: ShieldCheck, title: "Nội dung an toàn", desc: "Bài học kiểm duyệt kỹ, phù hợp lứa tuổi, bám sát chương trình." }
     ],
