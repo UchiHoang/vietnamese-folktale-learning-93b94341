@@ -1,39 +1,85 @@
 
+# Fix Star Calculation Logic + Add Failure Sound Effects
 
-## Vấn đề hiện tại
+## Problems Found
 
-Khi người chơi ghép sai cặp trong trò **Matching Pairs**, hệ thống hiển thị ngay lập tức:
-- Card chuyển **đỏ** (`bg-red-500`) với icon **X**
-- Điều này **lộ đáp án** vì người chơi biết ngay cặp nào sai
+### 1. Star Calculation Too Harsh
+Current formula: `Math.floor((correct / total) * 3)`
+- Requires **100% accuracy** for 3 stars (practically impossible for kids)
+- 66% accuracy = only 1 star
+- This misaligns with the performance thresholds (excellent >= 90%, good >= 60%)
 
-Tương tự, khi ghép đúng, card chuyển **xanh** ngay lập tức - cho phép người chơi dùng phương pháp loại trừ.
+**Fix**: Use threshold-based star calculation aligned with performance:
+- >= 90% accuracy = 3 stars (excellent)
+- >= 70% accuracy = 2 stars (good)
+- >= 40% accuracy = 1 star (encouraging)
+- < 40% accuracy = 0 stars (retry)
 
-## Giải pháp
+### 2. Stars Not Reset on Time Up
+`handleTimeUp()` sets `performance = "retry"` but does NOT reset `starsThisLevel` to 0. This means the BadgeModal shows leftover stars from a previous attempt -- causing the mismatch visible in the screenshot (2 stars + "retry" message).
 
-Thay đổi logic gameplay: **không tiết lộ đúng/sai ngay**, chỉ hiển thị kết quả sau khi người chơi đã nối hết tất cả các cặp.
+**Fix**: Add `setStarsThisLevel(0)` and `setEarnedXpThisLevel(0)` in `handleTimeUp`.
 
-### Luồng gameplay mới:
-1. Người chơi chọn trái -> chọn phải -> cặp được **ghim lại** (hiển thị màu trung tính, ví dụ màu cam/primary)
-2. Người chơi có thể **bỏ ghép** (nhấn X) để thử lại cặp khác
-3. Khi đã nối đủ tất cả các cặp, hiện nút **"Kiểm tra đáp án"**
-4. Khi bấm kiểm tra: mới hiển thị xanh (đúng) / đỏ (sai) cho từng cặp
-5. Sau 2 giây, gọi `onComplete` với kết quả
+### 3. Performance Thresholds Misaligned with Stars
+Current: performance uses 90%/60% thresholds but stars use a different formula. After fixing stars, align performance to match:
+- 3 stars = "excellent"
+- 2 stars = "good"  
+- 0-1 stars = "retry"
 
-### Chi tiết kỹ thuật
+### 4. No Failure Sound Effect
+Currently there is no sad/failure sound when:
+- Time runs out
+- Player gets 0 stars
+- Player performs poorly
 
-**File chỉnh sửa:** `src/components/game/MatchingPairsGame.tsx`
+**Fix**: Add a failure/sad sound effect that plays when `performance === "retry"` or when time is up.
 
-1. **Bỏ state `incorrect`** - không cần feedback sai ngay nữa
-2. **Đổi state `matched` thành `paired`** (`Record<string, string>`) - lưu cặp đã ghép (trái -> phải) mà chưa kiểm tra đúng sai
-3. **Thêm state `results`** (`Record<string, boolean>`) - chỉ có giá trị sau khi bấm kiểm tra
-4. **Thêm state `showResults`** (boolean) - đánh dấu đã kiểm tra chưa
-5. **Logic ghép cặp mới:**
-   - Khi chọn trái + phải: lưu vào `paired[leftId] = rightId`, reset selection
-   - Card đã ghép hiển thị màu primary (trung tính), có nút X để bỏ ghép
-   - Không hiển thị đúng/sai
-6. **Nút "Kiểm tra đáp án":** xuất hiện khi `Object.keys(paired).length === pairs.length`
-   - Khi bấm: tính `results` cho từng cặp, set `showResults = true`
-   - Hiển thị xanh/đỏ cho từng cặp
-   - Gọi `onComplete(allCorrect)` sau 2 giây
-7. **Cập nhật `getCardStyle`:** thêm trạng thái "paired" (đã ghép, chưa kiểm tra) với màu trung tính
+## Files to Change
 
+### `src/components/game/TrangQuynhMiniGame.tsx`
+- Fix star calculation formula (line ~493): replace `Math.floor((newCorrect / totalQuestions) * 3)` with threshold-based logic
+- Align performance determination to use star count instead of separate accuracy thresholds
+- Fix `handleTimeUp`: add `setStarsThisLevel(0)` and `setEarnedXpThisLevel(0)`
+- Play failure sound in `handleTimeUp`
+
+### `src/components/game/BadgeModal.tsx`
+- Add failure sound effect that plays when `performance === "retry"` on modal open
+- Use Web Audio API or a free sound URL for a gentle "aww" or "try again" tone (kid-friendly, not scary)
+
+## Technical Details
+
+Star calculation replacement:
+```typescript
+// Old
+const stars = Math.floor((newCorrect / totalQuestions) * 3);
+
+// New
+const accuracy = (newCorrect / totalQuestions) * 100;
+let stars: number;
+if (accuracy >= 90) stars = 3;
+else if (accuracy >= 70) stars = 2;
+else if (accuracy >= 40) stars = 1;
+else stars = 0;
+```
+
+Performance aligned with stars:
+```typescript
+let performance: "excellent" | "good" | "retry";
+if (stars >= 3) performance = "excellent";
+else if (stars >= 2) performance = "good";
+else performance = "retry";
+```
+
+handleTimeUp fix:
+```typescript
+const handleTimeUp = useCallback(() => {
+  toast.error("Het gio!");
+  setStarsThisLevel(0);
+  setEarnedXpThisLevel(0);
+  setLevelPerformance("retry");
+  setShowBadgeModal(true);
+  // Play failure sound
+}, []);
+```
+
+Failure sound in BadgeModal: Play a gentle "womp womp" or descending tone via Web Audio API when `performance === "retry"` and `isOpen` becomes true.
