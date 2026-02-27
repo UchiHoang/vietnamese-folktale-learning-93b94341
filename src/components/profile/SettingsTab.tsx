@@ -66,25 +66,30 @@ const SettingsTab = () => {
             <>
               <div className="bg-muted/50 rounded-xl p-4">
                 <Label className="font-medium text-sm mb-3 block">Thời gian tối đa mỗi ngày</Label>
-                <RadioGroup
-                  value={String(limitMinutes)}
-                  onValueChange={handleLimitChange}
-                  className="grid grid-cols-2 gap-3"
-                >
-                  {[30, 60, 90, 120].map((mins) => (
-                    <label
+                <div className="flex gap-2">
+                  {[
+                    { mins: 30, emoji: "⏱️", label: "30p" },
+                    { mins: 60, emoji: "🕐", label: "1 giờ" },
+                    { mins: 90, emoji: "🕜", label: "1.5 giờ" },
+                    { mins: 120, emoji: "🕑", label: "2 giờ" },
+                  ].map(({ mins, emoji, label }) => (
+                    <button
                       key={mins}
-                      className={`flex items-center gap-2 p-3 rounded-lg border-2 cursor-pointer transition-colors ${
+                      type="button"
+                      onClick={() => handleLimitChange(String(mins))}
+                      className={`flex-1 flex flex-col items-center gap-1 py-3 px-2 rounded-xl border-2 transition-all cursor-pointer ${
                         limitMinutes === mins
-                          ? "border-primary bg-primary/5"
-                          : "border-muted hover:border-primary/30"
+                          ? "border-primary bg-primary/10 shadow-sm scale-105"
+                          : "border-transparent bg-background hover:border-primary/20 hover:bg-primary/5"
                       }`}
                     >
-                      <RadioGroupItem value={String(mins)} />
-                      <span className="font-medium">{mins} phút</span>
-                    </label>
+                      <span className="text-2xl">{emoji}</span>
+                      <span className={`text-sm font-semibold ${limitMinutes === mins ? "text-primary" : "text-muted-foreground"}`}>
+                        {label}
+                      </span>
+                    </button>
                   ))}
-                </RadioGroup>
+                </div>
               </div>
 
               {/* Progress bar */}
