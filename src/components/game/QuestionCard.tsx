@@ -65,7 +65,7 @@ const QuestionCardComponent = ({
             style={{ width: `${(questionNumber / totalQuestions) * 100}%` }}
           />
         </div>
-        <span className="text-lg">⭐</span>
+        
       </div>
     </div>
   );
