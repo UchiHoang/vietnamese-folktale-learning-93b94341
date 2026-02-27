@@ -108,7 +108,7 @@ const MatchingPairsGameComponent = ({ pairs, onComplete, title }: MatchingPairsG
       if (correct) return "bg-green-500 text-white border-green-600";
       return "bg-red-500 text-white border-red-600";
     }
-    if (isPaired) return "bg-primary/20 text-primary border-primary/50";
+    if (isPaired) return "bg-sky-100 text-sky-700 border-sky-400 dark:bg-sky-900/30 dark:text-sky-300 dark:border-sky-500";
     if (isSelected) return "bg-primary text-primary-foreground border-primary ring-4 ring-primary/50";
     return "bg-card border-border hover:border-primary/50 hover:scale-105 cursor-pointer";
   };
