@@ -138,6 +138,16 @@ export const TrangQuynhMiniGame = ({ grade, courseId = "grade2-trangquynh", stor
   
   // 3. useRef
   const levelStartTime = useRef<number>(Date.now());
+  // Refs to access latest state in handleTimeUp callback
+  const correctThisLevelRef = useRef(correctThisLevel);
+  const incorrectThisLevelRef = useRef(incorrectThisLevel);
+  const currentActivityRef = useRef(currentActivity);
+  const currentNodeIndexRef = useRef(currentNodeIndex);
+
+  useEffect(() => { correctThisLevelRef.current = correctThisLevel; }, [correctThisLevel]);
+  useEffect(() => { incorrectThisLevelRef.current = incorrectThisLevel; }, [incorrectThisLevel]);
+  useEffect(() => { currentActivityRef.current = currentActivity; }, [currentActivity]);
+  useEffect(() => { currentNodeIndexRef.current = currentNodeIndex; }, [currentNodeIndex]);
   
   // 4. Custom hooks (useGameProgress)
   const { 
@@ -414,13 +424,84 @@ export const TrangQuynhMiniGame = ({ grade, courseId = "grade2-trangquynh", stor
     setGamePhase("cutscene");
   };
 
-  const handleTimeUp = useCallback(() => {
-    toast.error("Hết giờ! Thời gian đã hết, hãy thử lại nhé!");
-    setStarsThisLevel(0);
-    setEarnedXpThisLevel(0);
-    setLevelPerformance("retry");
+  const handleTimeUp = useCallback(async () => {
+    const activity = currentActivityRef.current;
+    const nodeIdx = currentNodeIndexRef.current;
+    const correct = correctThisLevelRef.current;
+    const incorrect = incorrectThisLevelRef.current;
+    const totalQuestions = activity?.questions?.length || 1;
+    const xpReward = activity?.xpReward || 10;
+
+    const accuracy = (correct / totalQuestions) * 100;
+    let stars: number;
+    if (accuracy >= 90) stars = 3;
+    else if (accuracy >= 70) stars = 2;
+    else if (accuracy >= 40) stars = 1;
+    else stars = 0;
+
+    const calculatedXp = correct * xpReward;
+    const score = correct * xpReward;
+    const timeSpent = Math.floor((Date.now() - levelStartTime.current) / 1000);
+
+    setStarsThisLevel(stars);
+    setEarnedXpThisLevel(calculatedXp);
+
+    const performance: "excellent" | "good" | "retry" = stars >= 3 ? "excellent" : stars >= 2 ? "good" : "retry";
+    setLevelPerformance(performance);
+
+    if (correct > 0) {
+      toast.info(`Hết giờ! Kết quả: ${correct}/${totalQuestions} câu đúng đã được lưu.`);
+    } else {
+      toast.error("Hết giờ! Chưa trả lời đúng câu nào.");
+    }
+
+    try {
+      const result = await completeStageMutation.mutateAsync({
+        nodeIndex: nodeIdx,
+        score,
+        stars,
+        xpReward: calculatedXp,
+        gameSpecificData: {
+          correct,
+          incorrect,
+          accuracy,
+          timeSpent,
+          timeUp: true,
+          nodeId: story.nodes[nodeIdx]?.id || `stage-${nodeIdx}`,
+        },
+      });
+
+      if (result?.success) {
+        if ((result as any).course) {
+          setLastCourseState((result as any).course as CourseState);
+        }
+        if ((result as any).globals) {
+          const rg = (result as any).globals;
+          setLastGlobals({
+            user_id: globals?.user_id || "",
+            total_xp: rg.total_xp || 0,
+            global_level: rg.global_level || 1,
+            coins: rg.coins || 0,
+            avatar_config: globals?.avatar_config || {},
+            unlocked_badges: globals?.unlocked_badges || [],
+            created_at: globals?.created_at || new Date().toISOString(),
+            updated_at: globals?.updated_at || new Date().toISOString(),
+          } as GlobalState);
+        }
+
+        const node = story.nodes[nodeIdx];
+        if (performance !== "retry" && node?.badgeOnComplete) {
+          setCompletedBadgeId(node.badgeOnComplete);
+        } else {
+          setCompletedBadgeId(null);
+        }
+      }
+    } catch (err) {
+      console.error("Error saving time-up results:", err);
+    }
+
     setShowBadgeModal(true);
-  }, []);
+  }, [completeStageMutation, story.nodes, globals]);
 
   const startLevelLogic = () => {
     const node = story.nodes[currentNodeIndex];
