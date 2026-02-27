@@ -1,92 +1,105 @@
 
 
-# Fix: Chi cong them phan chenh lech khi choi lai man game
+# Tinh nang gioi han thoi gian hoc tap cho phu huynh
 
-## Van de hien tai
+## Tong quan
 
-Trong ham `complete_stage` (PostgreSQL RPC), moi lan hoan thanh mot man game:
-- **Luon cong toan bo** `p_xp_reward` vao `game_globals.total_xp`
-- **Luon cong toan bo** `p_stars` vao `course_progress.total_stars`
-- **Luon cong toan bo** XP vao `course_progress.total_xp`
+Them tinh nang cho phep phu huynh dat gioi han thoi gian hoc/choi trong ngay (30p, 60p, 90p, 120p). Khi het thoi gian, hien thi canh bao than thien voi nhan vat Trau Vang (mascot-buffalo.png) thay vi error dialog.
 
-Dieu nay co nghia: Neu nguoi choi choi lai man cu va dat 30 XP, thi 30 XP do se duoc cong them vao tong XP, du truoc do da dat 50 XP o man do. Nguoi choi co the "farm" XP bang cach choi lai.
+## Thiet ke UX/UI
 
-## Logic mong muon
+### Canh bao khi het gio
+- **Khong phai error/cam doan** - ma la loi dong vien de thuong
+- Nhan vat Trau Vang xuat hien voi animation (bounce, vuon vai)
+- Thong diep: "Cha, ban da hoc rat cham chi roi! Trau Vang thay hoi moi mat, chung minh cung nghi giai lao, uong mot ngum nuoc va nhin ra cua so nhe!"
+- Nut "Nghi ngoi thoi!" (tat modal) va "Xin them 5 phut" (gia han 1 lan)
+- Background overlay nhe (khong block hoan toan), mau pastel am ap
+- Confetti nhe khi hien thi de ton vinh viec hoc cham chi
 
-1. Luu best score/stars/XP cho **tung node** trong mot course
-2. Khi choi lai:
-   - Neu diem moi > diem cu: chi cong phan **chenh lech** vao tong
-   - Neu diem moi <= diem cu: **khong cong them** gi
-3. Ap dung cho ca XP, stars, va score
+### Cai dat trong Settings
+- Them muc "Gioi han thoi gian" voi icon Clock trong SettingsTab
+- Toggle bat/tat tinh nang
+- Khi bat: hien thi 4 lua chon (30p, 60p, 90p, 120p) dang radio group
+- Hien thi thanh progress bar thoi gian da hoc hom nay
 
-## Giai phap
+## Chi tiet ky thuat
 
-### Thay doi 1: Sua ham `complete_stage` (SQL migration)
-
-Them logic kiem tra best score truoc khi cong:
-
-```text
-1. Tim best record cho (user_id, course_id, node_index) trong level_history
-2. Tinh delta:
-   - delta_xp = MAX(0, p_xp_reward - old_best_xp)
-   - delta_stars = MAX(0, p_stars - old_best_stars)
-   - delta_score = MAX(0, p_score - old_best_score)
-3. Chi cong delta vao game_globals va course_progress
-4. Van luu day du ket qua vao level_history (de co lich su)
-```
-
-Cu the trong SQL:
-- Truoc khi update, SELECT best record tu `level_history` WHERE `course_id = p_course_id AND node_index = p_node_index` ORDER BY `score DESC` LIMIT 1
-- Tinh `v_delta_xp`, `v_delta_stars`, `v_delta_score`
-- Dung delta thay vi gia tri tuyet doi khi update `game_globals` va `course_progress`
-
-### Thay doi 2: Khong can thay doi client code
-
-Logic client (`useGameProgress.ts`, `TrangQuynhMiniGame.tsx`) van gui cung payload nhu cu. Server se tu dong xu ly viec chi cong chenh lech.
-
-### Chi tiet ky thuat - SQL function moi
+### 1. Tao bang `parental_settings` trong Supabase
 
 ```text
-complete_stage (sua lai):
-
-  -- Lay best record cu
-  SELECT MAX(score), MAX(stars), MAX(xp_from_meta)
-  FROM level_history
-  WHERE user_id = v_user_id
-    AND course_id = p_course_id
-    AND node_index = p_node_index
-    AND passed = true;
-
-  -- Tinh delta
-  v_delta_xp := GREATEST(0, p_xp_reward - COALESCE(v_old_best_xp, 0));
-  v_delta_stars := GREATEST(0, p_stars - COALESCE(v_old_best_stars, 0));
-
-  -- Update game_globals chi voi delta
-  UPDATE game_globals
-  SET total_xp = total_xp + v_delta_xp,
-      coins = coins + v_delta_stars  -- chi cong them stars moi
-  ...
-
-  -- Update course_progress chi voi delta
-  total_stars = course_progress.total_stars + v_delta_stars,
-  total_xp = course_progress.total_xp + v_delta_xp
-
-  -- Van luu day du vao level_history
-  INSERT INTO level_history (...) VALUES (...);
-
-  -- daily_activity cung chi cong delta
-  INSERT INTO daily_activity ... xp_earned = v_delta_xp ...
+SQL Migration:
+- Tao bang parental_settings:
+  - user_id (uuid, PK, FK -> auth.users)
+  - daily_limit_minutes (integer, default null = khong gioi han)
+  - limit_enabled (boolean, default false)
+  - extra_time_used (boolean, default false) -- da dung "xin them 5 phut" hom nay chua
+  - last_reset_date (date) -- de reset extra_time_used moi ngay
+  - created_at, updated_at
+- RLS: user chi doc/sua cua minh
 ```
 
-### Ket qua mong doi
+### 2. Tao hook `useStudyTimeLimit` (src/hooks/useStudyTimeLimit.ts)
 
-| Tinh huong | XP cu | XP moi | Delta cong vao tong |
-|---|---|---|---|
-| Choi lan dau | 0 | 30 | +30 |
-| Choi lai, pha ky luc | 30 | 50 | +20 |
-| Choi lai, khong pha | 50 | 30 | +0 |
-| Choi lai, bang diem | 50 | 50 | +0 |
+```text
+- Load parental_settings tu Supabase
+- Load daily_activity.time_spent_minutes cua ngay hom nay
+- Tinh toan: remainingMinutes = dailyLimit - todayTimeSpent
+- Dat interval 1 phut de kiem tra
+- Khi remainingMinutes <= 0: trigger canh bao
+- Expose: { isLimitReached, remainingMinutes, dailyLimit, todayTimeSpent, 
+            grantExtraTime, settings, updateSettings }
+```
 
-### File thay doi
-- **SQL migration**: Sua ham `complete_stage` de them logic delta
-- Khong can thay doi file TypeScript nao
+### 3. Tao component `StudyBreakReminder` (src/components/game/StudyBreakReminder.tsx)
+
+```text
+- Full-screen overlay voi animation (framer-motion)
+- Hinh anh Trau Vang (/mascot-buffalo.png) voi animation bounce/vuon vai
+- Thong diep de thuong, khong mang tinh cam doan
+- 2 nut:
+  + "Nghi ngoi thoi!" -> dong modal, co the redirect ve trang chu
+  + "Xin them 5 phut nua!" -> goi grantExtraTime(), chi cho phep 1 lan/ngay
+- Hieu ung confetti nhe (da co react-confetti trong dependencies)
+```
+
+### 4. Cap nhat SettingsTab (src/components/profile/SettingsTab.tsx)
+
+```text
+- Them Card "Kiểm soát thời gian" voi icon Clock
+- Toggle bat/tat gioi han
+- Khi bat: hien thi RadioGroup voi 4 option: 30p, 60p, 90p, 120p
+- Hien thi progress bar: "Hôm nay đã học: X/Y phút"
+- Luu vao Supabase parental_settings
+```
+
+### 5. Tich hop vao game (TrangQuynhMiniGame va cac game page)
+
+```text
+- Trong App.tsx hoac tung game page: wrap voi StudyBreakReminder
+- Hook useStudyTimeLimit chay o cap App hoac tung game component
+- Khi isLimitReached = true: hien thi StudyBreakReminder overlay
+- Khong block ngay lap tuc (cho phep luu progress truoc)
+```
+
+### Files can thay doi
+
+| File | Thay doi |
+|---|---|
+| `supabase/migrations/xxx.sql` | Tao bang parental_settings + RLS |
+| `src/integrations/supabase/types.ts` | Cap nhat types cho bang moi |
+| `src/hooks/useStudyTimeLimit.ts` | **Moi** - Hook quan ly gioi han thoi gian |
+| `src/components/game/StudyBreakReminder.tsx` | **Moi** - Modal canh bao de thuong |
+| `src/components/profile/SettingsTab.tsx` | Them phan cai dat gioi han thoi gian |
+| `src/App.tsx` | Them StudyBreakReminder wrapper |
+
+### Luong hoat dong
+
+```text
+1. Phu huynh vao Profile > Settings > Bat "Gioi han thoi gian" > Chon 60 phut
+2. Be vao choi game, hook useStudyTimeLimit bat dau theo doi
+3. Moi phut, hook kiem tra daily_activity.time_spent_minutes
+4. Khi tong >= 60 phut: trigger StudyBreakReminder
+5. Trau Vang xuat hien: "Cham chi qua! Nghi ngoi di nao!"
+6. Be bam "Xin them 5 phut" -> duoc them 5 phut (chi 1 lan/ngay)
+7. Sau 5 phut: lai hien canh bao, chi con nut "Nghi ngoi thoi!"
+```
