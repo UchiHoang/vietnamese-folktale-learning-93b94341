@@ -1,105 +1,75 @@
 
 
-# Tinh nang gioi han thoi gian hoc tap cho phu huynh
+# Theo doi thoi gian online thuc te cho kiem soat thoi gian hoc
 
-## Tong quan
+## Van de hien tai
 
-Them tinh nang cho phep phu huynh dat gioi han thoi gian hoc/choi trong ngay (30p, 60p, 90p, 120p). Khi het thoi gian, hien thi canh bao than thien voi nhan vat Trau Vang (mascot-buffalo.png) thay vi error dialog.
+Hien tai, `time_spent_minutes` trong `daily_activity` chi duoc cap nhat khi be **hoan thanh 1 man choi** (qua ham `complete_stage`). Nghia la neu be mo trang web 2 tieng nhung khong hoan thanh man nao, thoi gian ghi nhan la 0 phut. Dieu nay khong phan anh dung thuc te.
 
-## Thiet ke UX/UI
+## Giai phap
 
-### Canh bao khi het gio
-- **Khong phai error/cam doan** - ma la loi dong vien de thuong
-- Nhan vat Trau Vang xuat hien voi animation (bounce, vuon vai)
-- Thong diep: "Cha, ban da hoc rat cham chi roi! Trau Vang thay hoi moi mat, chung minh cung nghi giai lao, uong mot ngum nuoc va nhin ra cua so nhe!"
-- Nut "Nghi ngoi thoi!" (tat modal) va "Xin them 5 phut" (gia han 1 lan)
-- Background overlay nhe (khong block hoan toan), mau pastel am ap
-- Confetti nhe khi hien thi de ton vinh viec hoc cham chi
+Them **online time tracker** chay tren client, moi phut se tu dong cong 1 phut vao `daily_activity.time_spent_minutes` khi be dang o trang game/lesson. Ket hop ca thoi gian online va thoi gian choi game.
 
-### Cai dat trong Settings
-- Them muc "Gioi han thoi gian" voi icon Clock trong SettingsTab
-- Toggle bat/tat tinh nang
-- Khi bat: hien thi 4 lua chon (30p, 60p, 90p, 120p) dang radio group
-- Hien thi thanh progress bar thoi gian da hoc hom nay
+## Thiet ke ky thuat
 
-## Chi tiet ky thuat
+### 1. Tao hook `useOnlineTimeTracker` (src/hooks/useOnlineTimeTracker.ts)
 
-### 1. Tao bang `parental_settings` trong Supabase
+Hook nay se:
+- Chay khi user dang o trang game/lesson (cac path `/classroom/` va `/lessons`)
+- Moi 60 giay, goi upsert vao `daily_activity` de cong them 1 phut
+- Tu dong dung khi user chuyen sang tab khac (document.hidden) hoac roi khoi trang game
+- Su dung `visibilitychange` event de khong tinh thoi gian khi tab bi an
 
+Logic chinh:
 ```text
-SQL Migration:
-- Tao bang parental_settings:
-  - user_id (uuid, PK, FK -> auth.users)
-  - daily_limit_minutes (integer, default null = khong gioi han)
-  - limit_enabled (boolean, default false)
-  - extra_time_used (boolean, default false) -- da dung "xin them 5 phut" hom nay chua
-  - last_reset_date (date) -- de reset extra_time_used moi ngay
-  - created_at, updated_at
-- RLS: user chi doc/sua cua minh
+- Bat dau interval 60 giay khi vao trang game
+- Moi 60 giay:
+  + Kiem tra tab co dang active khong (document.hidden === false)
+  + Neu active: upsert daily_activity, cong 1 phut
+- Khi tab bi an: tam dung interval
+- Khi tab active lai: tiep tuc interval
+- Khi roi khoi trang game: dung hoan toan
 ```
 
-### 2. Tao hook `useStudyTimeLimit` (src/hooks/useStudyTimeLimit.ts)
+### 2. Cap nhat `StudyTimeLimitWrapper` (src/components/game/StudyTimeLimitWrapper.tsx)
 
-```text
-- Load parental_settings tu Supabase
-- Load daily_activity.time_spent_minutes cua ngay hom nay
-- Tinh toan: remainingMinutes = dailyLimit - todayTimeSpent
-- Dat interval 1 phut de kiem tra
-- Khi remainingMinutes <= 0: trigger canh bao
-- Expose: { isLimitReached, remainingMinutes, dailyLimit, todayTimeSpent, 
-            grantExtraTime, settings, updateSettings }
-```
+- Tich hop `useOnlineTimeTracker` vao day (vi no da biet user dang o game page)
+- Hook se tu dong chay khi `isGamePage = true`
 
-### 3. Tao component `StudyBreakReminder` (src/components/game/StudyBreakReminder.tsx)
+### 3. Khong can thay doi database
 
-```text
-- Full-screen overlay voi animation (framer-motion)
-- Hinh anh Trau Vang (/mascot-buffalo.png) voi animation bounce/vuon vai
-- Thong diep de thuong, khong mang tinh cam doan
-- 2 nut:
-  + "Nghi ngoi thoi!" -> dong modal, co the redirect ve trang chu
-  + "Xin them 5 phut nua!" -> goi grantExtraTime(), chi cho phep 1 lan/ngay
-- Hieu ung confetti nhe (da co react-confetti trong dependencies)
-```
+Bang `daily_activity` da co san cot `time_spent_minutes` va RLS policies phu hop (user co the insert va update cua minh). Khong can migration.
 
-### 4. Cap nhat SettingsTab (src/components/profile/SettingsTab.tsx)
+### 4. Xu ly xung dot voi `complete_stage`
 
-```text
-- Them Card "Kiểm soát thời gian" voi icon Clock
-- Toggle bat/tat gioi han
-- Khi bat: hien thi RadioGroup voi 4 option: 30p, 60p, 90p, 120p
-- Hien thi progress bar: "Hôm nay đã học: X/Y phút"
-- Luu vao Supabase parental_settings
-```
+Ham `complete_stage` trong SQL cung cong `time_spent_minutes`. De tranh cong trung:
+- Online tracker se la nguon chinh de tinh thoi gian
+- Sua logic trong `complete_stage` de **khong cong** `time_spent_minutes` nua (chi giu cong xp, points, lessons_completed)
+- Tao migration de sua ham `complete_stage`
 
-### 5. Tich hop vao game (TrangQuynhMiniGame va cac game page)
-
-```text
-- Trong App.tsx hoac tung game page: wrap voi StudyBreakReminder
-- Hook useStudyTimeLimit chay o cap App hoac tung game component
-- Khi isLimitReached = true: hien thi StudyBreakReminder overlay
-- Khong block ngay lap tuc (cho phep luu progress truoc)
-```
-
-### Files can thay doi
+### Files thay doi
 
 | File | Thay doi |
 |---|---|
-| `supabase/migrations/xxx.sql` | Tao bang parental_settings + RLS |
-| `src/integrations/supabase/types.ts` | Cap nhat types cho bang moi |
-| `src/hooks/useStudyTimeLimit.ts` | **Moi** - Hook quan ly gioi han thoi gian |
-| `src/components/game/StudyBreakReminder.tsx` | **Moi** - Modal canh bao de thuong |
-| `src/components/profile/SettingsTab.tsx` | Them phan cai dat gioi han thoi gian |
-| `src/App.tsx` | Them StudyBreakReminder wrapper |
+| `src/hooks/useOnlineTimeTracker.ts` | **Moi** - Hook theo doi thoi gian online |
+| `src/components/game/StudyTimeLimitWrapper.tsx` | Tich hop useOnlineTimeTracker |
+| `supabase/migrations/xxx.sql` | Sua ham complete_stage: bo phan cong time_spent_minutes |
 
-### Luong hoat dong
+### Luong hoat dong moi
 
 ```text
-1. Phu huynh vao Profile > Settings > Bat "Gioi han thoi gian" > Chon 60 phut
-2. Be vao choi game, hook useStudyTimeLimit bat dau theo doi
-3. Moi phut, hook kiem tra daily_activity.time_spent_minutes
-4. Khi tong >= 60 phut: trigger StudyBreakReminder
-5. Trau Vang xuat hien: "Cham chi qua! Nghi ngoi di nao!"
-6. Be bam "Xin them 5 phut" -> duoc them 5 phut (chi 1 lan/ngay)
-7. Sau 5 phut: lai hien canh bao, chi con nut "Nghi ngoi thoi!"
+1. Be vao trang /classroom/grade1 -> useOnlineTimeTracker bat dau chay
+2. Moi 60 giay (neu tab active): upsert daily_activity += 1 phut
+3. Be chuyen tab sang YouTube -> tracker tam dung (khong tinh)
+4. Be quay lai tab -> tracker tiep tuc
+5. useStudyTimeLimit poll moi 60 giay -> doc daily_activity.time_spent_minutes
+6. Khi time >= limit -> hien StudyBreakReminder voi Trau Vang
 ```
+
+### Chi tiet xu ly edge case
+
+- **Tab bi an**: Dung `document.addEventListener('visibilitychange')` de tam dung/tiep tuc
+- **User chua dang nhap**: Khong track (kiem tra session truoc)
+- **Ngay moi**: `activity_date = CURRENT_DATE` trong upsert, tu dong tao row moi
+- **Nhieu tab**: Moi tab se track doc lap, nhung vi cong don vao cung row nen van chinh xac
+
