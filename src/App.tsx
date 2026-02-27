@@ -20,7 +20,7 @@ import Grade3Game from "./pages/Grade3Game";
 import Grade4Game from "./pages/Grade4Game";
 import Grade5Game from "./pages/Grade5Game";
 import DataPage from "./pages/data";
-
+import StudyTimeLimitWrapper from "./components/game/StudyTimeLimitWrapper";
 
 const queryClient = new QueryClient();
 
@@ -30,6 +30,7 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
+        <StudyTimeLimitWrapper />
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/lessons" element={<ProtectedClassroom><Lessons /></ProtectedClassroom>} />
@@ -37,7 +38,7 @@ const App = () => (
           <Route path="/auth" element={<Auth />} />
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/profile" element={<Profile />} />
-                    <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/classroom/trangquynh" element={<TrangQuynhGame />} />
           <Route path="/classroom/songhong" element={<SongHongGame />} />
           <Route path="/classroom/preschool" element={<PreschoolGame />} />

@@ -429,6 +429,36 @@ export type Database = {
         }
         Relationships: []
       }
+      parental_settings: {
+        Row: {
+          created_at: string
+          daily_limit_minutes: number | null
+          extra_time_used: boolean
+          last_reset_date: string
+          limit_enabled: boolean
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          daily_limit_minutes?: number | null
+          extra_time_used?: boolean
+          last_reset_date?: string
+          limit_enabled?: boolean
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          daily_limit_minutes?: number | null
+          extra_time_used?: boolean
+          last_reset_date?: string
+          limit_enabled?: boolean
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           address: string | null
