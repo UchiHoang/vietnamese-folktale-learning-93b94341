@@ -761,12 +761,12 @@ export const TrangQuynhMiniGame = ({ grade, courseId = "grade2-trangquynh", stor
 
      return (
       <div className="min-h-screen" style={rootStyle}>
-        <div className="fixed top-24 right-6 z-50">
+        <div className="fixed top-24 left-6 z-50">
           <Button 
-            onClick={handleExit} 
+            onClick={() => setGamePhase("prologue")} 
             size="sm"
             variant="outline"
-            className="gap-2 bg-sky-50 hover:bg-sky-100 text-sky-700 border-sky-200 backdrop-blur-sm shadow-sm"
+            className="gap-2 bg-sky-50 hover:bg-sky-700 hover:text-white text-sky-700 border-sky-200 backdrop-blur-sm shadow-sm transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
             Quay về
