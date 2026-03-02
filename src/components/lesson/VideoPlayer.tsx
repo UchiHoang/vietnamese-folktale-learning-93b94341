@@ -4,6 +4,7 @@ import { CheckCircle, Play, Sparkles, Trophy, Star } from "lucide-react";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import Confetti from "react-confetti";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const SOUND_URLS = {
   complete: "https://cdn.freesound.org/previews/270/270402_5123851-lq.mp3",
@@ -27,6 +28,7 @@ interface VideoPlayerProps {
 }
 
 export const VideoPlayer = ({ videoUrl, title, topicId, isCompleted = false, onComplete }: VideoPlayerProps) => {
+  const { t } = useLanguage();
   const [hasMarkedComplete, setHasMarkedComplete] = useState(isCompleted);
   const [isLoading, setIsLoading] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
@@ -60,14 +62,14 @@ export const VideoPlayer = ({ videoUrl, title, topicId, isCompleted = false, onC
         triggerCelebration();
       } catch (error) {
         console.error("Error completing topic:", error);
-        toast.error("Không thể lưu tiến độ. Vui lòng thử lại.");
+        toast.error(t.videoPlayer.saveError);
       }
     } else {
       triggerCelebration();
     }
     
     setIsLoading(false);
-  }, [topicId, onComplete, hasMarkedComplete, isLoading]);
+  }, [topicId, onComplete, hasMarkedComplete, isLoading, t]);
 
   return (
     <>
@@ -152,7 +154,7 @@ export const VideoPlayer = ({ videoUrl, title, topicId, isCompleted = false, onC
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3 }}
               >
-                🎉 Xuất sắc!
+                {t.videoPlayer.excellent}
               </motion.h2>
 
               <motion.p
@@ -161,7 +163,7 @@ export const VideoPlayer = ({ videoUrl, title, topicId, isCompleted = false, onC
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.45 }}
               >
-                Bạn đã hoàn thành bài học này
+                {t.videoPlayer.lessonCompleted}
               </motion.p>
 
               {/* Floating XP badge */}
@@ -253,10 +255,10 @@ export const VideoPlayer = ({ videoUrl, title, topicId, isCompleted = false, onC
                     <CheckCircle className="h-5 w-5 text-primary" />
                   </div>
                   <div>
-                    <p className="font-semibold text-foreground">Đã hoàn thành!</p>
+                    <p className="font-semibold text-foreground">{t.videoPlayer.completed}</p>
                     <p className="text-xs text-muted-foreground flex items-center gap-1">
                       <Sparkles className="h-3 w-3 text-primary" />
-                      Bạn đã nhận +20 XP cho bài học này
+                      {t.videoPlayer.earnedXP}
                     </p>
                   </div>
                 </motion.div>
@@ -266,8 +268,8 @@ export const VideoPlayer = ({ videoUrl, title, topicId, isCompleted = false, onC
                     <Play className="h-5 w-5 text-muted-foreground" />
                   </div>
                   <div>
-                    <p className="font-semibold text-foreground">Xem xong video?</p>
-                    <p className="text-xs text-muted-foreground">Nhấn nút để đánh dấu hoàn thành</p>
+                    <p className="font-semibold text-foreground">{t.videoPlayer.watchedVideo}</p>
+                    <p className="text-xs text-muted-foreground">{t.videoPlayer.clickToMark}</p>
                   </div>
                 </motion.div>
               )}
@@ -281,7 +283,7 @@ export const VideoPlayer = ({ videoUrl, title, topicId, isCompleted = false, onC
               className="gap-2"
             >
               <CheckCircle className="h-4 w-4" />
-              {isLoading ? "Đang lưu..." : "Hoàn thành"}
+              {isLoading ? t.videoPlayer.saving : t.videoPlayer.completeButton}
             </Button>
           )}
         </div>

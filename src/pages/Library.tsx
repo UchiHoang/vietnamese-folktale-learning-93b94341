@@ -19,27 +19,24 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-const GRADES = [
-  { id: "all", label: "Tất cả", icon: "📚" },
-  { id: "mam-non", label: "Mầm non", icon: "🌸" },
-  { id: "lop-1", label: "Lớp 1", icon: "🎒" },
-  { id: "lop-2", label: "Lớp 2", icon: "✏️" },
-  { id: "lop-3", label: "Lớp 3", icon: "📖" },
-  { id: "lop-4", label: "Lớp 4", icon: "🎓" },
-  { id: "lop-5", label: "Lớp 5", icon: "🏆" },
-];
-
-const SORT_OPTIONS = [
-  { id: "created_at_desc", label: "Mới nhất" },
-  { id: "created_at_asc", label: "Cũ nhất" },
-  { id: "download_count_desc", label: "Tải nhiều nhất" },
-  { id: "title_asc", label: "Tên A-Z" },
-  { id: "title_desc", label: "Tên Z-A" },
-];
+const GRADES_KEYS = ["all", "mam-non", "lop-1", "lop-2", "lop-3", "lop-4", "lop-5"] as const;
+const GRADE_ICONS = ["📚", "🌸", "🎒", "✏️", "📖", "🎓", "🏆"];
+const SORT_KEYS = ["created_at_desc", "created_at_asc", "download_count_desc", "title_asc", "title_desc"] as const;
 
 const Library = () => {
   const navigate = useNavigate();
   const { t } = useLanguage();
+
+  const GRADES = GRADES_KEYS.map((id, i) => ({
+    id,
+    label: [t.libraryPage.grades.all, t.libraryPage.grades.preschool, t.libraryPage.grades.grade1, t.libraryPage.grades.grade2, t.libraryPage.grades.grade3, t.libraryPage.grades.grade4, t.libraryPage.grades.grade5][i],
+    icon: GRADE_ICONS[i],
+  }));
+
+  const SORT_OPTIONS = SORT_KEYS.map((id, i) => ({
+    id,
+    label: [t.libraryPage.sort.newest, t.libraryPage.sort.oldest, t.libraryPage.sort.mostDownloaded, t.libraryPage.sort.nameAZ, t.libraryPage.sort.nameZA][i],
+  }));
   const [isLoading, setIsLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isTeacher, setIsTeacher] = useState(false);

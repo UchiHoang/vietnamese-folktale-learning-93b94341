@@ -811,6 +811,63 @@ const en: Translations = {
     unknownLesson: "Unknown lesson",
   },
 
+  // Video Player
+  videoPlayer: {
+    watchedVideo: "Finished watching?",
+    clickToMark: "Click the button to mark as complete",
+    completed: "Completed!",
+    earnedXP: "You earned +20 XP for this lesson",
+    completeButton: "Complete",
+    saving: "Saving...",
+    saveError: "Unable to save progress. Please try again.",
+    excellent: "🎉 Excellent!",
+    lessonCompleted: "You've completed this lesson",
+  },
+
+  // Comments Tab
+  commentsTab: {
+    loading: "Loading comments...",
+    inputPlaceholder: "Write a comment...",
+    totalComments: "All {count} Comments",
+    noComments: "No comments yet.",
+    beFirst: "Be the first to ask a question!",
+    teacher: "Teacher",
+    teacherSupport: "Teacher • Learning Support",
+    studentSchool: "Student • Primary School",
+    sentAt: "commented",
+    like: "Like",
+    reply: "Reply",
+    replyPlaceholder: "Write a reply...",
+    cancel: "Cancel",
+    repliesCount: "{count} replies",
+  },
+
+  // Upload Modal
+  uploadModal: {
+    title: "Upload Document",
+    description: "Add a new document to the library for students to reference.",
+    dragDrop: "Drag & drop file or click to select",
+    fileTypes: "PDF, DOC, DOCX, TXT (max 50MB)",
+    titleLabel: "Title *",
+    titlePlaceholder: "Enter document title",
+    descLabel: "Description",
+    descPlaceholder: "Short description of the document (optional)",
+    gradeLabel: "Grade *",
+    gradePlaceholder: "Select grade",
+    cancel: "Cancel",
+    upload: "Upload",
+    unsupportedFormat: "Unsupported Format",
+    unsupportedFormatDesc: "Only PDF, DOC, DOCX, and TXT files are supported.",
+    fileTooLarge: "File Too Large",
+    fileTooLargeDesc: "Maximum file size is 50MB.",
+    missingInfo: "Missing Information",
+    missingInfoDesc: "Please fill in all required fields and select a file.",
+    uploadSuccess: "Upload Successful",
+    uploadSuccessDesc: "\"{title}\" has been added to the library.",
+    uploadError: "Upload Error",
+    uploadErrorDesc: "Unable to upload file. Please try again.",
+  },
+
   // Notes Tab (lesson)
   notesTab: {
     loading: "Loading notes...",

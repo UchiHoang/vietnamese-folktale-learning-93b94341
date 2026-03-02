@@ -809,6 +809,63 @@ const vi = {
     unknownLesson: "Bài học không xác định",
   },
 
+  // Video Player
+  videoPlayer: {
+    watchedVideo: "Xem xong video?",
+    clickToMark: "Nhấn nút để đánh dấu hoàn thành",
+    completed: "Đã hoàn thành!",
+    earnedXP: "Bạn đã nhận +20 XP cho bài học này",
+    completeButton: "Hoàn thành",
+    saving: "Đang lưu...",
+    saveError: "Không thể lưu tiến độ. Vui lòng thử lại.",
+    excellent: "🎉 Xuất sắc!",
+    lessonCompleted: "Bạn đã hoàn thành bài học này",
+  },
+
+  // Comments Tab
+  commentsTab: {
+    loading: "Đang tải bình luận...",
+    inputPlaceholder: "Nhập bình luận ...",
+    totalComments: "Tất cả {count} Bình luận",
+    noComments: "Chưa có bình luận nào.",
+    beFirst: "Hãy là người đầu tiên đặt câu hỏi!",
+    teacher: "Giáo viên",
+    teacherSupport: "Giáo viên • Hỗ trợ học tập",
+    studentSchool: "Học sinh • Trường Tiểu học",
+    sentAt: "gửi bình luận lúc",
+    like: "Thích",
+    reply: "Trả lời",
+    replyPlaceholder: "Viết phản hồi...",
+    cancel: "Hủy",
+    repliesCount: "{count} phản hồi",
+  },
+
+  // Upload Modal
+  uploadModal: {
+    title: "Tải lên tài liệu",
+    description: "Thêm tài liệu mới vào thư viện cho học sinh tham khảo.",
+    dragDrop: "Kéo thả file hoặc click để chọn",
+    fileTypes: "PDF, DOC, DOCX, TXT (tối đa 50MB)",
+    titleLabel: "Tiêu đề *",
+    titlePlaceholder: "Nhập tiêu đề tài liệu",
+    descLabel: "Mô tả",
+    descPlaceholder: "Mô tả ngắn về tài liệu (không bắt buộc)",
+    gradeLabel: "Lớp học *",
+    gradePlaceholder: "Chọn lớp học",
+    cancel: "Hủy",
+    upload: "Tải lên",
+    unsupportedFormat: "Định dạng không hỗ trợ",
+    unsupportedFormatDesc: "Chỉ hỗ trợ file PDF, DOC, DOCX và TXT.",
+    fileTooLarge: "File quá lớn",
+    fileTooLargeDesc: "Kích thước file tối đa là 50MB.",
+    missingInfo: "Thiếu thông tin",
+    missingInfoDesc: "Vui lòng điền đầy đủ thông tin và chọn file.",
+    uploadSuccess: "Tải lên thành công",
+    uploadSuccessDesc: "\"{title}\" đã được thêm vào thư viện.",
+    uploadError: "Lỗi tải lên",
+    uploadErrorDesc: "Không thể tải file lên. Vui lòng thử lại.",
+  },
+
   // Notes Tab (lesson)
   notesTab: {
     loading: "Đang tải ghi chú...",

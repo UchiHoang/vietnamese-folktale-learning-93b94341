@@ -5,8 +5,10 @@ import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useTopicComments, CommentWithProfile } from '@/hooks/useTopicComments';
 import { formatDistanceToNow } from 'date-fns';
-import { vi } from 'date-fns/locale';
+import { vi as viLocale } from 'date-fns/locale';
+import { enUS } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
+import { useLanguage } from '@/contexts/LanguageContext';
 import {
   Popover,
   PopoverContent,
@@ -27,6 +29,8 @@ interface CommentItemProps {
   onReply: (parentId: string, content: string) => Promise<boolean>;
   isSubmitting: boolean;
   isReply?: boolean;
+  t: any;
+  language: string;
 }
 
 const CommentItem = ({
@@ -37,6 +41,8 @@ const CommentItem = ({
   onReply,
   isSubmitting,
   isReply = false,
+  t,
+  language,
 }: CommentItemProps) => {
   const [showReplyInput, setShowReplyInput] = useState(false);
   const [replyContent, setReplyContent] = useState('');
@@ -60,10 +66,9 @@ const CommentItem = ({
 
   const repliesCount = comment.replies?.length || 0;
 
-  // Format date nicely
   const formattedDate = formatDistanceToNow(new Date(comment.created_at), {
     addSuffix: false,
-    locale: vi,
+    locale: language === "vi" ? viLocale : enUS,
   });
 
   return (
@@ -98,11 +103,11 @@ const CommentItem = ({
               </span>
               {comment.is_admin_reply && (
                 <span className="px-2 py-0.5 bg-success/20 text-success text-xs font-semibold rounded-full">
-                  Giáo viên
+                  {t.commentsTab.teacher}
                 </span>
               )}
               <span className="text-xs text-muted-foreground">
-                gửi bình luận lúc {formattedDate}
+                {t.commentsTab.sentAt} {formattedDate}
               </span>
               
               {/* Like count badge */}
@@ -114,7 +119,7 @@ const CommentItem = ({
             
             {/* User info subtitle */}
             <p className="text-xs text-muted-foreground mt-0.5">
-              {comment.is_admin_reply ? "Giáo viên • Hỗ trợ học tập" : "Học sinh • Trường Tiểu học"}
+              {comment.is_admin_reply ? t.commentsTab.teacherSupport : t.commentsTab.studentSchool}
             </p>
           </div>
 
@@ -131,7 +136,7 @@ const CommentItem = ({
           )}
         </div>
 
-        {/* Comment Content - styled as quote box with white background */}
+        {/* Comment Content */}
         <div className="bg-white rounded-lg p-3 md:p-4 ml-0 md:ml-14 mb-3 shadow-sm">
           <p className="text-sm md:text-base text-foreground leading-relaxed whitespace-pre-wrap">
             {comment.content}
@@ -152,7 +157,7 @@ const CommentItem = ({
             <Heart
               className={cn("h-4 w-4", comment.is_liked && "fill-current")}
             />
-            <span>Thích</span>
+            <span>{t.commentsTab.like}</span>
           </button>
 
           {!isReply && (
@@ -161,7 +166,7 @@ const CommentItem = ({
               className="flex items-center gap-1.5 text-sm font-medium text-primary hover:text-primary/80 transition-colors"
             >
               <Reply className="h-4 w-4" />
-              <span>Trả lời</span>
+              <span>{t.commentsTab.reply}</span>
             </button>
           )}
         </div>
@@ -171,7 +176,7 @@ const CommentItem = ({
           <div className="mt-4 pt-4 border-t border-border/50 ml-0 md:ml-14">
             <div className="flex items-center gap-2">
               <Input
-                placeholder="Viết phản hồi..."
+                placeholder={t.commentsTab.replyPlaceholder}
                 value={replyContent}
                 onChange={(e) => setReplyContent(e.target.value)}
                 onKeyDown={handleReplyKeyDown}
@@ -186,7 +191,7 @@ const CommentItem = ({
                   setReplyContent('');
                 }}
               >
-                Hủy
+                {t.commentsTab.cancel}
               </Button>
               <Button
                 size="sm"
@@ -216,7 +221,7 @@ const CommentItem = ({
           ) : (
             <ChevronDown className="h-4 w-4" />
           )}
-          <span>{repliesCount} phản hồi</span>
+          <span>{t.commentsTab.repliesCount.replace("{count}", String(repliesCount))}</span>
         </button>
       )}
 
@@ -233,6 +238,8 @@ const CommentItem = ({
               onReply={onReply}
               isSubmitting={isSubmitting}
               isReply
+              t={t}
+              language={language}
             />
           ))}
         </div>
@@ -242,6 +249,7 @@ const CommentItem = ({
 };
 
 export const CommentsTab = ({ topicId, topicTitle }: CommentsTabProps) => {
+  const { t, language } = useLanguage();
   const [newComment, setNewComment] = useState('');
 
   const {
@@ -274,7 +282,6 @@ export const CommentsTab = ({ topicId, topicTitle }: CommentsTabProps) => {
     }
   };
 
-  // Count total comments including replies
   const totalComments = comments.reduce(
     (acc, c) => acc + 1 + (c.replies?.length || 0),
     0
@@ -284,17 +291,17 @@ export const CommentsTab = ({ topicId, topicTitle }: CommentsTabProps) => {
     return (
       <div className="flex items-center justify-center py-16">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
-        <span className="ml-3 text-muted-foreground text-lg">Đang tải bình luận...</span>
+        <span className="ml-3 text-muted-foreground text-lg">{t.commentsTab.loading}</span>
       </div>
     );
   }
 
   return (
     <div className="space-y-6">
-      {/* New Comment Input - Prominent at top with emoji picker */}
+      {/* New Comment Input */}
       <div className="flex items-center gap-3 bg-[#FFF5E6] rounded-full border-2 border-[#F5DEB3] p-2 pl-4 shadow-sm">
         <Input
-          placeholder="Nhập bình luận ..."
+          placeholder={t.commentsTab.inputPlaceholder}
           value={newComment}
           onChange={(e) => setNewComment(e.target.value)}
           onKeyDown={handleKeyDown}
@@ -344,7 +351,7 @@ export const CommentsTab = ({ topicId, topicTitle }: CommentsTabProps) => {
       {/* Total comments count */}
       <div className="flex justify-end">
         <span className="text-sm font-semibold text-foreground">
-          Tất cả {totalComments} Bình luận
+          {t.commentsTab.totalComments.replace("{count}", String(totalComments))}
         </span>
       </div>
 
@@ -353,8 +360,8 @@ export const CommentsTab = ({ topicId, topicTitle }: CommentsTabProps) => {
         {comments.length === 0 ? (
           <div className="text-center py-12 text-muted-foreground">
             <MessageCircle className="h-16 w-16 mx-auto mb-4 opacity-20" />
-            <p className="text-lg font-medium">Chưa có bình luận nào.</p>
-            <p className="text-sm">Hãy là người đầu tiên đặt câu hỏi!</p>
+            <p className="text-lg font-medium">{t.commentsTab.noComments}</p>
+            <p className="text-sm">{t.commentsTab.beFirst}</p>
           </div>
         ) : (
           comments.map((comment) => (
@@ -366,6 +373,8 @@ export const CommentsTab = ({ topicId, topicTitle }: CommentsTabProps) => {
               onLike={toggleLike}
               onReply={handleReply}
               isSubmitting={isSubmitting}
+              t={t}
+              language={language}
             />
           ))
         )}
