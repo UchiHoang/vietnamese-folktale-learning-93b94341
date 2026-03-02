@@ -10,7 +10,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
-import { Upload, Loader2, ImageIcon } from "lucide-react";
+import { Upload, Loader2 } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface AvatarUploadModalProps {
   open: boolean;
@@ -28,6 +29,7 @@ const EMOJI_AVATARS = [
 ];
 
 const AvatarUploadModal = ({ open, onClose, currentAvatar, onSave }: AvatarUploadModalProps) => {
+  const { t } = useLanguage();
   const [selectedAvatar, setSelectedAvatar] = useState(currentAvatar || "👤");
   const [activeTab, setActiveTab] = useState("emoji");
   const [uploading, setUploading] = useState(false);
@@ -41,18 +43,18 @@ const AvatarUploadModal = ({ open, onClose, currentAvatar, onSave }: AvatarUploa
     if (!file) return;
 
     if (!file.type.startsWith("image/")) {
-      toast({ title: "Lỗi", description: "Vui lòng chọn file ảnh.", variant: "destructive" });
+      toast({ title: t.avatarModal.uploadError, description: t.avatarModal.fileError, variant: "destructive" });
       return;
     }
     if (file.size > 2 * 1024 * 1024) {
-      toast({ title: "Lỗi", description: "Ảnh không được vượt quá 2MB.", variant: "destructive" });
+      toast({ title: t.avatarModal.uploadError, description: t.avatarModal.sizeError, variant: "destructive" });
       return;
     }
 
     setUploading(true);
     try {
       const { data: { session } } = await supabase.auth.getSession();
-      if (!session) throw new Error("Chưa đăng nhập");
+      if (!session) throw new Error(t.avatarModal.loginError);
 
       const userId = session.user.id;
       const filePath = `${userId}/avatar`;
@@ -71,9 +73,9 @@ const AvatarUploadModal = ({ open, onClose, currentAvatar, onSave }: AvatarUploa
       const url = `${publicUrl}?t=${Date.now()}`;
       setPreviewUrl(url);
       setSelectedAvatar(url);
-      toast({ title: "Tải lên thành công!", description: "Ảnh đại diện đã được tải lên." });
+      toast({ title: t.avatarModal.uploadSuccess, description: t.avatarModal.uploadSuccessDesc });
     } catch (error: any) {
-      toast({ title: "Lỗi tải lên", description: error.message, variant: "destructive" });
+      toast({ title: t.avatarModal.uploadError, description: error.message, variant: "destructive" });
     } finally {
       setUploading(false);
     }
@@ -91,13 +93,13 @@ const AvatarUploadModal = ({ open, onClose, currentAvatar, onSave }: AvatarUploa
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Chọn Avatar</DialogTitle>
+          <DialogTitle>{t.avatarModal.title}</DialogTitle>
         </DialogHeader>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="emoji">Emoji</TabsTrigger>
-            <TabsTrigger value="upload">Tải ảnh lên</TabsTrigger>
+            <TabsTrigger value="emoji">{t.avatarModal.emoji}</TabsTrigger>
+            <TabsTrigger value="upload">{t.avatarModal.upload}</TabsTrigger>
           </TabsList>
 
           <TabsContent value="emoji" className="mt-4">
@@ -133,9 +135,9 @@ const AvatarUploadModal = ({ open, onClose, currentAvatar, onSave }: AvatarUploa
                 className="gap-2"
               >
                 {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
-                {uploading ? "Đang tải lên..." : "Chọn ảnh từ máy"}
+                {uploading ? t.avatarModal.uploading : t.avatarModal.selectImage}
               </Button>
-              <p className="text-xs text-muted-foreground">JPG, PNG, WEBP • Tối đa 2MB</p>
+              <p className="text-xs text-muted-foreground">{t.avatarModal.uploadHint}</p>
             </div>
           </TabsContent>
         </Tabs>
@@ -143,7 +145,7 @@ const AvatarUploadModal = ({ open, onClose, currentAvatar, onSave }: AvatarUploa
         {/* Preview */}
         <div className="flex items-center justify-center gap-4 py-4 border-t">
           <div className="text-center">
-            <p className="text-sm text-muted-foreground mb-2">Xem trước</p>
+            <p className="text-sm text-muted-foreground mb-2">{t.avatarModal.preview}</p>
             <div className="w-20 h-20 rounded-full bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center text-4xl border-4 border-background shadow-lg overflow-hidden">
               {displayAvatar && avatarSrc ? (
                 <img src={avatarSrc} alt="Avatar" className="w-full h-full object-cover" />
@@ -155,8 +157,8 @@ const AvatarUploadModal = ({ open, onClose, currentAvatar, onSave }: AvatarUploa
         </div>
 
         <div className="flex gap-3 justify-end">
-          <Button variant="outline" onClick={onClose}>Hủy</Button>
-          <Button onClick={handleSave} disabled={uploading}>Lưu avatar</Button>
+          <Button variant="outline" onClick={onClose}>{t.avatarModal.cancel}</Button>
+          <Button onClick={handleSave} disabled={uploading}>{t.avatarModal.save}</Button>
         </div>
       </DialogContent>
     </Dialog>

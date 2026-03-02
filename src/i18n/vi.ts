@@ -866,6 +866,25 @@ const vi = {
     uploadErrorDesc: "Không thể tải file lên. Vui lòng thử lại.",
   },
 
+  // Avatar Upload Modal
+  avatarModal: {
+    title: "Chọn Avatar",
+    emoji: "Emoji",
+    upload: "Tải ảnh lên",
+    selectImage: "Chọn ảnh từ máy",
+    uploading: "Đang tải lên...",
+    uploadHint: "JPG, PNG, WEBP • Tối đa 2MB",
+    preview: "Xem trước",
+    cancel: "Hủy",
+    save: "Lưu avatar",
+    uploadSuccess: "Tải lên thành công!",
+    uploadSuccessDesc: "Ảnh đại diện đã được tải lên.",
+    uploadError: "Lỗi tải lên",
+    fileError: "Vui lòng chọn file ảnh.",
+    sizeError: "Ảnh không được vượt quá 2MB.",
+    loginError: "Chưa đăng nhập",
+  },
+
   // Notes Tab (lesson)
   notesTab: {
     loading: "Đang tải ghi chú...",

@@ -868,6 +868,25 @@ const en: Translations = {
     uploadErrorDesc: "Unable to upload file. Please try again.",
   },
 
+  // Avatar Upload Modal
+  avatarModal: {
+    title: "Choose Avatar",
+    emoji: "Emoji",
+    upload: "Upload Image",
+    selectImage: "Choose from device",
+    uploading: "Uploading...",
+    uploadHint: "JPG, PNG, WEBP • Max 2MB",
+    preview: "Preview",
+    cancel: "Cancel",
+    save: "Save avatar",
+    uploadSuccess: "Upload successful!",
+    uploadSuccessDesc: "Your avatar has been uploaded.",
+    uploadError: "Upload error",
+    fileError: "Please select an image file.",
+    sizeError: "Image must not exceed 2MB.",
+    loginError: "Not logged in",
+  },
+
   // Notes Tab (lesson)
   notesTab: {
     loading: "Loading notes...",
