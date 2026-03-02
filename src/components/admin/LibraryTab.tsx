@@ -20,12 +20,12 @@ const LibraryTab = () => {
 
   const GRADES = [
     { id: "all", label: t.adminLibrary.allGrades },
-    { id: "mam-non", label: "Mầm non" },
-    { id: "lop-1", label: "Lớp 1" },
-    { id: "lop-2", label: "Lớp 2" },
-    { id: "lop-3", label: "Lớp 3" },
-    { id: "lop-4", label: "Lớp 4" },
-    { id: "lop-5", label: "Lớp 5" },
+    { id: "mam-non", label: t.gradeLabels.preschool },
+    { id: "lop-1", label: t.gradeLabels.grade1 },
+    { id: "lop-2", label: t.gradeLabels.grade2 },
+    { id: "lop-3", label: t.gradeLabels.grade3 },
+    { id: "lop-4", label: t.gradeLabels.grade4 },
+    { id: "lop-5", label: t.gradeLabels.grade5 },
   ];
 
   const SORT_OPTIONS = [

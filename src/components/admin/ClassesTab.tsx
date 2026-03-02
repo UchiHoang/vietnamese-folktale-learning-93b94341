@@ -41,17 +41,18 @@ interface Class {
   student_count?: number;
 }
 
-const GRADES = [
-  { value: "preschool", label: "Mầm non" },
-  { value: "grade1", label: "Lớp 1" },
-  { value: "grade2", label: "Lớp 2" },
-  { value: "grade3", label: "Lớp 3" },
-  { value: "grade4", label: "Lớp 4" },
-  { value: "grade5", label: "Lớp 5" },
-];
 
 const ClassesTab = () => {
   const { t } = useLanguage();
+
+  const GRADES = [
+    { value: "preschool", label: t.gradeLabels.preschool },
+    { value: "grade1", label: t.gradeLabels.grade1 },
+    { value: "grade2", label: t.gradeLabels.grade2 },
+    { value: "grade3", label: t.gradeLabels.grade3 },
+    { value: "grade4", label: t.gradeLabels.grade4 },
+    { value: "grade5", label: t.gradeLabels.grade5 },
+  ];
   const [classes, setClasses] = useState<Class[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);

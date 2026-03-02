@@ -13,7 +13,7 @@ const en: Translations = {
     login: "Login",
     myAccount: "My Account",
     profile: "Profile",
-    adminPanel: "Teacher Admin",
+    adminPanel: "Teacher Management",
     logout: "Logout",
     logoutSuccess: "Logged out",
     logoutSuccessDesc: "See you again!",
@@ -882,6 +882,16 @@ const en: Translations = {
   // Lesson Progress Badge
   lessonProgressBadge: {
     lessons: "lessons",
+  },
+
+  // Shared grade labels
+  gradeLabels: {
+    preschool: "Preschool",
+    grade1: "Grade 1",
+    grade2: "Grade 2",
+    grade3: "Grade 3",
+    grade4: "Grade 4",
+    grade5: "Grade 5",
   },
 };
 
