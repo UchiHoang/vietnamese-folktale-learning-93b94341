@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/select";
 import { Upload, FileText, X, Loader2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface Grade {
   id: string;
@@ -56,6 +57,7 @@ const LibraryUploadModal = ({
   onSuccess,
   grades,
 }: LibraryUploadModalProps) => {
+  const { t } = useLanguage();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [grade, setGrade] = useState("");
@@ -75,8 +77,8 @@ const LibraryUploadModal = ({
 
     if (!ALLOWED_TYPES.includes(selectedFile.type)) {
       toast({
-        title: "Định dạng không hỗ trợ",
-        description: "Chỉ hỗ trợ file PDF, DOC, DOCX và TXT.",
+        title: t.uploadModal.unsupportedFormat,
+        description: t.uploadModal.unsupportedFormatDesc,
         variant: "destructive",
       });
       return;
@@ -84,8 +86,8 @@ const LibraryUploadModal = ({
 
     if (selectedFile.size > MAX_FILE_SIZE) {
       toast({
-        title: "File quá lớn",
-        description: "Kích thước file tối đa là 50MB.",
+        title: t.uploadModal.fileTooLarge,
+        description: t.uploadModal.fileTooLargeDesc,
         variant: "destructive",
       });
       return;
@@ -121,8 +123,8 @@ const LibraryUploadModal = ({
 
     if (!file || !title || !grade) {
       toast({
-        title: "Thiếu thông tin",
-        description: "Vui lòng điền đầy đủ thông tin và chọn file.",
+        title: t.uploadModal.missingInfo,
+        description: t.uploadModal.missingInfoDesc,
         variant: "destructive",
       });
       return;
@@ -134,18 +136,15 @@ const LibraryUploadModal = ({
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) throw new Error("Not authenticated");
 
-      // Generate unique file path
       const fileExt = file.name.split(".").pop();
       const filePath = `${session.user.id}/${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
 
-      // Upload file to storage
       const { error: uploadError } = await supabase.storage
         .from("library-documents")
         .upload(filePath, file);
 
       if (uploadError) throw uploadError;
 
-      // Save document metadata
       const { error: dbError } = await supabase.from("library_documents").insert({
         title,
         description: description || null,
@@ -160,8 +159,8 @@ const LibraryUploadModal = ({
       if (dbError) throw dbError;
 
       toast({
-        title: "Tải lên thành công",
-        description: `"${title}" đã được thêm vào thư viện.`,
+        title: t.uploadModal.uploadSuccess,
+        description: t.uploadModal.uploadSuccessDesc.replace("{title}", title),
       });
 
       resetForm();
@@ -169,8 +168,8 @@ const LibraryUploadModal = ({
     } catch (error) {
       console.error("Upload error:", error);
       toast({
-        title: "Lỗi tải lên",
-        description: "Không thể tải file lên. Vui lòng thử lại.",
+        title: t.uploadModal.uploadError,
+        description: t.uploadModal.uploadErrorDesc,
         variant: "destructive",
       });
     } finally {
@@ -182,9 +181,9 @@ const LibraryUploadModal = ({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md bg-card">
         <DialogHeader>
-          <DialogTitle className="text-xl font-semibold">Tải lên tài liệu</DialogTitle>
+          <DialogTitle className="text-xl font-semibold">{t.uploadModal.title}</DialogTitle>
           <DialogDescription>
-            Thêm tài liệu mới vào thư viện cho học sinh tham khảo.
+            {t.uploadModal.description}
           </DialogDescription>
         </DialogHeader>
 
@@ -235,10 +234,10 @@ const LibraryUploadModal = ({
                   <Upload className="h-6 w-6 text-muted-foreground" />
                 </div>
                 <p className="text-sm font-medium text-foreground mb-1">
-                  Kéo thả file hoặc click để chọn
+                  {t.uploadModal.dragDrop}
                 </p>
                 <p className="text-xs text-muted-foreground">
-                  PDF, DOC, DOCX, TXT (tối đa 50MB)
+                  {t.uploadModal.fileTypes}
                 </p>
                 <input
                   type="file"
@@ -252,12 +251,12 @@ const LibraryUploadModal = ({
 
           {/* Title */}
           <div className="space-y-2">
-            <Label htmlFor="title" className="text-sm font-medium">Tiêu đề *</Label>
+            <Label htmlFor="title" className="text-sm font-medium">{t.uploadModal.titleLabel}</Label>
             <Input
               id="title"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="Nhập tiêu đề tài liệu"
+              placeholder={t.uploadModal.titlePlaceholder}
               required
               className="border-border bg-background focus:ring-2 focus:ring-primary/20"
             />
@@ -265,12 +264,12 @@ const LibraryUploadModal = ({
 
           {/* Description */}
           <div className="space-y-2">
-            <Label htmlFor="description" className="text-sm font-medium">Mô tả</Label>
+            <Label htmlFor="description" className="text-sm font-medium">{t.uploadModal.descLabel}</Label>
             <Textarea
               id="description"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder="Mô tả ngắn về tài liệu (không bắt buộc)"
+              placeholder={t.uploadModal.descPlaceholder}
               rows={3}
               className="border-border bg-background focus:ring-2 focus:ring-primary/20 resize-none"
             />
@@ -278,10 +277,10 @@ const LibraryUploadModal = ({
 
           {/* Grade Select */}
           <div className="space-y-2">
-            <Label className="text-sm font-medium">Lớp học *</Label>
+            <Label className="text-sm font-medium">{t.uploadModal.gradeLabel}</Label>
             <Select value={grade} onValueChange={setGrade} required>
               <SelectTrigger className="border-border bg-background focus:ring-2 focus:ring-primary/20">
-                <SelectValue placeholder="Chọn lớp học" />
+                <SelectValue placeholder={t.uploadModal.gradePlaceholder} />
               </SelectTrigger>
               <SelectContent className="bg-popover border-border">
                 {grades.map((g) => (
@@ -302,7 +301,7 @@ const LibraryUploadModal = ({
               onClick={() => onOpenChange(false)}
               disabled={isUploading}
             >
-              Hủy
+              {t.uploadModal.cancel}
             </Button>
             <Button 
               type="submit" 
@@ -314,7 +313,7 @@ const LibraryUploadModal = ({
               ) : (
                 <Upload className="h-4 w-4" />
               )}
-              Tải lên
+              {t.uploadModal.upload}
             </Button>
           </div>
         </form>
