@@ -22,6 +22,7 @@ import { Button } from "@/components/ui/button";
 import * as XLSX from "xlsx";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface GradeDistribution {
   name: string;
@@ -92,16 +93,18 @@ const getStartDate = (period: TimePeriod): string | null => {
   return d.toISOString().split("T")[0];
 };
 
-const periodLabel = (period: TimePeriod) => {
-  switch (period) {
-    case "7d": return "7 ngày qua";
-    case "30d": return "30 ngày qua";
-    case "90d": return "90 ngày qua";
-    case "all": return "Tất cả";
-  }
-};
-
 const ReportsTab = () => {
+  const { t } = useLanguage();
+
+  const periodLabel = (period: TimePeriod) => {
+    switch (period) {
+      case "7d": return t.adminReports.period7d;
+      case "30d": return t.adminReports.period30d;
+      case "90d": return t.adminReports.period90d;
+      case "all": return t.adminReports.periodAll;
+    }
+  };
+
   const [isLoading, setIsLoading] = useState(true);
   const [period, setPeriod] = useState<TimePeriod>("30d");
   const [totalStudents, setTotalStudents] = useState(0);
@@ -122,7 +125,6 @@ const ReportsTab = () => {
     const startDate = getStartDate(period);
 
     try {
-      // Parallel queries
       const [
         { count: studentCount },
         { count: classCount },
@@ -148,7 +150,6 @@ const ReportsTab = () => {
       setTotalStudents(studentCount || 0);
       setTotalClasses(classCount || 0);
 
-      // Lessons completed
       let totalCompleted = 0;
       courseProgressRes.data?.forEach((p: any) => {
         const nodes = Array.isArray(p.completed_nodes) ? p.completed_nodes : [];
@@ -156,7 +157,6 @@ const ReportsTab = () => {
       });
       setTotalLessonsCompleted(totalCompleted);
 
-      // Daily activity & average time
       const actData = activityRes.data || [];
       setDailyActivity(actData as DailyActivityRow[]);
       if (actData.length > 0) {
@@ -166,7 +166,6 @@ const ReportsTab = () => {
         setAverageStudyTime(0);
       }
 
-      // Grade distribution
       const studentRoles = studentRolesRes.data;
       if (studentRoles && studentRoles.length > 0) {
         const studentIds = studentRoles.map((r) => r.user_id);
@@ -196,20 +195,18 @@ const ReportsTab = () => {
         setGradeDistribution(distribution.length > 0 ? distribution : []);
       }
 
-      // Top students
       const globalData = globalProgressRes.data;
       if (globalData && globalData.length > 0) {
         const userIds = globalData.map((g) => g.user_id);
         const { data: profilesData } = await supabase.from("profiles").select("id, display_name").in("id", userIds);
         setTopStudents(globalData.map((p) => {
           const prof = profilesData?.find((pr) => pr.id === p.user_id);
-          return { name: prof?.display_name || "Học sinh", xp: p.total_xp || 0, level: p.global_level || 1 };
+          return { name: prof?.display_name || t.adminReports.studentLabel, xp: p.total_xp || 0, level: p.global_level || 1 };
         }));
       } else {
         setTopStudents([]);
       }
 
-      // Grade completion from stage_history
       const stageData = stageHistoryRes.data || [];
       const gradeMap: Record<string, { users: Set<string>; totalStages: number; totalAcc: number; accCount: number }> = {};
       stageData.forEach((r: any) => {
@@ -245,11 +242,9 @@ const ReportsTab = () => {
     }
   };
 
-  // Aggregate daily activity into weekly/daily trend data
   const trendData = useMemo(() => {
     if (dailyActivity.length === 0) return [];
 
-    // Group by date, summing across all users
     const dateMap: Record<string, { xp: number; lessons: number; minutes: number; users: Set<string> }> = {};
     dailyActivity.forEach((a) => {
       if (!dateMap[a.activity_date]) dateMap[a.activity_date] = { xp: 0, lessons: 0, minutes: 0, users: new Set() };
@@ -259,10 +254,8 @@ const ReportsTab = () => {
       dateMap[a.activity_date].users.add(a.user_id);
     });
 
-    // If more than 60 data points, aggregate weekly
     const dates = Object.keys(dateMap).sort();
     if (dates.length > 60) {
-      // Weekly aggregation
       const weekMap: Record<string, { xp: number; lessons: number; minutes: number; users: Set<string> }> = {};
       dates.forEach((date) => {
         const d = new Date(date);
@@ -278,20 +271,20 @@ const ReportsTab = () => {
       return Object.entries(weekMap).sort(([a], [b]) => a.localeCompare(b)).map(([date, data]) => ({
         date: formatDate(date),
         XP: data.xp,
-        "Bài hoàn thành": data.lessons,
-        "Phút học": data.minutes,
-        "Học sinh": data.users.size,
+        [t.adminReports.lessonsCompletedChart]: data.lessons,
+        [t.adminReports.studyMinutes]: data.minutes,
+        [t.adminReports.studentsLabel]: data.users.size,
       }));
     }
 
     return dates.map((date) => ({
       date: formatDate(date),
       XP: dateMap[date].xp,
-      "Bài hoàn thành": dateMap[date].lessons,
-      "Phút học": dateMap[date].minutes,
-      "Học sinh": dateMap[date].users.size,
+      [t.adminReports.lessonsCompletedChart]: dateMap[date].lessons,
+      [t.adminReports.studyMinutes]: dateMap[date].minutes,
+      [t.adminReports.studentsLabel]: dateMap[date].users.size,
     }));
-  }, [dailyActivity]);
+  }, [dailyActivity, t]);
 
   const buildExportData = () => {
     const summary = [
@@ -313,9 +306,8 @@ const ReportsTab = () => {
     const distRows = gradeDistribution.map((g) => ({
       "Khoi": g.name, "So hoc sinh": g.value,
     }));
-    const trendRows = trendData.map((t) => ({
-      "Ngay": t.date, "XP": t.XP, "Bai hoan thanh": t["Bài hoàn thành"],
-      "Phut hoc": t["Phút học"], "Hoc sinh": t["Học sinh"],
+    const trendRows = trendData.map((td) => ({
+      "Ngay": td.date, "XP": td.XP,
     }));
     return { summary, gradeRows, topRows, distRows, trendRows };
   };
@@ -406,7 +398,7 @@ const ReportsTab = () => {
     <div className="space-y-6">
       {/* Header with filter & export */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <h2 className="text-2xl font-bold">Báo cáo & Thống kê</h2>
+        <h2 className="text-2xl font-bold">{t.adminReports.title}</h2>
         <div className="flex items-center gap-2">
           <Button variant="outline" size="sm" onClick={exportExcel} className="gap-1.5">
             <FileSpreadsheet className="h-4 w-4" />
@@ -422,10 +414,10 @@ const ReportsTab = () => {
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="7d">7 ngày qua</SelectItem>
-              <SelectItem value="30d">30 ngày qua</SelectItem>
-              <SelectItem value="90d">90 ngày qua</SelectItem>
-              <SelectItem value="all">Tất cả</SelectItem>
+              <SelectItem value="7d">{t.adminReports.period7d}</SelectItem>
+              <SelectItem value="30d">{t.adminReports.period30d}</SelectItem>
+              <SelectItem value="90d">{t.adminReports.period90d}</SelectItem>
+              <SelectItem value="all">{t.adminReports.periodAll}</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -440,7 +432,7 @@ const ReportsTab = () => {
                 <Users className="h-6 w-6 text-primary" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Tổng học sinh</p>
+                <p className="text-sm text-muted-foreground">{t.adminReports.totalStudents}</p>
                 <p className="text-2xl font-bold">{totalStudents}</p>
               </div>
             </div>
@@ -453,7 +445,7 @@ const ReportsTab = () => {
                 <BookOpen className="h-6 w-6 text-green-600" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Số lớp học</p>
+                <p className="text-sm text-muted-foreground">{t.adminReports.totalClasses}</p>
                 <p className="text-2xl font-bold">{totalClasses}</p>
               </div>
             </div>
@@ -466,7 +458,7 @@ const ReportsTab = () => {
                 <Award className="h-6 w-6 text-amber-600" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Bài hoàn thành</p>
+                <p className="text-sm text-muted-foreground">{t.adminReports.lessonsCompleted}</p>
                 <p className="text-2xl font-bold">{totalLessonsCompleted}</p>
               </div>
             </div>
@@ -479,8 +471,8 @@ const ReportsTab = () => {
                 <TrendingUp className="h-6 w-6 text-purple-600" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Thời gian TB</p>
-                <p className="text-2xl font-bold">{averageStudyTime} phút</p>
+                <p className="text-sm text-muted-foreground">{t.adminReports.avgStudyTime}</p>
+                <p className="text-2xl font-bold">{averageStudyTime} {t.adminReports.minutes}</p>
               </div>
             </div>
           </CardContent>
@@ -490,7 +482,7 @@ const ReportsTab = () => {
       {/* Activity Trend Chart */}
       <Card>
         <CardHeader>
-          <CardTitle>📈 Xu hướng hoạt động ({periodLabel(period)})</CardTitle>
+          <CardTitle>📈 {t.adminReports.activityTrend} ({periodLabel(period)})</CardTitle>
         </CardHeader>
         <CardContent>
           {trendData.length > 0 ? (
@@ -508,13 +500,13 @@ const ReportsTab = () => {
                 />
                 <Legend />
                 <Line type="monotone" dataKey="XP" stroke="#3b82f6" strokeWidth={2} dot={false} />
-                <Line type="monotone" dataKey="Bài hoàn thành" stroke="#22c55e" strokeWidth={2} dot={false} />
-                <Line type="monotone" dataKey="Học sinh" stroke="#f59e0b" strokeWidth={2} dot={false} />
+                <Line type="monotone" dataKey={t.adminReports.lessonsCompletedChart} stroke="#22c55e" strokeWidth={2} dot={false} />
+                <Line type="monotone" dataKey={t.adminReports.studentsLabel} stroke="#f59e0b" strokeWidth={2} dot={false} />
               </LineChart>
             </ResponsiveContainer>
           ) : (
             <div className="text-center py-8 text-muted-foreground">
-              <p>Chưa có dữ liệu hoạt động trong khoảng thời gian này</p>
+              <p>{t.adminReports.noActivityData}</p>
             </div>
           )}
         </CardContent>
@@ -522,10 +514,9 @@ const ReportsTab = () => {
 
       {/* Grade Completion & Distribution */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Grade Completion Rates */}
         <Card>
           <CardHeader>
-            <CardTitle>📊 Tỷ lệ hoàn thành theo khối lớp</CardTitle>
+            <CardTitle>📊 {t.adminReports.completionByGrade}</CardTitle>
           </CardHeader>
           <CardContent>
             {gradeCompletions.length > 0 ? (
@@ -542,41 +533,39 @@ const ReportsTab = () => {
                         borderRadius: "8px",
                       }}
                       formatter={(value: number, name: string) => {
-                        if (name === "avgAccuracy") return [`${value}%`, "Độ chính xác TB"];
-                        if (name === "totalStages") return [value, "Tổng lượt chơi"];
-                        if (name === "activeStudents") return [value, "Học sinh hoạt động"];
+                        if (name === "avgAccuracy") return [`${value}%`, t.adminReports.avgAccuracy];
+                        if (name === "totalStages") return [value, t.adminReports.totalPlays];
+                        if (name === "activeStudents") return [value, t.adminReports.activeStudents];
                         return [value, name];
                       }}
                     />
-                    <Legend formatter={(v) => v === "avgAccuracy" ? "Độ chính xác TB (%)" : v === "totalStages" ? "Tổng lượt chơi" : "Học sinh"} />
+                    <Legend formatter={(v) => v === "avgAccuracy" ? `${t.adminReports.avgAccuracy} (%)` : v === "totalStages" ? t.adminReports.totalPlays : t.adminReports.studentsLabel} />
                     <Bar dataKey="totalStages" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} name="totalStages" />
                     <Bar dataKey="avgAccuracy" fill="#22c55e" radius={[4, 4, 0, 0]} name="avgAccuracy" />
                   </BarChart>
                 </ResponsiveContainer>
-                {/* Detail cards */}
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                   {gradeCompletions.map((gc) => (
                     <div key={gc.grade} className="p-3 rounded-lg bg-muted/50 text-center">
                       <div className="w-3 h-3 rounded-full mx-auto mb-1" style={{ backgroundColor: gc.color }} />
                       <p className="text-xs font-semibold">{gc.grade}</p>
                       <p className="text-lg font-bold text-primary">{gc.avgAccuracy}%</p>
-                      <p className="text-xs text-muted-foreground">{gc.activeStudents} HS · {gc.totalStages} lượt</p>
+                      <p className="text-xs text-muted-foreground">{gc.activeStudents} HS · {gc.totalStages} {t.adminReports.plays}</p>
                     </div>
                   ))}
                 </div>
               </div>
             ) : (
               <div className="text-center py-8 text-muted-foreground">
-                <p>Chưa có dữ liệu hoàn thành theo khối</p>
+                <p>{t.adminReports.noCompletionData}</p>
               </div>
             )}
           </CardContent>
         </Card>
 
-        {/* Grade Distribution Pie */}
         <Card>
           <CardHeader>
-            <CardTitle>Phân bố học sinh theo khối</CardTitle>
+            <CardTitle>{t.adminReports.studentDistribution}</CardTitle>
           </CardHeader>
           <CardContent>
             {gradeDistribution.length > 0 ? (
@@ -604,7 +593,7 @@ const ReportsTab = () => {
                         border: "1px solid hsl(var(--border))",
                         borderRadius: "8px",
                       }}
-                      formatter={(value: number) => [`${value} học sinh`, "Số lượng"]}
+                      formatter={(value: number) => [`${value} ${t.adminReports.students}`, t.adminReports.quantity]}
                     />
                   </PieChart>
                 </ResponsiveContainer>
@@ -619,7 +608,7 @@ const ReportsTab = () => {
               </div>
             ) : (
               <div className="text-center py-8 text-muted-foreground">
-                <p>Chưa có dữ liệu phân bố khối</p>
+                <p>{t.adminReports.noDistributionData}</p>
               </div>
             )}
           </CardContent>
@@ -630,7 +619,7 @@ const ReportsTab = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card>
           <CardHeader>
-            <CardTitle>Top 5 học sinh xuất sắc theo XP</CardTitle>
+            <CardTitle>{t.adminReports.top5Students}</CardTitle>
           </CardHeader>
           <CardContent>
             {topStudents.length > 0 ? (
@@ -645,14 +634,14 @@ const ReportsTab = () => {
                       border: "1px solid hsl(var(--border))",
                       borderRadius: "8px",
                     }}
-                    formatter={(value: number) => [`${value} XP`, "Tổng XP"]}
+                    formatter={(value: number) => [`${value} XP`, t.adminReports.totalXPLabel]}
                   />
                   <Bar dataKey="xp" fill="hsl(var(--primary))" radius={[0, 8, 8, 0]} name="XP" />
                 </BarChart>
               </ResponsiveContainer>
             ) : (
               <div className="text-center py-8 text-muted-foreground">
-                <p>Chưa có dữ liệu xếp hạng</p>
+                <p>{t.adminReports.noRankingData}</p>
               </div>
             )}
           </CardContent>
@@ -660,7 +649,7 @@ const ReportsTab = () => {
 
         <Card>
           <CardHeader>
-            <CardTitle>Bảng xếp hạng chi tiết</CardTitle>
+            <CardTitle>{t.adminReports.detailedRanking}</CardTitle>
           </CardHeader>
           <CardContent>
             {topStudents.length > 0 ? (
@@ -686,7 +675,7 @@ const ReportsTab = () => {
                 ))}
               </div>
             ) : (
-              <div className="text-center py-8 text-muted-foreground">Chưa có dữ liệu xếp hạng</div>
+              <div className="text-center py-8 text-muted-foreground">{t.adminReports.noRankingData}</div>
             )}
           </CardContent>
         </Card>
@@ -695,19 +684,22 @@ const ReportsTab = () => {
       {/* Insights */}
       <Card className="bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-950/30 dark:to-purple-950/30 border-indigo-200 dark:border-indigo-800">
         <CardHeader>
-          <CardTitle className="text-indigo-700 dark:text-indigo-300">📊 Phân tích tổng quan</CardTitle>
+          <CardTitle className="text-indigo-700 dark:text-indigo-300">📊 {t.adminReports.overallAnalysis}</CardTitle>
         </CardHeader>
         <CardContent>
           <ul className="space-y-2 text-sm text-indigo-600/80 dark:text-indigo-400/80">
-            <li>• Tổng số <strong>{totalStudents}</strong> học sinh đang sử dụng hệ thống</li>
-            <li>• Có <strong>{totalClasses}</strong> lớp học đã được tạo</li>
-            <li>• Học sinh đã hoàn thành <strong>{totalLessonsCompleted}</strong> bài học</li>
-            <li>• Thời gian học trung bình: <strong>{averageStudyTime} phút/ngày</strong></li>
+            <li>• {t.adminReports.totalStudentsUsing.replace("{count}", String(totalStudents))}</li>
+            <li>• {t.adminReports.classesCreated.replace("{count}", String(totalClasses))}</li>
+            <li>• {t.adminReports.lessonsCompletedTotal.replace("{count}", String(totalLessonsCompleted))}</li>
+            <li>• {t.adminReports.avgTimePerDay.replace("{time}", String(averageStudyTime))}</li>
             {gradeCompletions.length > 0 && (
-              <li>• Độ chính xác cao nhất: <strong>{gradeCompletions.reduce((max, c) => c.avgAccuracy > max.avgAccuracy ? c : max).grade} ({gradeCompletions.reduce((max, c) => c.avgAccuracy > max.avgAccuracy ? c : max).avgAccuracy}%)</strong></li>
+              <li>• {t.adminReports.highestAccuracy
+                .replace("{grade}", gradeCompletions.reduce((max, c) => c.avgAccuracy > max.avgAccuracy ? c : max).grade)
+                .replace("{accuracy}", String(gradeCompletions.reduce((max, c) => c.avgAccuracy > max.avgAccuracy ? c : max).avgAccuracy))
+              }</li>
             )}
             {gradeDistribution.length > 0 && (
-              <li>• Khối có nhiều học sinh nhất: <strong>{gradeDistribution.reduce((max, curr) => curr.value > max.value ? curr : max).name}</strong></li>
+              <li>• {t.adminReports.mostStudentsGrade.replace("{grade}", gradeDistribution.reduce((max, curr) => curr.value > max.value ? curr : max).name)}</li>
             )}
           </ul>
         </CardContent>

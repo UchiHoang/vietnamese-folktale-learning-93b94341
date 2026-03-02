@@ -13,37 +13,35 @@ import {
 import { FolderOpen, Upload, Search, FileText, Download } from "lucide-react";
 import LibraryGrid from "@/components/library/LibraryGrid";
 import LibraryUploadModal from "@/components/library/LibraryUploadModal";
-
-const GRADES = [
-  { id: "all", label: "Tất cả lớp" },
-  { id: "mam-non", label: "Mầm non" },
-  { id: "lop-1", label: "Lớp 1" },
-  { id: "lop-2", label: "Lớp 2" },
-  { id: "lop-3", label: "Lớp 3" },
-  { id: "lop-4", label: "Lớp 4" },
-  { id: "lop-5", label: "Lớp 5" },
-];
-
-const SORT_OPTIONS = [
-  { id: "created_at_desc", label: "Mới nhất" },
-  { id: "created_at_asc", label: "Cũ nhất" },
-  { id: "download_count_desc", label: "Tải nhiều nhất" },
-  { id: "title_asc", label: "A → Z" },
-  { id: "title_desc", label: "Z → A" },
-];
-
-interface LibraryStats {
-  totalDocuments: number;
-  totalDownloads: number;
-}
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const LibraryTab = () => {
+  const { t } = useLanguage();
+
+  const GRADES = [
+    { id: "all", label: t.adminLibrary.allGrades },
+    { id: "mam-non", label: "Mầm non" },
+    { id: "lop-1", label: "Lớp 1" },
+    { id: "lop-2", label: "Lớp 2" },
+    { id: "lop-3", label: "Lớp 3" },
+    { id: "lop-4", label: "Lớp 4" },
+    { id: "lop-5", label: "Lớp 5" },
+  ];
+
+  const SORT_OPTIONS = [
+    { id: "created_at_desc", label: t.adminLibrary.newest },
+    { id: "created_at_asc", label: t.adminLibrary.oldest },
+    { id: "download_count_desc", label: t.adminLibrary.mostDownloaded },
+    { id: "title_asc", label: t.adminLibrary.sortAZ },
+    { id: "title_desc", label: t.adminLibrary.sortZA },
+  ];
+
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedGrade, setSelectedGrade] = useState("all");
   const [sortBy, setSortBy] = useState("created_at_desc");
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [showUploadModal, setShowUploadModal] = useState(false);
-  const [stats, setStats] = useState<LibraryStats>({ totalDocuments: 0, totalDownloads: 0 });
+  const [stats, setStats] = useState({ totalDocuments: 0, totalDownloads: 0 });
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -81,15 +79,15 @@ const LibraryTab = () => {
                 <FolderOpen className="h-6 w-6 text-primary" />
               </div>
               <div>
-                <CardTitle className="text-xl">Quản lý thư viện</CardTitle>
+                <CardTitle className="text-xl">{t.adminLibrary.title}</CardTitle>
                 <p className="text-sm text-muted-foreground mt-0.5">
-                  Quản lý tài liệu tham khảo cho học sinh
+                  {t.adminLibrary.subtitle}
                 </p>
               </div>
             </div>
             <Button onClick={() => setShowUploadModal(true)} className="gap-2">
               <Upload className="h-4 w-4" />
-              Tải lên tài liệu
+              {t.adminLibrary.upload}
             </Button>
           </div>
         </CardHeader>
@@ -104,7 +102,7 @@ const LibraryTab = () => {
                 <FileText className="h-5 w-5 text-primary" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Tổng tài liệu</p>
+                <p className="text-sm text-muted-foreground">{t.adminLibrary.totalDocuments}</p>
                 <p className="text-2xl font-bold text-foreground">{stats.totalDocuments}</p>
               </div>
             </div>
@@ -117,7 +115,7 @@ const LibraryTab = () => {
                 <Download className="h-5 w-5 text-secondary-foreground" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Tổng lượt tải</p>
+                <p className="text-sm text-muted-foreground">{t.adminLibrary.totalDownloads}</p>
                 <p className="text-2xl font-bold text-foreground">{stats.totalDownloads}</p>
               </div>
             </div>
@@ -129,18 +127,16 @@ const LibraryTab = () => {
       <Card className="bg-card">
         <CardContent className="p-4">
           <div className="flex flex-col sm:flex-row gap-4">
-            {/* Search */}
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Tìm kiếm tài liệu..."
+                placeholder={t.adminLibrary.searchPlaceholder}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-10 bg-background border-border"
               />
             </div>
 
-            {/* Grade Filter */}
             <Select value={selectedGrade} onValueChange={setSelectedGrade}>
               <SelectTrigger className="w-full sm:w-[180px] bg-background border-border">
                 <SelectValue />
@@ -154,7 +150,6 @@ const LibraryTab = () => {
               </SelectContent>
             </Select>
 
-            {/* Sort */}
             <Select value={sortBy} onValueChange={setSortBy}>
               <SelectTrigger className="w-full sm:w-[180px] bg-background border-border">
                 <SelectValue />
