@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { FileText, FileType, Download, Eye, MoreVertical, Trash2, Loader2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface LibraryDocument {
   id: string;
@@ -41,13 +42,22 @@ interface LibraryCardProps {
   onDelete: () => Promise<boolean>;
 }
 
-const GRADE_LABELS: Record<string, string> = {
+const GRADE_LABELS_FALLBACK: Record<string, string> = {
   "mam-non": "Mầm non",
   "lop-1": "Lớp 1",
   "lop-2": "Lớp 2",
   "lop-3": "Lớp 3",
   "lop-4": "Lớp 4",
   "lop-5": "Lớp 5",
+};
+
+const GRADE_KEY_MAP: Record<string, string> = {
+  "mam-non": "preschool",
+  "lop-1": "grade1",
+  "lop-2": "grade2",
+  "lop-3": "grade3",
+  "lop-4": "grade4",
+  "lop-5": "grade5",
 };
 
 const FILE_ICONS: Record<string, React.ReactNode> = {
@@ -66,9 +76,15 @@ const formatFileSize = (bytes: number): string => {
 };
 
 const LibraryCard = ({ document, isTeacher, onView, onDelete }: LibraryCardProps) => {
+  const { t } = useLanguage();
   const [isDownloading, setIsDownloading] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+
+  const getGradeLabel = (grade: string) => {
+    const key = GRADE_KEY_MAP[grade] as keyof typeof t.gradeLabels;
+    return key ? t.gradeLabels[key] : GRADE_LABELS_FALLBACK[grade] || grade;
+  };
 
   const handleDownload = async () => {
     setIsDownloading(true);
@@ -96,14 +112,14 @@ const LibraryCard = ({ document, isTeacher, onView, onDelete }: LibraryCardProps
       URL.revokeObjectURL(url);
 
       toast({
-        title: "Tải xuống thành công",
-        description: `Đã tải "${document.title}"`,
+        title: t.libraryCard.downloadSuccess,
+        description: t.libraryCard.downloadSuccessDesc.replace("{title}", document.title),
       });
     } catch (error) {
       console.error("Download error:", error);
       toast({
-        title: "Lỗi tải xuống",
-        description: "Không thể tải file. Vui lòng thử lại.",
+        title: t.libraryCard.downloadError,
+        description: t.libraryCard.downloadErrorDesc,
         variant: "destructive",
       });
     } finally {
@@ -119,13 +135,13 @@ const LibraryCard = ({ document, isTeacher, onView, onDelete }: LibraryCardProps
 
     if (success) {
       toast({
-        title: "Đã xóa",
-        description: "Tài liệu đã được xóa thành công.",
+        title: t.libraryCard.deleted,
+        description: t.libraryCard.deletedDesc,
       });
     } else {
       toast({
-        title: "Lỗi",
-        description: "Không thể xóa tài liệu. Vui lòng thử lại.",
+        title: t.libraryCard.deleteError,
+        description: t.libraryCard.deleteErrorDesc,
         variant: "destructive",
       });
     }
@@ -143,7 +159,7 @@ const LibraryCard = ({ document, isTeacher, onView, onDelete }: LibraryCardProps
               </div>
               <div className="flex-1 min-w-0">
                 <span className="inline-block px-2 py-0.5 text-xs font-medium rounded-full bg-primary/10 text-primary mb-1">
-                  {GRADE_LABELS[document.grade] || document.grade}
+                  {getGradeLabel(document.grade)}
                 </span>
               </div>
             </div>
@@ -160,7 +176,7 @@ const LibraryCard = ({ document, isTeacher, onView, onDelete }: LibraryCardProps
                     onClick={() => setShowDeleteDialog(true)}
                   >
                     <Trash2 className="mr-2 h-4 w-4" />
-                    Xóa tài liệu
+                    {t.libraryCard.deleteDoc}
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -185,7 +201,7 @@ const LibraryCard = ({ document, isTeacher, onView, onDelete }: LibraryCardProps
             <span>•</span>
             <span>{formatFileSize(document.file_size)}</span>
             <span>•</span>
-            <span>{document.download_count} lượt tải</span>
+            <span>{document.download_count} {t.libraryCard.downloads}</span>
           </div>
 
           {/* Actions - fixed at bottom */}
@@ -197,7 +213,7 @@ const LibraryCard = ({ document, isTeacher, onView, onDelete }: LibraryCardProps
               onClick={onView}
             >
               <Eye className="h-4 w-4" />
-              Xem
+              {t.libraryCard.view}
             </Button>
             <Button
               size="sm"
@@ -210,7 +226,7 @@ const LibraryCard = ({ document, isTeacher, onView, onDelete }: LibraryCardProps
               ) : (
                 <Download className="h-4 w-4" />
               )}
-              Tải xuống
+              {t.libraryCard.download}
             </Button>
           </div>
         </CardContent>
@@ -220,13 +236,13 @@ const LibraryCard = ({ document, isTeacher, onView, onDelete }: LibraryCardProps
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Xác nhận xóa tài liệu</AlertDialogTitle>
+            <AlertDialogTitle>{t.libraryCard.deleteConfirmTitle}</AlertDialogTitle>
             <AlertDialogDescription>
-              Bạn có chắc chắn muốn xóa "{document.title}"? Hành động này không thể hoàn tác.
+              {t.libraryCard.deleteConfirmDesc.replace("{title}", document.title)}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={isDeleting}>Hủy</AlertDialogCancel>
+            <AlertDialogCancel disabled={isDeleting}>{t.libraryCard.cancel}</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDelete}
               disabled={isDeleting}
@@ -235,7 +251,7 @@ const LibraryCard = ({ document, isTeacher, onView, onDelete }: LibraryCardProps
               {isDeleting ? (
                 <Loader2 className="h-4 w-4 animate-spin mr-2" />
               ) : null}
-              Xóa
+              {t.libraryCard.delete}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

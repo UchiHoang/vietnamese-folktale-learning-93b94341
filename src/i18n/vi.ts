@@ -877,6 +877,26 @@ const vi = {
     privateHint: "Chỉ bạn mới xem được ghi chú này",
   },
 
+  // Library Card
+  libraryCard: {
+    view: "Xem",
+    download: "Tải xuống",
+    downloadSuccess: "Tải xuống thành công",
+    downloadSuccessDesc: "Đã tải \"{title}\"",
+    downloadError: "Lỗi tải xuống",
+    downloadErrorDesc: "Không thể tải file. Vui lòng thử lại.",
+    deleteConfirmTitle: "Xác nhận xóa tài liệu",
+    deleteConfirmDesc: "Bạn có chắc chắn muốn xóa \"{title}\"? Hành động này không thể hoàn tác.",
+    cancel: "Hủy",
+    delete: "Xóa",
+    deleteDoc: "Xóa tài liệu",
+    deleted: "Đã xóa",
+    deletedDesc: "Tài liệu đã được xóa thành công.",
+    deleteError: "Lỗi",
+    deleteErrorDesc: "Không thể xóa tài liệu. Vui lòng thử lại.",
+    downloads: "lượt tải",
+  },
+
   // Lesson Progress Badge
   lessonProgressBadge: {
     lessons: "bài",

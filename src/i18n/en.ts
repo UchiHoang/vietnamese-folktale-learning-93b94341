@@ -879,6 +879,26 @@ const en: Translations = {
     privateHint: "Only you can see these notes",
   },
 
+  // Library Card
+  libraryCard: {
+    view: "View",
+    download: "Download",
+    downloadSuccess: "Download Successful",
+    downloadSuccessDesc: "Downloaded \"{title}\"",
+    downloadError: "Download Error",
+    downloadErrorDesc: "Unable to download file. Please try again.",
+    deleteConfirmTitle: "Confirm Delete Document",
+    deleteConfirmDesc: "Are you sure you want to delete \"{title}\"? This action cannot be undone.",
+    cancel: "Cancel",
+    delete: "Delete",
+    deleteDoc: "Delete document",
+    deleted: "Deleted",
+    deletedDesc: "Document has been deleted successfully.",
+    deleteError: "Error",
+    deleteErrorDesc: "Unable to delete document. Please try again.",
+    downloads: "downloads",
+  },
+
   // Lesson Progress Badge
   lessonProgressBadge: {
     lessons: "lessons",
