@@ -9,16 +9,18 @@ import {
   AchievementDefinition,
   EarnedAchievement,
   getAchievementsByCategory,
-  getCategoryLabel,
   getCategoryIcon,
 } from "@/data/achievements";
 import { AchievementCard } from "./AchievementCard";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface AchievementGridProps {
   earnedAchievements: EarnedAchievement[];
 }
 
 export const AchievementGrid = ({ earnedAchievements }: AchievementGridProps) => {
+  const { t } = useLanguage();
+
   const earnedIds = useMemo(
     () => new Set(earnedAchievements.map((a) => a.achievement_id)),
     [earnedAchievements]
@@ -31,6 +33,16 @@ export const AchievementGrid = ({ earnedAchievements }: AchievementGridProps) =>
   }, [earnedAchievements]);
 
   const categories: AchievementDefinition["category"][] = ["learning", "activity", "game"];
+
+  const getCategoryLabel = (category: AchievementDefinition["category"]): string => {
+    switch (category) {
+      case "learning": return t.achievementGrid.categoryLearning;
+      case "activity": return t.achievementGrid.categoryActivity;
+      case "game": return t.achievementGrid.categoryGame;
+      case "social": return t.achievementGrid.categorySocial;
+      default: return category;
+    }
+  };
 
   const getCategoryProgress = (category: AchievementDefinition["category"]) => {
     const categoryAchievements = getAchievementsByCategory(category);
@@ -50,33 +62,30 @@ export const AchievementGrid = ({ earnedAchievements }: AchievementGridProps) =>
 
   return (
     <Card className="p-6">
-      {/* Header */}
       <div className="flex items-center gap-3 mb-6">
         <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
           <Award className="h-6 w-6 text-primary" />
         </div>
         <div className="flex-1">
-          <h3 className="font-bold text-xl">Thành tựu & Huy hiệu</h3>
+          <h3 className="font-bold text-xl">{t.achievementGrid.title}</h3>
           <p className="text-sm text-muted-foreground">
-            {totalProgress.earned}/{totalProgress.total} thành tựu đã mở khóa
+            {totalProgress.earned}/{totalProgress.total} {t.achievementGrid.unlocked}
           </p>
         </div>
       </div>
 
-      {/* Overall Progress */}
       <div className="mb-6">
         <div className="flex justify-between text-sm mb-2">
-          <span className="text-muted-foreground">Tiến độ tổng</span>
+          <span className="text-muted-foreground">{t.achievementGrid.overallProgress}</span>
           <span className="font-medium">{Math.round(totalProgress.percentage)}%</span>
         </div>
         <Progress value={totalProgress.percentage} className="h-2" />
       </div>
 
-      {/* Category Tabs */}
       <Tabs defaultValue="all" className="w-full">
         <TabsList className="grid w-full grid-cols-4 mb-6">
           <TabsTrigger value="all" className="text-xs sm:text-sm">
-            Tất cả
+            {t.achievementGrid.all}
           </TabsTrigger>
           {categories.map((category) => (
             <TabsTrigger key={category} value={category} className="text-xs sm:text-sm">
@@ -86,20 +95,13 @@ export const AchievementGrid = ({ earnedAchievements }: AchievementGridProps) =>
           ))}
         </TabsList>
 
-        {/* All achievements */}
         <TabsContent value="all">
           <div className="space-y-6">
             {categories.map((category) => {
               const progress = getCategoryProgress(category);
               const achievements = getAchievementsByCategory(category);
-              
               return (
-                <motion.div
-                  key={category}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                >
-                  {/* Category header */}
+                <motion.div key={category} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
                   <div className="flex items-center gap-2 mb-4">
                     <span className="text-2xl">{getCategoryIcon(category)}</span>
                     <h4 className="font-semibold">{getCategoryLabel(category)}</h4>
@@ -107,16 +109,9 @@ export const AchievementGrid = ({ earnedAchievements }: AchievementGridProps) =>
                       {progress.earned}/{progress.total}
                     </span>
                   </div>
-
-                  {/* Grid */}
                   <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3">
                     {achievements.map((achievement, index) => (
-                      <AchievementCard
-                        key={achievement.id}
-                        achievement={achievement}
-                        earnedData={earnedMap.get(achievement.id)}
-                        index={index}
-                      />
+                      <AchievementCard key={achievement.id} achievement={achievement} earnedData={earnedMap.get(achievement.id)} index={index} />
                     ))}
                   </div>
                 </motion.div>
@@ -125,25 +120,19 @@ export const AchievementGrid = ({ earnedAchievements }: AchievementGridProps) =>
           </div>
         </TabsContent>
 
-        {/* Individual category tabs */}
         {categories.map((category) => {
           const progress = getCategoryProgress(category);
           const achievements = getAchievementsByCategory(category);
-
           return (
             <TabsContent key={category} value={category}>
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-              >
-                {/* Category progress */}
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
                 <div className="mb-6 p-4 rounded-xl bg-muted/50">
                   <div className="flex items-center gap-3 mb-3">
                     <span className="text-3xl">{getCategoryIcon(category)}</span>
                     <div className="flex-1">
                       <h4 className="font-semibold">{getCategoryLabel(category)}</h4>
                       <p className="text-sm text-muted-foreground">
-                        {progress.earned}/{progress.total} đã mở khóa
+                        {progress.earned}/{progress.total} {t.achievementGrid.categoryUnlocked}
                       </p>
                     </div>
                     <span className="text-2xl font-bold text-primary">
@@ -152,16 +141,9 @@ export const AchievementGrid = ({ earnedAchievements }: AchievementGridProps) =>
                   </div>
                   <Progress value={progress.percentage} className="h-2" />
                 </div>
-
-                {/* Grid */}
                 <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-4">
                   {achievements.map((achievement, index) => (
-                    <AchievementCard
-                      key={achievement.id}
-                      achievement={achievement}
-                      earnedData={earnedMap.get(achievement.id)}
-                      index={index}
-                    />
+                    <AchievementCard key={achievement.id} achievement={achievement} earnedData={earnedMap.get(achievement.id)} index={index} />
                   ))}
                 </div>
               </motion.div>

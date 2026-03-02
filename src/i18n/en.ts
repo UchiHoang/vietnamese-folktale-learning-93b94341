@@ -124,6 +124,33 @@ const en: Translations = {
     description: "Complete missions and collect special badges",
   },
 
+  // Rewards section (homepage)
+  rewards: {
+    badgeLabel: "Achievements",
+    title: "Badges & Achievements",
+    description: "Discover an exciting learning journey with over",
+    descHighlight: "27+ achievements",
+    descSuffix: "unique milestones! From first steps to knowledge mastery, every milestone is recognized with a special badge. Maintain your learning streak, conquer levels, accumulate XP and become a legend in the student community!",
+    statsAchievements: "27+ achievements",
+    statsCategories: "3 categories",
+    statsAutoUnlock: "Auto-unlock",
+    viewAll: "View all achievements",
+  },
+
+  // Achievement grid & card
+  achievementGrid: {
+    title: "Achievements & Badges",
+    unlocked: "achievements unlocked",
+    overallProgress: "Overall Progress",
+    all: "All",
+    categoryUnlocked: "unlocked",
+    categoryLearning: "Learning",
+    categoryActivity: "Activity",
+    categoryGame: "Game",
+    categorySocial: "Social",
+    earnedAt: "Earned",
+  },
+
   // Contact
   contact: {
     badge: "Contact",

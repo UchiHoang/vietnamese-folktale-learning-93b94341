@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { Award, Trophy, Star, Target, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 // Lấy 6 thành tựu nổi bật nhất để giới thiệu
 const FEATURED_ACHIEVEMENTS = [
@@ -15,6 +16,8 @@ const FEATURED_ACHIEVEMENTS = [
 ];
 
 const Rewards = () => {
+  const { t } = useLanguage();
+
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -46,24 +49,14 @@ const Rewards = () => {
       <div className="absolute inset-0 pointer-events-none">
         <motion.div
           className="absolute top-20 left-20 text-6xl opacity-10"
-          animate={{ 
-            rotate: [0, 360],
-            scale: [1, 1.2, 1]
-          }}
+          animate={{ rotate: [0, 360], scale: [1, 1.2, 1] }}
           transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-        >
-          🏆
-        </motion.div>
+        >🏆</motion.div>
         <motion.div
           className="absolute bottom-20 right-20 text-5xl opacity-10"
-          animate={{ 
-            rotate: [360, 0],
-            scale: [1, 1.3, 1]
-          }}
+          animate={{ rotate: [360, 0], scale: [1, 1.3, 1] }}
           transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
-        >
-          ⭐
-        </motion.div>
+        >⭐</motion.div>
         <motion.div
           className="absolute top-1/2 left-1/3 w-72 h-72 bg-primary/5 rounded-full blur-3xl"
           animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.5, 0.3] }}
@@ -86,13 +79,10 @@ const Rewards = () => {
             viewport={{ once: true }}
             whileHover={{ scale: 1.05 }}
           >
-            <motion.div
-              animate={{ rotate: [0, 15, -15, 0] }}
-              transition={{ duration: 2, repeat: Infinity }}
-            >
+            <motion.div animate={{ rotate: [0, 15, -15, 0] }} transition={{ duration: 2, repeat: Infinity }}>
               <Award className="h-4 w-4" />
             </motion.div>
-            <span>Thành tựu</span>
+            <span>{t.rewards.badgeLabel}</span>
           </motion.div>
           
           <motion.h2 
@@ -101,7 +91,7 @@ const Rewards = () => {
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
           >
-            Huy hiệu và thành tựu
+            {t.rewards.title}
           </motion.h2>
           <motion.p 
             className="text-lg text-muted-foreground max-w-3xl mx-auto leading-relaxed"
@@ -110,12 +100,9 @@ const Rewards = () => {
             viewport={{ once: true }}
             transition={{ delay: 0.2 }}
           >
-            Khám phá hành trình học tập đầy thú vị với hơn <span className="text-primary font-semibold">27+ thành tựu</span> độc đáo! 
-            Từ những bước đầu tiên đến bậc thầy kiến thức, mỗi cột mốc đều được ghi nhận bằng huy hiệu đặc biệt. 
-            Duy trì streak học tập, chinh phục các level, tích lũy XP và trở thành huyền thoại trong cộng đồng học sinh!
+            {t.rewards.description} <span className="text-primary font-semibold">{t.rewards.descHighlight}</span> {t.rewards.descSuffix}
           </motion.p>
           
-          {/* Stats highlights */}
           <motion.div 
             className="flex flex-wrap justify-center gap-6 mt-6"
             initial={{ opacity: 0, y: 20 }}
@@ -125,15 +112,15 @@ const Rewards = () => {
           >
             <div className="flex items-center gap-2 text-sm">
               <Trophy className="h-5 w-5 text-yellow-500" />
-              <span className="text-muted-foreground">27+ thành tựu</span>
+              <span className="text-muted-foreground">{t.rewards.statsAchievements}</span>
             </div>
             <div className="flex items-center gap-2 text-sm">
               <Star className="h-5 w-5 text-orange-500" />
-              <span className="text-muted-foreground">3 danh mục</span>
+              <span className="text-muted-foreground">{t.rewards.statsCategories}</span>
             </div>
             <div className="flex items-center gap-2 text-sm">
               <Target className="h-5 w-5 text-green-500" />
-              <span className="text-muted-foreground">Tự động mở khóa</span>
+              <span className="text-muted-foreground">{t.rewards.statsAutoUnlock}</span>
             </div>
           </motion.div>
         </motion.div>
@@ -149,35 +136,21 @@ const Rewards = () => {
             <motion.div
               key={achievement.id}
               variants={badgeVariants}
-              whileHover={{ 
-                y: -10, 
-                scale: 1.05,
-                boxShadow: "0 20px 40px -10px rgba(0, 0, 0, 0.15)"
-              }}
+              whileHover={{ y: -10, scale: 1.05, boxShadow: "0 20px 40px -10px rgba(0, 0, 0, 0.15)" }}
               whileTap={{ scale: 0.95 }}
               className="bg-card rounded-2xl p-6 card-shadow text-center space-y-3 group cursor-pointer relative overflow-hidden transition-colors duration-300 hover:bg-highlight/60"
             >
-              {/* Full color background on hover */}
               <div className="absolute inset-0 bg-gradient-to-br from-highlight/80 to-secondary/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl" />
-              
-              {/* Shimmer effect */}
               <motion.div
                 className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent opacity-0 group-hover:opacity-100"
                 initial={{ x: "-100%" }}
                 whileHover={{ x: "100%" }}
                 transition={{ duration: 0.6 }}
               />
-              
               <motion.div 
                 className="text-5xl relative z-10"
-                animate={{ 
-                  y: [0, -5, 0],
-                }}
-                transition={{ 
-                  duration: 2, 
-                  repeat: Infinity,
-                  delay: index * 0.2 
-                }}
+                animate={{ y: [0, -5, 0] }}
+                transition={{ duration: 2, repeat: Infinity, delay: index * 0.2 }}
               >
                 {achievement.icon}
               </motion.div>
@@ -189,20 +162,15 @@ const Rewards = () => {
                   {achievement.description}
                 </div>
               </div>
-              
-              {/* Sparkle particles on hover */}
               <motion.div
                 className="absolute top-2 right-2 text-xs opacity-0 group-hover:opacity-100"
                 animate={{ rotate: 360 }}
                 transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-              >
-                ✨
-              </motion.div>
+              >✨</motion.div>
             </motion.div>
           ))}
         </motion.div>
 
-        {/* CTA Button */}
         <motion.div 
           className="text-center mt-10"
           initial={{ opacity: 0, y: 20 }}
@@ -212,7 +180,7 @@ const Rewards = () => {
         >
           <Button asChild size="lg" className="group">
             <Link to="/profile?tab=stats">
-              Xem tất cả thành tựu
+              {t.rewards.viewAll}
               <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
             </Link>
           </Button>

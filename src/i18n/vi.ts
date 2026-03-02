@@ -122,6 +122,33 @@ const vi = {
     description: "Hoàn thành nhiệm vụ và thu thập các huy hiệu đặc biệt",
   },
 
+  // Rewards section (homepage)
+  rewards: {
+    badgeLabel: "Thành tựu",
+    title: "Huy hiệu và thành tựu",
+    description: "Khám phá hành trình học tập đầy thú vị với hơn",
+    descHighlight: "27+ thành tựu",
+    descSuffix: "độc đáo! Từ những bước đầu tiên đến bậc thầy kiến thức, mỗi cột mốc đều được ghi nhận bằng huy hiệu đặc biệt. Duy trì streak học tập, chinh phục các level, tích lũy XP và trở thành huyền thoại trong cộng đồng học sinh!",
+    statsAchievements: "27+ thành tựu",
+    statsCategories: "3 danh mục",
+    statsAutoUnlock: "Tự động mở khóa",
+    viewAll: "Xem tất cả thành tựu",
+  },
+
+  // Achievement grid & card
+  achievementGrid: {
+    title: "Thành tựu & Huy hiệu",
+    unlocked: "thành tựu đã mở khóa",
+    overallProgress: "Tiến độ tổng",
+    all: "Tất cả",
+    categoryUnlocked: "đã mở khóa",
+    categoryLearning: "Học tập",
+    categoryActivity: "Hoạt động",
+    categoryGame: "Trò chơi",
+    categorySocial: "Xã hội",
+    earnedAt: "Đạt được",
+  },
+
   // Contact
   contact: {
     badge: "Liên hệ",
