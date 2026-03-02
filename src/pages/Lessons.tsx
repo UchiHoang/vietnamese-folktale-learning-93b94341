@@ -1848,7 +1848,7 @@ const Lessons = () => {
                 return (
                   <SelectItem key={lesson.id} value={lesson.id}>
                     <div className="flex items-center justify-between w-full gap-3">
-                      <span>{lesson.title}</span>
+                      <span>{t.lessonsPage.classNames[lesson.id] || lesson.title}</span>
                       {progress && progress.completion_percentage > 0 && (
                         <span className="text-xs text-primary font-bold">
                           {Math.round(progress.completion_percentage)}%
@@ -2087,7 +2087,7 @@ const Lessons = () => {
                   {selectedTopic.title}
                 </p>
                 <p className="text-xs text-muted-foreground">
-                  {selectedLesson?.title} • {t.lessonsPage.semester} {selectedSemester}
+                  {selectedLesson ? (t.lessonsPage.classNames[selectedLesson.id] || selectedLesson.title) : ''} • {t.lessonsPage.semester} {selectedSemester}
                 </p>
               </div>
             )}
@@ -2108,7 +2108,7 @@ const Lessons = () => {
                 <div className="hidden lg:flex flex-col gap-3">
                   <div className="flex items-center gap-3 text-sm md:text-base">
                     <span className="bg-gradient-to-r from-primary to-primary/80 text-primary-foreground px-3 py-1.5 rounded-lg text-xs md:text-sm font-bold uppercase tracking-wider shadow-md">
-                      {selectedLesson?.title}
+                      {selectedLesson ? (t.lessonsPage.classNames[selectedLesson.id] || selectedLesson.title) : ''}
                     </span>
                     <span className="text-muted-foreground font-semibold">/</span>
                     <span className="bg-muted px-3 py-1.5 rounded-lg text-xs md:text-sm font-semibold">

@@ -515,6 +515,13 @@ const vi = {
   lessonsPage: {
     classLabel: "Lớp Học",
     selectClass: "Chọn lớp...",
+    classNames: {
+      L1: "Toán Lớp 1",
+      L2: "Toán Lớp 2",
+      L3: "Toán Lớp 3",
+      L4: "Toán Lớp 4",
+      L5: "Toán Lớp 5",
+    } as Record<string, string>,
     progress: "Tiến độ",
     lessons: "bài",
     semester1: "Học kì 1",
