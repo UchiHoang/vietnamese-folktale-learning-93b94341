@@ -1,14 +1,16 @@
 import { motion } from "framer-motion";
 import { Lock, Check } from "lucide-react";
-import { AchievementDefinition, EarnedAchievement, getCategoryLabel } from "@/data/achievements";
+import { AchievementDefinition, EarnedAchievement } from "@/data/achievements";
 import { format } from "date-fns";
-import { vi } from "date-fns/locale";
+import { vi as viLocale } from "date-fns/locale";
+import { enUS } from "date-fns/locale";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface AchievementCardProps {
   achievement: AchievementDefinition;
@@ -21,7 +23,18 @@ export const AchievementCard = ({
   earnedData,
   index = 0,
 }: AchievementCardProps) => {
+  const { t, language } = useLanguage();
   const isEarned = !!earnedData;
+
+  const getCategoryLabel = (category: AchievementDefinition["category"]): string => {
+    switch (category) {
+      case "learning": return t.achievementGrid.categoryLearning;
+      case "activity": return t.achievementGrid.categoryActivity;
+      case "game": return t.achievementGrid.categoryGame;
+      case "social": return t.achievementGrid.categorySocial;
+      default: return category;
+    }
+  };
 
   return (
     <TooltipProvider>
@@ -40,43 +53,23 @@ export const AchievementCard = ({
               }
             `}
           >
-            {/* Earned indicator */}
             {isEarned && (
-              <motion.div
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                className="absolute -top-1 -right-1 w-5 h-5 bg-primary rounded-full flex items-center justify-center"
-              >
+              <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="absolute -top-1 -right-1 w-5 h-5 bg-primary rounded-full flex items-center justify-center">
                 <Check className="h-3 w-3 text-primary-foreground" />
               </motion.div>
             )}
-
-            {/* Icon */}
             <div className={`relative ${!isEarned && "grayscale opacity-40"}`}>
               <motion.span
                 className="text-4xl block"
-                animate={isEarned ? { 
-                  y: [0, -3, 0],
-                } : {}}
-                transition={{ 
-                  repeat: Infinity, 
-                  duration: 2,
-                  delay: index * 0.2 
-                }}
+                animate={isEarned ? { y: [0, -3, 0] } : {}}
+                transition={{ repeat: Infinity, duration: 2, delay: index * 0.2 }}
               >
                 {achievement.icon}
               </motion.span>
             </div>
-
-            {/* Name */}
-            <span className={`
-              text-xs text-center font-medium mt-2 line-clamp-2
-              ${isEarned ? "text-foreground" : "text-muted-foreground"}
-            `}>
+            <span className={`text-xs text-center font-medium mt-2 line-clamp-2 ${isEarned ? "text-foreground" : "text-muted-foreground"}`}>
               {achievement.name}
             </span>
-
-            {/* Lock overlay */}
             {!isEarned && (
               <div className="absolute inset-0 flex items-center justify-center bg-background/30 backdrop-blur-[1px] rounded-xl">
                 <Lock className="h-6 w-6 text-muted-foreground/50" />
@@ -91,7 +84,7 @@ export const AchievementCard = ({
             <p className="text-xs text-primary">{getCategoryLabel(achievement.category)}</p>
             {earnedData && (
               <p className="text-xs text-primary">
-                Đạt được: {format(new Date(earnedData.earned_at), "dd/MM/yyyy", { locale: vi })}
+                {t.achievementGrid.earnedAt}: {format(new Date(earnedData.earned_at), "dd/MM/yyyy", { locale: language === "vi" ? viLocale : enUS })}
               </p>
             )}
           </div>
