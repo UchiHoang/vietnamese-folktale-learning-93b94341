@@ -29,6 +29,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { toast } from "@/hooks/use-toast";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface Student {
   id: string;
@@ -68,6 +69,7 @@ const GRADE_DISPLAY: Record<string, string> = {
 };
 
 const StudentsTab = () => {
+  const { t, language } = useLanguage();
   const [students, setStudents] = useState<Student[]>([]);
   const [classes, setClasses] = useState<Class[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -89,7 +91,6 @@ const StudentsTab = () => {
     setIsLoading(true);
     
     try {
-      // Get all student user IDs
       const { data: studentRoles } = await supabase
         .from("user_roles")
         .select("user_id")
@@ -98,7 +99,6 @@ const StudentsTab = () => {
       if (studentRoles && studentRoles.length > 0) {
         const studentIds = studentRoles.map(r => r.user_id);
         
-        // Load profiles
         const { data: profiles } = await supabase
           .from("profiles")
           .select("*")
@@ -110,7 +110,6 @@ const StudentsTab = () => {
           return;
         }
 
-        // Load classes separately
         const classIds = profiles
           .map(p => p.class_id)
           .filter((id): id is string => id != null);
@@ -131,7 +130,6 @@ const StudentsTab = () => {
           }
         }
 
-        // Transform data to include class_name
         const studentsWithClass = profiles.map((profile: any) => ({
           ...profile,
           class_name: profile.class_id ? classesMap[profile.class_id] : undefined,
@@ -144,8 +142,8 @@ const StudentsTab = () => {
     } catch (error) {
       console.error("Error loading students:", error);
       toast({
-        title: "Lỗi",
-        description: "Không thể tải danh sách học sinh",
+        title: t.adminStudents.error,
+        description: t.adminStudents.cannotLoadStudents,
         variant: "destructive",
       });
     } finally {
@@ -166,28 +164,24 @@ const StudentsTab = () => {
     setSelectedStudent(student);
     
     try {
-      // Load student stats from game_globals (primary source)
       const { data: globalData } = await supabase
         .from("game_globals")
         .select("total_xp, global_level")
         .eq("user_id", student.id)
         .maybeSingle();
 
-      // Load from game_progress as fallback
       const { data: gameProgress } = await supabase
         .from("game_progress")
         .select("total_xp, level, total_points")
         .eq("user_id", student.id)
         .maybeSingle();
 
-      // Load streak data
       const { data: streak } = await supabase
         .from("user_streaks")
         .select("current_streak")
         .eq("user_id", student.id)
         .maybeSingle();
 
-      // Load completed lessons from course_progress
       const { data: courseProgress } = await supabase
         .from("course_progress")
         .select("completed_nodes")
@@ -203,7 +197,6 @@ const StudentsTab = () => {
         });
       }
 
-      // Calculate total points from course_progress
       const { data: courseStars } = await supabase
         .from("course_progress")
         .select("total_stars")
@@ -223,8 +216,8 @@ const StudentsTab = () => {
     } catch (error) {
       console.error("Error loading student stats:", error);
       toast({
-        title: "Lỗi",
-        description: "Không thể tải thông tin học sinh",
+        title: t.adminStudents.error,
+        description: t.adminStudents.cannotLoadStudentInfo,
         variant: "destructive",
       });
     }
@@ -259,10 +252,10 @@ const StudentsTab = () => {
       }
 
       toast({
-        title: "Thành công",
+        title: t.adminStudents.success,
         description: classIdToUpdate 
-          ? "Đã gán học sinh vào lớp"
-          : "Đã xóa học sinh khỏi lớp",
+          ? t.adminStudents.assignedToClass
+          : t.adminStudents.removedFromClass,
       });
 
       setShowAssignModal(false);
@@ -271,8 +264,8 @@ const StudentsTab = () => {
     } catch (error: any) {
       console.error("Failed to assign class:", error);
       toast({
-        title: "Lỗi",
-        description: error.message || "Không thể gán lớp",
+        title: t.adminStudents.error,
+        description: error.message || t.adminStudents.cannotAssign,
         variant: "destructive",
       });
     } finally {
@@ -300,7 +293,7 @@ const StudentsTab = () => {
                 <Users className="h-6 w-6 text-primary" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Tổng học sinh</p>
+                <p className="text-sm text-muted-foreground">{t.adminStudents.totalStudents}</p>
                 <p className="text-2xl font-bold">{students.length}</p>
               </div>
             </div>
@@ -314,7 +307,7 @@ const StudentsTab = () => {
                 <TrendingUp className="h-6 w-6 text-green-600" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Đã có lớp</p>
+                <p className="text-sm text-muted-foreground">{t.adminStudents.hasClass}</p>
                 <p className="text-2xl font-bold">
                   {students.filter(s => s.class_id).length}
                 </p>
@@ -330,7 +323,7 @@ const StudentsTab = () => {
                 <Award className="h-6 w-6 text-amber-600" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Chưa có lớp</p>
+                <p className="text-sm text-muted-foreground">{t.adminStudents.noClass}</p>
                 <p className="text-2xl font-bold">
                   {students.filter(s => !s.class_id).length}
                 </p>
@@ -344,11 +337,11 @@ const StudentsTab = () => {
       <Card>
         <CardHeader>
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <CardTitle>Danh sách học sinh</CardTitle>
+            <CardTitle>{t.adminStudents.studentList}</CardTitle>
             <div className="relative w-full md:w-72">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Tìm kiếm học sinh..."
+                placeholder={t.adminStudents.searchPlaceholder}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-10"
@@ -363,18 +356,18 @@ const StudentsTab = () => {
             </div>
           ) : filteredStudents.length === 0 ? (
             <div className="text-center py-8 text-muted-foreground">
-              Không tìm thấy học sinh nào
+              {t.adminStudents.noStudentsFound}
             </div>
           ) : (
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Học sinh</TableHead>
-                  <TableHead>Lớp học</TableHead>
-                  <TableHead>Khối</TableHead>
-                  <TableHead>Trường</TableHead>
-                  <TableHead>Email</TableHead>
-                  <TableHead className="text-right">Hành động</TableHead>
+                  <TableHead>{t.adminStudents.student}</TableHead>
+                  <TableHead>{t.adminStudents.class}</TableHead>
+                  <TableHead>{t.adminStudents.grade}</TableHead>
+                  <TableHead>{t.adminStudents.school}</TableHead>
+                  <TableHead>{t.adminStudents.email}</TableHead>
+                  <TableHead className="text-right">{t.adminStudents.actions}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -417,7 +410,7 @@ const StudentsTab = () => {
                           onClick={() => handleOpenAssignModal(student)}
                         >
                           <UserPlus className="h-4 w-4 mr-1" />
-                          Gán lớp
+                          {t.adminStudents.assignClass}
                         </Button>
                         <Button
                           variant="outline"
@@ -425,7 +418,7 @@ const StudentsTab = () => {
                           onClick={() => viewStudentDetail(student)}
                         >
                           <Eye className="h-4 w-4 mr-1" />
-                          Xem
+                          {t.adminStudents.view}
                         </Button>
                       </div>
                     </TableCell>
@@ -441,7 +434,7 @@ const StudentsTab = () => {
       <Dialog open={showDetailModal} onOpenChange={setShowDetailModal}>
         <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle>Thông tin học sinh</DialogTitle>
+            <DialogTitle>{t.adminStudents.studentInfo}</DialogTitle>
           </DialogHeader>
           {selectedStudent && (
             <div className="space-y-6">
@@ -460,40 +453,40 @@ const StudentsTab = () => {
                 </Avatar>
                 <div className="flex-1">
                   <h3 className="text-lg font-bold">{selectedStudent.display_name}</h3>
-                  <p className="text-sm text-muted-foreground">{selectedStudent.email || "Chưa có email"}</p>
+                  <p className="text-sm text-muted-foreground">{selectedStudent.email || t.adminStudents.noEmail}</p>
                   {selectedStudent.class_name && (
-                    <p className="text-sm text-primary mt-1">Lớp: {selectedStudent.class_name}</p>
+                    <p className="text-sm text-primary mt-1">{t.adminStudents.classLabel} {selectedStudent.class_name}</p>
                   )}
                 </div>
               </div>
 
               {/* Personal Info */}
               <div className="space-y-3 p-4 bg-muted/50 rounded-lg">
-                <h4 className="font-semibold text-sm">Thông tin cá nhân</h4>
+                <h4 className="font-semibold text-sm">{t.adminStudents.personalInfo}</h4>
                 <div className="grid grid-cols-2 gap-3 text-sm">
                   <div>
-                    <p className="text-muted-foreground">Khối</p>
-                    <p className="font-medium">{selectedStudent.grade || "Chưa cập nhật"}</p>
+                    <p className="text-muted-foreground">{t.adminStudents.gradeLabel}</p>
+                    <p className="font-medium">{selectedStudent.grade || t.adminStudents.notUpdated}</p>
                   </div>
                   <div>
-                    <p className="text-muted-foreground">Trường</p>
-                    <p className="font-medium">{selectedStudent.school || "Chưa cập nhật"}</p>
+                    <p className="text-muted-foreground">{t.adminStudents.schoolLabel}</p>
+                    <p className="font-medium">{selectedStudent.school || t.adminStudents.notUpdated}</p>
                   </div>
                   <div>
-                    <p className="text-muted-foreground">Số điện thoại</p>
-                    <p className="font-medium">{selectedStudent.phone || "Chưa cập nhật"}</p>
+                    <p className="text-muted-foreground">{t.adminStudents.phone}</p>
+                    <p className="font-medium">{selectedStudent.phone || t.adminStudents.notUpdated}</p>
                   </div>
                   <div>
-                    <p className="text-muted-foreground">Ngày sinh</p>
+                    <p className="text-muted-foreground">{t.adminStudents.birthDate}</p>
                     <p className="font-medium">
                       {selectedStudent.birth_date 
-                        ? new Date(selectedStudent.birth_date).toLocaleDateString("vi-VN")
-                        : "Chưa cập nhật"}
+                        ? new Date(selectedStudent.birth_date).toLocaleDateString(language === "vi" ? "vi-VN" : "en-US")
+                        : t.adminStudents.notUpdated}
                     </p>
                   </div>
                   {selectedStudent.address && (
                     <div className="col-span-2">
-                      <p className="text-muted-foreground">Địa chỉ</p>
+                      <p className="text-muted-foreground">{t.adminStudents.address}</p>
                       <p className="font-medium">{selectedStudent.address}</p>
                     </div>
                   )}
@@ -502,27 +495,27 @@ const StudentsTab = () => {
 
               {/* Stats */}
               <div className="space-y-3">
-                <h4 className="font-semibold text-sm">Thống kê học tập</h4>
+                <h4 className="font-semibold text-sm">{t.adminStudents.learningStats}</h4>
                 <div className="grid grid-cols-2 gap-3">
                   <div className="p-4 bg-gradient-to-br from-primary/10 to-primary/5 rounded-xl text-center">
                     <p className="text-2xl font-bold text-primary">{studentStats?.level || 1}</p>
-                    <p className="text-xs text-muted-foreground">Cấp độ</p>
+                    <p className="text-xs text-muted-foreground">{t.adminStudents.level}</p>
                   </div>
                   <div className="p-4 bg-gradient-to-br from-blue-500/10 to-blue-500/5 rounded-xl text-center">
                     <p className="text-2xl font-bold text-blue-600">{studentStats?.total_xp || 0}</p>
-                    <p className="text-xs text-muted-foreground">Tổng XP</p>
+                    <p className="text-xs text-muted-foreground">{t.adminStudents.totalXP}</p>
                   </div>
                   <div className="p-4 bg-gradient-to-br from-green-500/10 to-green-500/5 rounded-xl text-center">
                     <p className="text-2xl font-bold text-green-600">{studentStats?.total_points || 0}</p>
-                    <p className="text-xs text-muted-foreground">Điểm số</p>
+                    <p className="text-xs text-muted-foreground">{t.adminStudents.points}</p>
                   </div>
                   <div className="p-4 bg-gradient-to-br from-orange-500/10 to-orange-500/5 rounded-xl text-center">
                     <p className="text-2xl font-bold text-orange-600">{studentStats?.current_streak || 0}</p>
-                    <p className="text-xs text-muted-foreground">Chuỗi ngày</p>
+                    <p className="text-xs text-muted-foreground">{t.adminStudents.streak}</p>
                   </div>
                   <div className="col-span-2 p-4 bg-gradient-to-br from-purple-500/10 to-purple-500/5 rounded-xl text-center">
                     <p className="text-2xl font-bold text-purple-600">{studentStats?.completed_lessons || 0}</p>
-                    <p className="text-xs text-muted-foreground">Bài đã hoàn thành</p>
+                    <p className="text-xs text-muted-foreground">{t.adminStudents.lessonsCompleted}</p>
                   </div>
                 </div>
               </div>
@@ -535,7 +528,7 @@ const StudentsTab = () => {
       <Dialog open={showAssignModal} onOpenChange={setShowAssignModal}>
         <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle>Gán lớp học</DialogTitle>
+            <DialogTitle>{t.adminStudents.assignClassTitle}</DialogTitle>
           </DialogHeader>
           {assigningStudent && (
             <div className="space-y-4">
@@ -559,7 +552,7 @@ const StudentsTab = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="class">Chọn lớp học</Label>
+                <Label htmlFor="class">{t.adminStudents.selectClass}</Label>
                 <Select
                   value={selectedClassId}
                   onValueChange={(value) => {
@@ -568,15 +561,15 @@ const StudentsTab = () => {
                   }}
                 >
                   <SelectTrigger id="class">
-                    <SelectValue placeholder="Chọn lớp học..." />
+                    <SelectValue placeholder={t.adminStudents.selectClassPlaceholder} />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="none">
-                      <span className="text-muted-foreground italic">Không có lớp</span>
+                      <span className="text-muted-foreground italic">{t.adminStudents.noClassOption}</span>
                     </SelectItem>
                     {classes.length === 0 ? (
                       <div className="p-2 text-sm text-muted-foreground text-center">
-                        Chưa có lớp học nào
+                        {t.adminStudents.noClassesYet}
                       </div>
                     ) : (
                       classes.map((cls) => (
@@ -589,12 +582,12 @@ const StudentsTab = () => {
                 </Select>
                 {assigningStudent?.class_name && (
                   <p className="text-sm text-muted-foreground">
-                    Lớp hiện tại: <span className="font-medium text-primary">{assigningStudent.class_name}</span>
+                    {t.adminStudents.currentClass} <span className="font-medium text-primary">{assigningStudent.class_name}</span>
                   </p>
                 )}
                 {!assigningStudent?.class_name && (
                   <p className="text-sm text-muted-foreground">
-                    Học sinh chưa có lớp
+                    {t.adminStudents.studentNoClass}
                   </p>
                 )}
               </div>
@@ -607,16 +600,16 @@ const StudentsTab = () => {
               onClick={() => setShowAssignModal(false)}
               disabled={isAssigning}
             >
-              Hủy
+              {t.adminStudents.cancel}
             </Button>
             <Button onClick={handleAssignClass} disabled={isAssigning}>
               {isAssigning ? (
                 <>
                   <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  Đang lưu...
+                  {t.adminStudents.saving}
                 </>
               ) : (
-                "Lưu"
+                t.adminStudents.save
               )}
             </Button>
           </DialogFooter>

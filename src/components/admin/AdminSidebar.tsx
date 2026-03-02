@@ -1,6 +1,7 @@
 import { Users, BookOpen, BarChart3, Settings, LogOut, User, FolderOpen, MessageSquare } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface AdminSidebarProps {
   activeTab: string;
@@ -13,14 +14,16 @@ interface AdminSidebarProps {
 }
 
 const AdminSidebar = ({ activeTab, onTabChange, profile, onLogout }: AdminSidebarProps) => {
+  const { t } = useLanguage();
+
   const menuItems = [
-    { id: "students", label: "Quản lý học sinh", icon: Users },
-    { id: "classes", label: "Quản lý lớp học", icon: BookOpen },
-    { id: "library", label: "Quản lý thư viện", icon: FolderOpen },
-    { id: "comments", label: "Quản lý bình luận", icon: MessageSquare },
-    { id: "reports", label: "Báo cáo & Thống kê", icon: BarChart3 },
-    { id: "profile", label: "Hồ sơ cá nhân", icon: User },
-    { id: "settings", label: "Cài đặt", icon: Settings },
+    { id: "students", label: t.adminSidebar.students, icon: Users },
+    { id: "classes", label: t.adminSidebar.classes, icon: BookOpen },
+    { id: "library", label: t.adminSidebar.library, icon: FolderOpen },
+    { id: "comments", label: t.adminSidebar.comments, icon: MessageSquare },
+    { id: "reports", label: t.adminSidebar.reports, icon: BarChart3 },
+    { id: "profile", label: t.adminSidebar.profile, icon: User },
+    { id: "settings", label: t.adminSidebar.settings, icon: Settings },
   ];
 
   const isEmojiAvatar = !profile?.avatar || 
@@ -55,10 +58,10 @@ const AdminSidebar = ({ activeTab, onTabChange, profile, onLogout }: AdminSideba
         </Avatar>
         
         <h2 className="mt-4 text-xl font-bold text-foreground">
-          {profile?.display_name || "Giáo viên"}
+          {profile?.display_name || t.adminSidebar.teacher}
         </h2>
         <span className="px-3 py-1 mt-2 bg-primary/10 text-primary text-sm font-medium rounded-full">
-          Giáo viên
+          {t.adminSidebar.teacher}
         </span>
       </div>
 
@@ -89,7 +92,7 @@ const AdminSidebar = ({ activeTab, onTabChange, profile, onLogout }: AdminSideba
           className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left text-destructive hover:bg-destructive/10 transition-all mt-2"
         >
           <LogOut className="h-5 w-5" />
-          <span>Đăng xuất</span>
+          <span>{t.adminSidebar.logout}</span>
         </button>
       </nav>
     </div>

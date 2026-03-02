@@ -26,23 +26,8 @@ import {
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { formatDistanceToNow } from "date-fns";
-import { vi } from "date-fns/locale";
-
-// Grade options
-const GRADES = [
-  { id: "all", label: "Tất cả lớp" },
-  { id: "L1", label: "Lớp 1" },
-  { id: "L2", label: "Lớp 2" },
-  { id: "L3", label: "Lớp 3" },
-  { id: "L4", label: "Lớp 4" },
-  { id: "L5", label: "Lớp 5" },
-];
-
-const SEMESTERS = [
-  { id: "all", label: "Tất cả học kỳ" },
-  { id: "1", label: "Học kỳ 1" },
-  { id: "2", label: "Học kỳ 2" },
-];
+import { vi as viLocale, enUS } from "date-fns/locale";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface Comment {
   id: string;
@@ -77,18 +62,33 @@ interface Stats {
 }
 
 const CommentsManagementTab = () => {
+  const { t, language } = useLanguage();
+
+  const GRADES = [
+    { id: "all", label: t.adminComments.allGrades },
+    { id: "L1", label: "Lớp 1" },
+    { id: "L2", label: "Lớp 2" },
+    { id: "L3", label: "Lớp 3" },
+    { id: "L4", label: "Lớp 4" },
+    { id: "L5", label: "Lớp 5" },
+  ];
+
+  const SEMESTERS = [
+    { id: "all", label: t.adminComments.allSemesters },
+    { id: "1", label: `${t.adminComments.semester} 1` },
+    { id: "2", label: `${t.adminComments.semester} 2` },
+  ];
+
   const [comments, setComments] = useState<CommentWithDetails[]>([]);
   const [topics, setTopics] = useState<Topic[]>([]);
   const [filteredTopics, setFilteredTopics] = useState<Topic[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [stats, setStats] = useState<Stats>({ totalComments: 0, pendingReplies: 0, repliedToday: 0 });
   
-  // Filters
   const [selectedGrade, setSelectedGrade] = useState("all");
   const [selectedSemester, setSelectedSemester] = useState("all");
   const [selectedTopic, setSelectedTopic] = useState("all");
   
-  // Reply states
   const [replyingTo, setReplyingTo] = useState<string | null>(null);
   const [replyContent, setReplyContent] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -245,9 +245,6 @@ const CommentsManagementTab = () => {
       today.setHours(0, 0, 0, 0);
       
       const pendingReplies = commentsWithDetails.filter(c => !hasAdminReplyMap.has(c.id)).length;
-      const repliedToday = repliesResult.data?.filter(r => 
-        r.is_admin_reply && new Date(r.parent_id || "") >= today
-      ).length || 0;
 
       setStats({
         totalComments: commentsWithDetails.length,
@@ -258,14 +255,14 @@ const CommentsManagementTab = () => {
     } catch (error) {
       console.error("Error fetching comments:", error);
       toast({
-        title: "Lỗi",
-        description: "Không thể tải bình luận",
+        title: t.adminComments.error,
+        description: t.adminComments.cannotLoadComments,
         variant: "destructive",
       });
     } finally {
       setIsLoading(false);
     }
-  }, [selectedGrade, selectedSemester, selectedTopic, topics, toast]);
+  }, [selectedGrade, selectedSemester, selectedTopic, topics, toast, t]);
 
   // Handle admin reply
   const handleReply = async (commentId: string) => {
@@ -276,8 +273,8 @@ const CommentsManagementTab = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         toast({
-          title: "Lỗi",
-          description: "Vui lòng đăng nhập",
+          title: t.adminComments.error,
+          description: t.adminComments.pleaseLogin,
           variant: "destructive",
         });
         return;
@@ -300,8 +297,8 @@ const CommentsManagementTab = () => {
       if (error) throw error;
 
       toast({
-        title: "Thành công",
-        description: "Đã gửi phản hồi",
+        title: t.adminComments.success,
+        description: t.adminComments.replySent,
       });
 
       setReplyContent("");
@@ -310,8 +307,8 @@ const CommentsManagementTab = () => {
     } catch (error) {
       console.error("Error posting reply:", error);
       toast({
-        title: "Lỗi",
-        description: "Không thể gửi phản hồi",
+        title: t.adminComments.error,
+        description: t.adminComments.cannotReply,
         variant: "destructive",
       });
     } finally {
@@ -321,7 +318,7 @@ const CommentsManagementTab = () => {
 
   // Handle delete comment
   const handleDelete = async (commentId: string) => {
-    if (!confirm("Bạn có chắc muốn xóa bình luận này?")) return;
+    if (!confirm(t.adminComments.confirmDelete)) return;
 
     try {
       const { error } = await supabase
@@ -332,16 +329,16 @@ const CommentsManagementTab = () => {
       if (error) throw error;
 
       toast({
-        title: "Đã xóa",
-        description: "Bình luận đã được xóa",
+        title: t.adminComments.deleted,
+        description: t.adminComments.commentDeleted,
       });
 
       fetchComments();
     } catch (error) {
       console.error("Error deleting comment:", error);
       toast({
-        title: "Lỗi",
-        description: "Không thể xóa bình luận",
+        title: t.adminComments.error,
+        description: t.adminComments.cannotDelete,
         variant: "destructive",
       });
     }
@@ -388,9 +385,9 @@ const CommentsManagementTab = () => {
                 <MessageSquare className="h-6 w-6 text-primary" />
               </div>
               <div>
-                <CardTitle className="text-xl">Quản lý bình luận</CardTitle>
+                <CardTitle className="text-xl">{t.adminComments.title}</CardTitle>
                 <p className="text-sm text-muted-foreground">
-                  Xem và phản hồi câu hỏi của học sinh
+                  {t.adminComments.subtitle}
                 </p>
               </div>
             </div>
@@ -401,7 +398,7 @@ const CommentsManagementTab = () => {
               disabled={isLoading}
             >
               <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? "animate-spin" : ""}`} />
-              Làm mới
+              {t.adminComments.refresh}
             </Button>
           </div>
         </CardHeader>
@@ -416,7 +413,7 @@ const CommentsManagementTab = () => {
                 <MessageSquare className="h-5 w-5 text-primary" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Tổng bình luận</p>
+                <p className="text-sm text-muted-foreground">{t.adminComments.totalComments}</p>
                 <p className="text-2xl font-bold text-foreground">{stats.totalComments}</p>
               </div>
             </div>
@@ -429,7 +426,7 @@ const CommentsManagementTab = () => {
                 <Clock className="h-5 w-5 text-warning" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Chờ phản hồi</p>
+                <p className="text-sm text-muted-foreground">{t.adminComments.pendingReplies}</p>
                 <p className="text-2xl font-bold text-foreground">{stats.pendingReplies}</p>
               </div>
             </div>
@@ -442,7 +439,7 @@ const CommentsManagementTab = () => {
                 <CheckCircle className="h-5 w-5 text-success" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Đã phản hồi</p>
+                <p className="text-sm text-muted-foreground">{t.adminComments.replied}</p>
                 <p className="text-2xl font-bold text-foreground">{stats.repliedToday}</p>
               </div>
             </div>
@@ -455,13 +452,13 @@ const CommentsManagementTab = () => {
         <CardContent className="p-4">
           <div className="flex items-center gap-2 mb-4">
             <Filter className="h-4 w-4 text-muted-foreground" />
-            <span className="text-sm font-medium">Phân loại</span>
+            <span className="text-sm font-medium">{t.adminComments.filter}</span>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {/* Grade Filter */}
             <Select value={selectedGrade} onValueChange={setSelectedGrade}>
               <SelectTrigger>
-                <SelectValue placeholder="Chọn lớp" />
+                <SelectValue />
               </SelectTrigger>
               <SelectContent>
                 {GRADES.map((grade) => (
@@ -475,7 +472,7 @@ const CommentsManagementTab = () => {
             {/* Semester Filter */}
             <Select value={selectedSemester} onValueChange={setSelectedSemester}>
               <SelectTrigger>
-                <SelectValue placeholder="Chọn học kỳ" />
+                <SelectValue />
               </SelectTrigger>
               <SelectContent>
                 {SEMESTERS.map((semester) => (
@@ -489,10 +486,10 @@ const CommentsManagementTab = () => {
             {/* Topic Filter */}
             <Select value={selectedTopic} onValueChange={setSelectedTopic}>
               <SelectTrigger>
-                <SelectValue placeholder="Chọn bài học" />
+                <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Tất cả bài học</SelectItem>
+                <SelectItem value="all">{t.adminComments.allTopics}</SelectItem>
                 {filteredTopics.map((topic) => (
                   <SelectItem key={topic.id} value={topic.id}>
                     {topic.title}
@@ -508,7 +505,7 @@ const CommentsManagementTab = () => {
       <Card className="bg-card">
         <CardHeader>
           <CardTitle className="text-lg">
-            Danh sách bình luận ({comments.length})
+            {t.adminComments.commentList} ({comments.length})
           </CardTitle>
         </CardHeader>
         <CardContent className="p-0">
@@ -519,7 +516,7 @@ const CommentsManagementTab = () => {
           ) : comments.length === 0 ? (
             <div className="text-center py-12 text-muted-foreground">
               <MessageSquare className="h-12 w-12 mx-auto mb-4 opacity-50" />
-              <p>Không có bình luận nào</p>
+              <p>{t.adminComments.noComments}</p>
             </div>
           ) : (
             <ScrollArea className="h-[600px]">
@@ -548,7 +545,7 @@ const CommentsManagementTab = () => {
                             {comment.display_name}
                           </span>
                           <span className="text-muted-foreground text-sm">
-                            đã bình luận tại bài
+                            {t.adminComments.commentedOn}
                           </span>
                           <Badge variant="secondary" className="text-xs">
                             {comment.topic_title}
@@ -559,18 +556,18 @@ const CommentsManagementTab = () => {
                         <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground mb-2">
                           <span>{getGradeLabel(comment.lesson_id)}</span>
                           <span>•</span>
-                          <span>Học kỳ {comment.semester}</span>
+                          <span>{t.adminComments.semester} {comment.semester}</span>
                           <span>•</span>
                           <span>
                             {formatDistanceToNow(new Date(comment.created_at), {
                               addSuffix: true,
-                              locale: vi,
+                              locale: language === "vi" ? viLocale : enUS,
                             })}
                           </span>
                           {comment.replies_count > 0 && (
                             <>
                               <span>•</span>
-                              <span>{comment.replies_count} phản hồi</span>
+                              <span>{comment.replies_count} {t.adminComments.replies}</span>
                             </>
                           )}
                         </div>
@@ -588,7 +585,7 @@ const CommentsManagementTab = () => {
                             onClick={() => window.open(`/lessons?topic=${comment.topic_id}`, "_blank")}
                           >
                             <ExternalLink className="h-3 w-3 mr-1" />
-                            Xem bài học
+                            {t.adminComments.viewLesson}
                           </Button>
                           
                           <Button
@@ -597,7 +594,7 @@ const CommentsManagementTab = () => {
                             onClick={() => setReplyingTo(replyingTo === comment.id ? null : comment.id)}
                           >
                             <MessageSquare className="h-3 w-3 mr-1" />
-                            Trả lời
+                            {t.adminComments.reply}
                           </Button>
                           
                           <Button
@@ -607,7 +604,7 @@ const CommentsManagementTab = () => {
                             onClick={() => handleDelete(comment.id)}
                           >
                             <Trash2 className="h-3 w-3 mr-1" />
-                            Xóa
+                            {t.adminComments.delete}
                           </Button>
                         </div>
                         
@@ -615,7 +612,7 @@ const CommentsManagementTab = () => {
                         {replyingTo === comment.id && (
                           <div className="mt-3 flex gap-2">
                             <Input
-                              placeholder="Nhập câu trả lời và nhấn Enter..."
+                              placeholder={t.adminComments.replyPlaceholder}
                               value={replyContent}
                               onChange={(e) => setReplyContent(e.target.value)}
                               onKeyPress={(e) => handleKeyPress(e, comment.id)}

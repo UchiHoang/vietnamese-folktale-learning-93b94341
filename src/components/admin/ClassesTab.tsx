@@ -29,6 +29,7 @@ import {
 } from "@/components/ui/table";
 import { BookOpen, Users, Plus, Edit, Trash2, Loader2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface Class {
   id: string;
@@ -50,6 +51,7 @@ const GRADES = [
 ];
 
 const ClassesTab = () => {
+  const { t } = useLanguage();
   const [classes, setClasses] = useState<Class[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
@@ -75,7 +77,6 @@ const ClassesTab = () => {
 
       if (error) throw error;
 
-      // Load student count for each class
       const classesWithCount = await Promise.all(
         (classesData || []).map(async (cls) => {
           const { count } = await supabase
@@ -90,8 +91,8 @@ const ClassesTab = () => {
       setClasses(classesWithCount);
     } catch (error: any) {
       toast({
-        title: "Lỗi",
-        description: error.message || "Không thể tải danh sách lớp học",
+        title: t.adminClasses.error,
+        description: error.message || t.adminClasses.cannotSave,
         variant: "destructive",
       });
     } finally {
@@ -123,8 +124,8 @@ const ClassesTab = () => {
   const handleSave = async () => {
     if (!formData.name || !formData.grade) {
       toast({
-        title: "Lỗi",
-        description: "Vui lòng điền đầy đủ thông tin",
+        title: t.adminClasses.error,
+        description: t.adminClasses.fillRequired,
         variant: "destructive",
       });
       return;
@@ -133,10 +134,9 @@ const ClassesTab = () => {
     setIsSaving(true);
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Chưa đăng nhập");
+      if (!user) throw new Error("Not logged in");
 
       if (editingClass) {
-        // Update
         const { error } = await supabase
           .from("classes")
           .update({
@@ -150,11 +150,10 @@ const ClassesTab = () => {
         if (error) throw error;
 
         toast({
-          title: "Thành công",
-          description: "Đã cập nhật lớp học",
+          title: t.adminClasses.success,
+          description: t.adminClasses.classUpdated,
         });
       } else {
-        // Create
         const { error } = await supabase.from("classes").insert({
           name: formData.name,
           grade: formData.grade,
@@ -165,8 +164,8 @@ const ClassesTab = () => {
         if (error) throw error;
 
         toast({
-          title: "Thành công",
-          description: "Đã tạo lớp học mới",
+          title: t.adminClasses.success,
+          description: t.adminClasses.classCreated,
         });
       }
 
@@ -174,8 +173,8 @@ const ClassesTab = () => {
       loadClasses();
     } catch (error: any) {
       toast({
-        title: "Lỗi",
-        description: error.message || "Không thể lưu lớp học",
+        title: t.adminClasses.error,
+        description: error.message || t.adminClasses.cannotSave,
         variant: "destructive",
       });
     } finally {
@@ -184,7 +183,7 @@ const ClassesTab = () => {
   };
 
   const handleDelete = async (classId: string) => {
-    if (!confirm("Bạn có chắc muốn xóa lớp học này?")) return;
+    if (!confirm(t.adminClasses.confirmDelete)) return;
 
     try {
       const { error } = await supabase
@@ -195,15 +194,15 @@ const ClassesTab = () => {
       if (error) throw error;
 
       toast({
-        title: "Thành công",
-        description: "Đã xóa lớp học",
+        title: t.adminClasses.success,
+        description: t.adminClasses.classDeleted,
       });
 
       loadClasses();
     } catch (error: any) {
       toast({
-        title: "Lỗi",
-        description: error.message || "Không thể xóa lớp học",
+        title: t.adminClasses.error,
+        description: error.message || t.adminClasses.cannotDelete,
         variant: "destructive",
       });
     }
@@ -216,10 +215,10 @@ const ClassesTab = () => {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold">Quản lý lớp học</h2>
+        <h2 className="text-2xl font-bold">{t.adminClasses.title}</h2>
         <Button className="gap-2" onClick={() => handleOpenModal()}>
           <Plus className="h-4 w-4" />
-          Tạo lớp mới
+          {t.adminClasses.createNew}
         </Button>
       </div>
 
@@ -232,7 +231,7 @@ const ClassesTab = () => {
                 <BookOpen className="h-6 w-6 text-primary" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Tổng số lớp</p>
+                <p className="text-sm text-muted-foreground">{t.adminClasses.totalClasses}</p>
                 <p className="text-2xl font-bold">{classes.length}</p>
               </div>
             </div>
@@ -246,7 +245,7 @@ const ClassesTab = () => {
                 <Users className="h-6 w-6 text-green-600" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Tổng học sinh</p>
+                <p className="text-sm text-muted-foreground">{t.adminClasses.totalStudents}</p>
                 <p className="text-2xl font-bold">
                   {classes.reduce((sum, cls) => sum + (cls.student_count || 0), 0)}
                 </p>
@@ -262,7 +261,7 @@ const ClassesTab = () => {
                 <Users className="h-6 w-6 text-amber-600" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">TB học sinh/lớp</p>
+                <p className="text-sm text-muted-foreground">{t.adminClasses.avgStudents}</p>
                 <p className="text-2xl font-bold">
                   {classes.length > 0
                     ? Math.round(
@@ -280,7 +279,7 @@ const ClassesTab = () => {
       {/* Classes Table */}
       <Card>
         <CardHeader>
-          <CardTitle>Danh sách lớp học</CardTitle>
+          <CardTitle>{t.adminClasses.classList}</CardTitle>
         </CardHeader>
         <CardContent>
           {isLoading ? (
@@ -289,17 +288,17 @@ const ClassesTab = () => {
             </div>
           ) : classes.length === 0 ? (
             <div className="text-center py-8 text-muted-foreground">
-              Chưa có lớp học nào. Hãy tạo lớp mới!
+              {t.adminClasses.noClasses}
             </div>
           ) : (
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Tên lớp</TableHead>
-                  <TableHead>Khối</TableHead>
-                  <TableHead>Số học sinh</TableHead>
-                  <TableHead>Mô tả</TableHead>
-                  <TableHead className="text-right">Hành động</TableHead>
+                  <TableHead>{t.adminClasses.className}</TableHead>
+                  <TableHead>{t.adminClasses.grade}</TableHead>
+                  <TableHead>{t.adminClasses.studentCount}</TableHead>
+                  <TableHead>{t.adminClasses.description}</TableHead>
+                  <TableHead className="text-right">{t.adminClasses.actions}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -352,29 +351,29 @@ const ClassesTab = () => {
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle>
-              {editingClass ? "Chỉnh sửa lớp học" : "Tạo lớp học mới"}
+              {editingClass ? t.adminClasses.editClass : t.adminClasses.createClass}
             </DialogTitle>
           </DialogHeader>
 
           <div className="space-y-4">
             <div>
-              <Label htmlFor="name">Tên lớp *</Label>
+              <Label htmlFor="name">{t.adminClasses.classNameLabel}</Label>
               <Input
                 id="name"
-                placeholder="VD: Lớp 2A"
+                placeholder={t.adminClasses.classNamePlaceholder}
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
               />
             </div>
 
             <div>
-              <Label htmlFor="grade">Khối *</Label>
+              <Label htmlFor="grade">{t.adminClasses.gradeLabel}</Label>
               <Select
                 value={formData.grade}
                 onValueChange={(value) => setFormData({ ...formData, grade: value })}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Chọn khối" />
+                  <SelectValue placeholder={t.adminClasses.selectGrade} />
                 </SelectTrigger>
                 <SelectContent>
                   {GRADES.map((grade) => (
@@ -387,10 +386,10 @@ const ClassesTab = () => {
             </div>
 
             <div>
-              <Label htmlFor="description">Mô tả</Label>
+              <Label htmlFor="description">{t.adminClasses.descriptionLabel}</Label>
               <Textarea
                 id="description"
-                placeholder="Mô tả về lớp học..."
+                placeholder={t.adminClasses.descriptionPlaceholder}
                 value={formData.description}
                 onChange={(e) =>
                   setFormData({ ...formData, description: e.target.value })
@@ -402,16 +401,16 @@ const ClassesTab = () => {
 
           <DialogFooter>
             <Button variant="outline" onClick={handleCloseModal} disabled={isSaving}>
-              Hủy
+              {t.adminClasses.cancel}
             </Button>
             <Button onClick={handleSave} disabled={isSaving}>
               {isSaving ? (
                 <>
                   <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  Đang lưu...
+                  {t.adminClasses.saving}
                 </>
               ) : (
-                "Lưu"
+                t.adminClasses.save
               )}
             </Button>
           </DialogFooter>
