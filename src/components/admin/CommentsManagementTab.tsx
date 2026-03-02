@@ -66,11 +66,11 @@ const CommentsManagementTab = () => {
 
   const GRADES = [
     { id: "all", label: t.adminComments.allGrades },
-    { id: "L1", label: "Lớp 1" },
-    { id: "L2", label: "Lớp 2" },
-    { id: "L3", label: "Lớp 3" },
-    { id: "L4", label: "Lớp 4" },
-    { id: "L5", label: "Lớp 5" },
+    { id: "L1", label: t.gradeLabels.grade1 },
+    { id: "L2", label: t.gradeLabels.grade2 },
+    { id: "L3", label: t.gradeLabels.grade3 },
+    { id: "L4", label: t.gradeLabels.grade4 },
+    { id: "L5", label: t.gradeLabels.grade5 },
   ];
 
   const SEMESTERS = [

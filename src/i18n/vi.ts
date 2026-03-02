@@ -881,6 +881,16 @@ const vi = {
   lessonProgressBadge: {
     lessons: "bài",
   },
+
+  // Shared grade labels
+  gradeLabels: {
+    preschool: "Mầm non",
+    grade1: "Lớp 1",
+    grade2: "Lớp 2",
+    grade3: "Lớp 3",
+    grade4: "Lớp 4",
+    grade5: "Lớp 5",
+  },
 };
 
 export default vi;
