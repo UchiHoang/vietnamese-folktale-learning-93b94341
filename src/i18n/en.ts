@@ -517,6 +517,13 @@ const en: Translations = {
   lessonsPage: {
     classLabel: "Class",
     selectClass: "Select class...",
+    classNames: {
+      L1: "Math Grade 1",
+      L2: "Math Grade 2",
+      L3: "Math Grade 3",
+      L4: "Math Grade 4",
+      L5: "Math Grade 5",
+    } as Record<string, string>,
     progress: "Progress",
     lessons: "lessons",
     semester1: "Semester 1",
