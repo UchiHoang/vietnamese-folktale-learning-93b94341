@@ -7,9 +7,11 @@ import { Progress } from "@/components/ui/progress";
 import { useStudyTimeLimit } from "@/hooks/useStudyTimeLimit";
 import { useEffect, useState } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useSound } from "@/contexts/SoundContext";
 
 const SettingsTab = () => {
   const { t, language, setLanguage } = useLanguage();
+  const { soundEnabled, setSoundEnabled, playSound } = useSound();
   const { settings, todayTimeSpent, dailyLimit, updateSettings, loading } = useStudyTimeLimit();
   const [limitEnabled, setLimitEnabled] = useState(false);
   const [limitMinutes, setLimitMinutes] = useState<number>(60);
@@ -137,7 +139,13 @@ const SettingsTab = () => {
                 <p className="text-sm text-muted-foreground">{t.settingsTab.soundDesc}</p>
               </div>
             </div>
-            <Switch defaultChecked />
+            <Switch
+              checked={soundEnabled}
+              onCheckedChange={(checked) => {
+                setSoundEnabled(checked);
+                if (checked) playSound("click");
+              }}
+            />
           </div>
 
           <div className="flex items-center justify-between">
