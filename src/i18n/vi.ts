@@ -200,7 +200,7 @@ const vi = {
     userGuide: "Hướng dẫn sử dụng",
     faq: "Câu hỏi thường gặp",
     privacy: "Chính sách bảo mật",
-    terms: "Điều khoản sử dụng",
+    contactUs: "Liên hệ với chúng tôi",
     contactTitle: "Liên hệ",
   },
 
@@ -940,6 +940,98 @@ const vi = {
     grade3: "Lớp 3",
     grade4: "Lớp 4",
     grade5: "Lớp 5",
+  },
+
+  // User Guide Page
+  userGuidePage: {
+    title: "Hướng dẫn sử dụng",
+    subtitle: "Tìm hiểu cách sử dụng VietEdu Odyssey một cách hiệu quả nhất",
+    sections: [
+      {
+        title: "Bắt đầu",
+        content: "Để bắt đầu sử dụng VietEdu Odyssey, bạn cần tạo một tài khoản bằng cách nhấn vào nút \"Đăng nhập\" ở góc trên bên phải. Bạn có thể đăng ký bằng email hoặc tài khoản Google. Sau khi đăng ký, hãy hoàn thiện hồ sơ cá nhân để có trải nghiệm tốt nhất.",
+      },
+      {
+        title: "Điều hướng trang web",
+        content: "Trang chủ bao gồm các phần: Giới thiệu, Lớp học, Bảng xếp hạng, Thành tựu và Liên hệ. Sử dụng thanh điều hướng phía trên để truy cập nhanh các phần khác nhau. Bạn cũng có thể truy cập Bài giảng video và Thư viện tài liệu từ menu.",
+      },
+      {
+        title: "Chơi trò chơi học tập",
+        content: "Mỗi lớp học có một câu chuyện dân gian Việt Nam riêng. Nhấn \"Vào lớp\" để bắt đầu hành trình. Trò chơi bao gồm các dạng: trắc nghiệm, đếm số, kéo thả, điền chỗ trống và ghép cặp. Hoàn thành mỗi màn chơi để mở khóa màn tiếp theo và nhận sao, XP.",
+      },
+      {
+        title: "Theo dõi tiến độ",
+        content: "Tiến độ học tập được tự động lưu lại. Bạn có thể xem thống kê chi tiết trong phần Hồ sơ cá nhân bao gồm: tổng XP, cấp độ, chuỗi ngày học liên tục, số bài đã hoàn thành và biểu đồ hoạt động. Bảng xếp hạng giúp bạn so sánh với các bạn khác.",
+      },
+      {
+        title: "Sử dụng thư viện",
+        content: "Thư viện chứa các tài liệu tham khảo được phân loại theo lớp. Bạn có thể xem trực tiếp hoặc tải xuống các tài liệu PDF, Word và hình ảnh. Sử dụng thanh tìm kiếm và bộ lọc để tìm tài liệu phù hợp.",
+      },
+      {
+        title: "Xem bài giảng video",
+        content: "Phần Bài giảng cung cấp các video học tập được sắp xếp theo bài và học kỳ. Bạn có thể ghi chú, bình luận và đánh dấu bài đã hoàn thành. Tiến độ xem video được tự động lưu lại để bạn có thể tiếp tục từ vị trí đã dừng.",
+      },
+    ],
+  },
+
+  // FAQ Page
+  faqPage: {
+    title: "Câu hỏi thường gặp",
+    subtitle: "Tìm câu trả lời cho các thắc mắc phổ biến",
+    items: [
+      { q: "VietEdu Odyssey là gì?", a: "VietEdu Odyssey là nền tảng học tập trực tuyến kết hợp giáo dục toán học với văn hóa dân gian Việt Nam, dành cho học sinh từ mầm non đến lớp 5." },
+      { q: "Làm thế nào để tạo tài khoản?", a: "Nhấn vào nút \"Đăng nhập\" ở góc trên bên phải, chọn \"Đăng ký\" và điền thông tin. Bạn cũng có thể đăng ký nhanh bằng tài khoản Google." },
+      { q: "Ứng dụng có miễn phí không?", a: "Có, VietEdu Odyssey hoàn toàn miễn phí. Tất cả các trò chơi, bài giảng và tài liệu đều có thể truy cập mà không mất phí." },
+      { q: "Phụ huynh có thể theo dõi tiến độ của con không?", a: "Có, phụ huynh có thể xem tiến độ học tập, điểm số, thời gian học và thành tựu của con thông qua trang hồ sơ. Tính năng giới hạn thời gian học cũng có sẵn." },
+      { q: "Trò chơi phù hợp với độ tuổi nào?", a: "Trò chơi được thiết kế cho trẻ em từ 4-11 tuổi, chia theo các cấp độ: Mầm non (4-5 tuổi), Lớp 1-5 (6-11 tuổi). Nội dung bám sát chương trình giáo dục phổ thông." },
+      { q: "Dữ liệu tiến độ có được lưu tự động không?", a: "Có, tất cả tiến độ chơi game, xem video và hoạt động đều được tự động lưu vào tài khoản của bạn. Bạn có thể tiếp tục từ nơi đã dừng trên bất kỳ thiết bị nào." },
+      { q: "Tôi quên mật khẩu, phải làm sao?", a: "Nhấn vào \"Quên mật khẩu\" ở trang đăng nhập, nhập email đã đăng ký và kiểm tra hộp thư để nhận liên kết đặt lại mật khẩu." },
+      { q: "Bảng xếp hạng hoạt động như thế nào?", a: "Bảng xếp hạng dựa trên tổng điểm XP tích lũy từ việc hoàn thành các màn chơi. Bạn có thể lọc theo khối lớp và khoảng thời gian (tuần, tháng, năm)." },
+      { q: "Thư viện tài liệu chứa những gì?", a: "Thư viện chứa các tài liệu tham khảo bổ sung như bài tập, đề ôn tập và tài liệu học tập, được phân loại theo lớp và có thể tải xuống miễn phí." },
+      { q: "Giáo viên có thể sử dụng nền tảng này không?", a: "Có, giáo viên có thể đăng ký tài khoản giáo viên để quản lý lớp học, theo dõi tiến độ học sinh, quản lý bình luận và xem báo cáo thống kê chi tiết." },
+      { q: "Trang web có hỗ trợ tiếng Anh không?", a: "Có, VietEdu Odyssey hỗ trợ song ngữ Tiếng Việt và Tiếng Anh. Bạn có thể chuyển đổi ngôn ngữ bằng biểu tượng ngôn ngữ trên thanh điều hướng." },
+      { q: "Làm sao để liên hệ hỗ trợ?", a: "Bạn có thể gửi tin nhắn qua form liên hệ ở cuối trang chủ, hoặc gửi email trực tiếp đến hoangquockhanh204@gmail.com. Chúng tôi sẽ phản hồi trong vòng 24 giờ." },
+    ],
+  },
+
+  // Privacy Policy Page
+  privacyPage: {
+    title: "Chính sách bảo mật",
+    subtitle: "Cập nhật lần cuối: Tháng 3, 2026",
+    sections: [
+      {
+        title: "1. Giới thiệu",
+        content: "VietEdu Odyssey cam kết bảo vệ quyền riêng tư của người dùng, đặc biệt là trẻ em. Chính sách bảo mật này giải thích cách chúng tôi thu thập, sử dụng và bảo vệ thông tin cá nhân của bạn khi sử dụng nền tảng.",
+      },
+      {
+        title: "2. Thông tin chúng tôi thu thập",
+        content: "Chúng tôi thu thập các thông tin sau: thông tin tài khoản (tên, email, mật khẩu), thông tin hồ sơ (trường học, lớp, ngày sinh), dữ liệu học tập (tiến độ, điểm số, thời gian học) và thông tin liên hệ khi bạn gửi form liên hệ.",
+      },
+      {
+        title: "3. Cách chúng tôi sử dụng thông tin",
+        content: "Thông tin được sử dụng để: cung cấp và cải thiện dịch vụ, theo dõi tiến độ học tập, cá nhân hóa trải nghiệm, hiển thị bảng xếp hạng, gửi thông báo quan trọng và phản hồi yêu cầu hỗ trợ.",
+      },
+      {
+        title: "4. Bảo mật dữ liệu",
+        content: "Chúng tôi sử dụng các biện pháp bảo mật tiêu chuẩn ngành bao gồm mã hóa dữ liệu, xác thực an toàn và kiểm soát truy cập. Dữ liệu được lưu trữ trên hạ tầng Supabase với các chính sách bảo mật Row Level Security (RLS).",
+      },
+      {
+        title: "5. Quyền riêng tư trẻ em",
+        content: "VietEdu Odyssey được thiết kế cho trẻ em và chúng tôi đặc biệt chú trọng đến quyền riêng tư của các em. Chúng tôi không thu thập thông tin nhạy cảm, không hiển thị quảng cáo và không chia sẻ dữ liệu cá nhân của trẻ em với bên thứ ba.",
+      },
+      {
+        title: "6. Chia sẻ thông tin",
+        content: "Chúng tôi không bán, cho thuê hoặc chia sẻ thông tin cá nhân của bạn với bên thứ ba vì mục đích thương mại. Thông tin chỉ được chia sẻ khi có sự đồng ý của bạn hoặc khi pháp luật yêu cầu.",
+      },
+      {
+        title: "7. Quyền của bạn",
+        content: "Bạn có quyền: truy cập và xem thông tin cá nhân, chỉnh sửa thông tin không chính xác, yêu cầu xóa tài khoản và dữ liệu, từ chối nhận thông báo email. Để thực hiện các quyền này, vui lòng liên hệ chúng tôi.",
+      },
+      {
+        title: "8. Liên hệ",
+        content: "Nếu bạn có câu hỏi về chính sách bảo mật, vui lòng liên hệ qua email: hoangquockhanh204@gmail.com hoặc sử dụng form liên hệ trên trang web. Địa chỉ: 280 An Dương Vương, Phường 4, Quận 5, TP. Hồ Chí Minh.",
+      },
+    ],
   },
 };
 

@@ -202,7 +202,7 @@ const en: Translations = {
     userGuide: "User Guide",
     faq: "FAQ",
     privacy: "Privacy Policy",
-    terms: "Terms of Service",
+    contactUs: "Contact Us",
     contactTitle: "Contact",
   },
 
@@ -942,6 +942,98 @@ const en: Translations = {
     grade3: "Grade 3",
     grade4: "Grade 4",
     grade5: "Grade 5",
+  },
+
+  // User Guide Page
+  userGuidePage: {
+    title: "User Guide",
+    subtitle: "Learn how to use VietEdu Odyssey effectively",
+    sections: [
+      {
+        title: "Getting Started",
+        content: "To start using VietEdu Odyssey, create an account by clicking the \"Login\" button in the top right corner. You can register with email or Google account. After registering, complete your profile for the best experience.",
+      },
+      {
+        title: "Website Navigation",
+        content: "The homepage includes sections: About, Classes, Leaderboard, Achievements, and Contact. Use the navigation bar at the top to quickly access different sections. You can also access Video Lessons and Document Library from the menu.",
+      },
+      {
+        title: "Playing Learning Games",
+        content: "Each class has its own Vietnamese folk tale. Click \"Enter Class\" to begin your journey. Games include: multiple choice, counting, drag & drop, fill-in-the-blank, and matching pairs. Complete each level to unlock the next and earn stars and XP.",
+      },
+      {
+        title: "Tracking Progress",
+        content: "Learning progress is automatically saved. You can view detailed statistics in your Profile including: total XP, level, learning streak, completed lessons, and activity charts. The leaderboard lets you compare with other students.",
+      },
+      {
+        title: "Using the Library",
+        content: "The library contains reference materials organized by grade. You can view directly or download PDF, Word, and image files. Use the search bar and filters to find suitable materials.",
+      },
+      {
+        title: "Watching Video Lessons",
+        content: "The Lessons section provides learning videos organized by lesson and semester. You can take notes, comment, and mark lessons as completed. Video watching progress is automatically saved so you can continue from where you left off.",
+      },
+    ],
+  },
+
+  // FAQ Page
+  faqPage: {
+    title: "Frequently Asked Questions",
+    subtitle: "Find answers to common questions",
+    items: [
+      { q: "What is VietEdu Odyssey?", a: "VietEdu Odyssey is an online learning platform combining math education with Vietnamese folk culture, designed for students from preschool to grade 5." },
+      { q: "How do I create an account?", a: "Click the \"Login\" button in the top right corner, select \"Register\" and fill in your information. You can also quickly register with your Google account." },
+      { q: "Is the app free?", a: "Yes, VietEdu Odyssey is completely free. All games, lessons, and materials can be accessed at no cost." },
+      { q: "Can parents track their child's progress?", a: "Yes, parents can view learning progress, scores, study time, and achievements through the profile page. A study time limit feature is also available." },
+      { q: "What age group are the games for?", a: "Games are designed for children aged 4-11, divided into levels: Preschool (4-5 years), Grades 1-5 (6-11 years). Content aligns with the national education curriculum." },
+      { q: "Is progress saved automatically?", a: "Yes, all game progress, video watching, and activities are automatically saved to your account. You can continue from where you left off on any device." },
+      { q: "I forgot my password, what should I do?", a: "Click \"Forgot password\" on the login page, enter your registered email, and check your inbox for a password reset link." },
+      { q: "How does the leaderboard work?", a: "The leaderboard is based on total XP accumulated from completing game levels. You can filter by grade and time period (week, month, year)." },
+      { q: "What does the document library contain?", a: "The library contains supplementary reference materials such as exercises, review tests, and study materials, organized by grade and available for free download." },
+      { q: "Can teachers use this platform?", a: "Yes, teachers can register a teacher account to manage classes, track student progress, manage comments, and view detailed statistical reports." },
+      { q: "Does the website support English?", a: "Yes, VietEdu Odyssey supports bilingual Vietnamese and English. You can switch languages using the language icon on the navigation bar." },
+      { q: "How do I contact support?", a: "You can send a message through the contact form at the bottom of the homepage, or email directly to hoangquockhanh204@gmail.com. We will respond within 24 hours." },
+    ],
+  },
+
+  // Privacy Policy Page
+  privacyPage: {
+    title: "Privacy Policy",
+    subtitle: "Last updated: March 2026",
+    sections: [
+      {
+        title: "1. Introduction",
+        content: "VietEdu Odyssey is committed to protecting user privacy, especially children. This privacy policy explains how we collect, use, and protect your personal information when using the platform.",
+      },
+      {
+        title: "2. Information We Collect",
+        content: "We collect: account information (name, email, password), profile information (school, grade, date of birth), learning data (progress, scores, study time), and contact information when you submit the contact form.",
+      },
+      {
+        title: "3. How We Use Information",
+        content: "Information is used to: provide and improve services, track learning progress, personalize experiences, display leaderboards, send important notifications, and respond to support requests.",
+      },
+      {
+        title: "4. Data Security",
+        content: "We use industry-standard security measures including data encryption, secure authentication, and access control. Data is stored on Supabase infrastructure with Row Level Security (RLS) policies.",
+      },
+      {
+        title: "5. Children's Privacy",
+        content: "VietEdu Odyssey is designed for children and we place special emphasis on their privacy. We do not collect sensitive information, do not display advertisements, and do not share children's personal data with third parties.",
+      },
+      {
+        title: "6. Information Sharing",
+        content: "We do not sell, rent, or share your personal information with third parties for commercial purposes. Information is only shared with your consent or when required by law.",
+      },
+      {
+        title: "7. Your Rights",
+        content: "You have the right to: access and view personal information, correct inaccurate information, request account and data deletion, opt out of email notifications. To exercise these rights, please contact us.",
+      },
+      {
+        title: "8. Contact",
+        content: "If you have questions about the privacy policy, please contact us via email: hoangquockhanh204@gmail.com or use the contact form on the website. Address: 280 An Dương Vương, Ward 4, District 5, Ho Chi Minh City.",
+      },
+    ],
   },
 };
 
