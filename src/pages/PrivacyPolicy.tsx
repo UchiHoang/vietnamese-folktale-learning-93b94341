@@ -2,12 +2,16 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Shield } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { UserRole } from "@/data/mockData";
 
 const PrivacyPolicy = () => {
   const { t } = useLanguage();
   const [currentRole, setCurrentRole] = useState<UserRole>("student");
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, []);
 
   return (
     <div className="min-h-screen flex flex-col">

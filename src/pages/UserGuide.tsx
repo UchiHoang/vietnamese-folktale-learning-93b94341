@@ -3,12 +3,16 @@ import Footer from "@/components/Footer";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { BookOpen } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { UserRole } from "@/data/mockData";
 
 const UserGuide = () => {
   const { t } = useLanguage();
   const [currentRole, setCurrentRole] = useState<UserRole>("student");
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, []);
 
   return (
     <div className="min-h-screen flex flex-col">
