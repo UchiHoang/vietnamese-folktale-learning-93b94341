@@ -35,7 +35,7 @@ const Footer = ({ compact = false, className }: FooterProps) => {
           <div className="flex items-center gap-6 text-xs font-semibold opacity-70">
             <Link to="/" className="hover:text-primary transition-colors hover:opacity-100">{t.footer.home.toUpperCase()}</Link>
             <Link to="/#about" className="hover:text-primary transition-colors hover:opacity-100">{t.footer.about.toUpperCase()}</Link>
-            <button className="hover:text-primary transition-colors hover:opacity-100">{t.footer.terms.toUpperCase()}</button>
+            <Link to="/#contact" className="hover:text-primary transition-colors hover:opacity-100">{t.footer.contactUs.toUpperCase()}</Link>
             <div className="flex gap-2 ml-2 pl-4 border-l border-accent-foreground/20">
               <a href="https://www.facebook.com/HCMUE.VN" target="_blank" rel="noopener noreferrer" className="w-6 h-6 bg-accent-foreground/5 rounded-full hover:bg-primary hover:text-white transition-colors flex items-center justify-center">
                 <Facebook className="h-3 w-3" />
@@ -101,11 +101,18 @@ const Footer = ({ compact = false, className }: FooterProps) => {
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: 0.2 }}>
             <h4 className="font-heading font-bold mb-4">{t.footer.support}</h4>
             <ul className="space-y-2 text-sm">
-              {[t.footer.userGuide, t.footer.faq, t.footer.privacy, t.footer.terms].map((item, index) => (
-                <motion.li key={item} initial={{ opacity: 0, x: -10 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ delay: 0.3 + index * 0.05 }}>
-                  <motion.a href="#" className="opacity-90 hover:opacity-100 transition-opacity inline-block" variants={linkVariants} whileHover="hover" onClick={(e) => e.preventDefault()}>
-                    {item}
-                  </motion.a>
+              {[
+                { label: t.footer.userGuide, to: "/user-guide" },
+                { label: t.footer.faq, to: "/faq" },
+                { label: t.footer.privacy, to: "/privacy" },
+                { label: t.footer.contactUs, to: "/#contact" },
+              ].map((item, index) => (
+                <motion.li key={item.to} initial={{ opacity: 0, x: -10 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ delay: 0.3 + index * 0.05 }}>
+                  <motion.div variants={linkVariants} whileHover="hover">
+                    <Link to={item.to} className="opacity-90 hover:opacity-100 transition-opacity inline-block">
+                      {item.label}
+                    </Link>
+                  </motion.div>
                 </motion.li>
               ))}
             </ul>

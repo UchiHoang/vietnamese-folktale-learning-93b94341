@@ -20,6 +20,9 @@ import Grade3Game from "./pages/Grade3Game";
 import Grade4Game from "./pages/Grade4Game";
 import Grade5Game from "./pages/Grade5Game";
 import DataPage from "./pages/data";
+import UserGuide from "./pages/UserGuide";
+import FAQ from "./pages/FAQ";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
 import StudyTimeLimitWrapper from "./components/game/StudyTimeLimitWrapper";
 import { LanguageProvider } from "./contexts/LanguageContext";
 
@@ -49,6 +52,9 @@ const App = () => (
           <Route path="/classroom/grade4" element={<Grade4Game />} />
           <Route path="/classroom/grade5" element={<Grade5Game />} />
           <Route path="/data" element={<DataPage />} />
+          <Route path="/user-guide" element={<UserGuide />} />
+          <Route path="/faq" element={<FAQ />} />
+          <Route path="/privacy" element={<PrivacyPolicy />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
