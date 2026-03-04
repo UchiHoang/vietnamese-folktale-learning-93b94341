@@ -164,6 +164,8 @@ const en: Translations = {
     nameLabel: "Full Name",
     namePlaceholder: "Enter your full name",
     emailPlaceholder: "email@example.com",
+    contactPhoneLabel: "Phone Number",
+    contactPhonePlaceholder: "Enter your phone number",
     subjectLabel: "Subject",
     subjectPlaceholder: "What would you like to ask about?",
     messageLabel: "Message",
