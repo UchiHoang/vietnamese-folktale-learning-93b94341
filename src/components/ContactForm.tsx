@@ -10,18 +10,28 @@ import { motion } from "framer-motion";
 import { Send, MessageCircle, Mail, User, FileText, Phone, MapPin, Star, Heart, Sparkles, BookOpen, Pencil } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 
-const contactSchema = z.object({
-  name: z.string().trim().min(1, { message: "Vui lòng nhập họ tên" }).max(100, { message: "Họ tên không được quá 100 ký tự" }),
-  email: z.string().trim().email({ message: "Email không hợp lệ" }).max(255, { message: "Email không được quá 255 ký tự" }),
-  phone: z.string().trim().max(20, { message: "Số điện thoại không được quá 20 ký tự" }).optional().or(z.literal("")),
-  subject: z.string().trim().min(1, { message: "Vui lòng nhập chủ đề" }).max(200, { message: "Chủ đề không được quá 200 ký tự" }),
-  message: z.string().trim().min(1, { message: "Vui lòng nhập tin nhắn" }).max(1000, { message: "Tin nhắn không được quá 1000 ký tự" })
+const createContactSchema = (t: any) => z.object({
+  name: z.string().trim().min(1, { message: t.contact.validation.name }).max(100, { message: t.contact.validation.nameMax }),
+  email: z.string().trim().email({ message: t.contact.validation.email }).max(255, { message: t.contact.validation.emailMax })
+    .refine(val => val.endsWith('@gmail.com'), { message: t.contact.validation.gmailOnly }),
+  phone: z.string().trim()
+    .regex(/^[0-9+\-\s]*$/, { message: t.contact.validation.phoneNumeric })
+    .max(20).optional().or(z.literal("")),
+  subject: z.string().trim().min(1, { message: t.contact.validation.subject }).max(200, { message: t.contact.validation.subjectMax }),
+  message: z.string().trim().min(1, { message: t.contact.validation.message }).max(1000, { message: t.contact.validation.messageMax })
 });
 
-type ContactFormData = z.infer<typeof contactSchema>;
+type ContactFormData = {
+  name: string;
+  email: string;
+  phone?: string;
+  subject: string;
+  message: string;
+};
 
 const ContactForm = () => {
   const { t } = useLanguage();
+  const contactSchema = createContactSchema(t);
   const [formData, setFormData] = useState<ContactFormData>({
     name: "",
     email: "",

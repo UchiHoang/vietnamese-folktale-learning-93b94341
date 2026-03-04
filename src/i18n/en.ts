@@ -181,6 +181,8 @@ const en: Translations = {
       nameMax: "Name must not exceed 100 characters",
       email: "Invalid email address",
       emailMax: "Email must not exceed 255 characters",
+      gmailOnly: "Email must be a Gmail address (@gmail.com)",
+      phoneNumeric: "Phone number must contain only digits",
       subject: "Please enter a subject",
       subjectMax: "Subject must not exceed 200 characters",
       message: "Please enter a message",
