@@ -24,7 +24,7 @@ interface LeaderboardEntry {
 const Leaderboard = () => {
   const { t } = useLanguage();
   const [selectedGrade, setSelectedGrade] = useState("tat-ca");
-  const [selectedPeriod, setSelectedPeriod] = useState("tuan");
+  const [selectedPeriod, setSelectedPeriod] = useState("tat-ca");
   const [leaderboardData, setLeaderboardData] = useState<LeaderboardEntry[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
