@@ -25,12 +25,14 @@ import FAQ from "./pages/FAQ";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import StudyTimeLimitWrapper from "./components/game/StudyTimeLimitWrapper";
 import { LanguageProvider } from "./contexts/LanguageContext";
+import { SoundProvider } from "./contexts/SoundContext";
 
 const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <LanguageProvider>
+    <SoundProvider>
     <TooltipProvider>
       <Toaster />
       <Sonner />
@@ -60,6 +62,7 @@ const App = () => (
         </Routes>
       </BrowserRouter>
     </TooltipProvider>
+    </SoundProvider>
     </LanguageProvider>
   </QueryClientProvider>
 );
