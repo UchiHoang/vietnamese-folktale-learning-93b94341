@@ -179,6 +179,8 @@ const vi = {
       nameMax: "Họ tên không được quá 100 ký tự",
       email: "Email không hợp lệ",
       emailMax: "Email không được quá 255 ký tự",
+      gmailOnly: "Email phải là địa chỉ Gmail (@gmail.com)",
+      phoneNumeric: "Số điện thoại chỉ được chứa số",
       subject: "Vui lòng nhập chủ đề",
       subjectMax: "Chủ đề không được quá 200 ký tự",
       message: "Vui lòng nhập tin nhắn",
