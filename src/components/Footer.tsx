@@ -13,16 +13,18 @@ const Footer = ({ compact = false, className }: FooterProps) => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const scrollToContact = () => {
+  const scrollToSection = (sectionId: string) => {
     if (location.pathname === "/") {
-      document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" });
+      document.getElementById(sectionId)?.scrollIntoView({ behavior: "smooth" });
     } else {
       navigate("/");
       setTimeout(() => {
-        document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" });
+        document.getElementById(sectionId)?.scrollIntoView({ behavior: "smooth" });
       }, 300);
     }
   };
+
+  const scrollToContact = () => scrollToSection("contact");
 
   const linkVariants = {
     hover: { x: 5, color: "hsl(var(--primary))", transition: { duration: 0.2 } }
@@ -95,15 +97,19 @@ const Footer = ({ compact = false, className }: FooterProps) => {
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: 0.1 }}>
             <h4 className="font-heading font-bold mb-4">{t.footer.links}</h4>
             <ul className="space-y-2 text-sm">
+              <motion.li initial={{ opacity: 0, x: -10 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ delay: 0.2 }}>
+                <motion.div variants={linkVariants} whileHover="hover">
+                  <Link to="/" className="opacity-90 hover:opacity-100 transition-opacity inline-block">{t.footer.home}</Link>
+                </motion.div>
+              </motion.li>
               {[
-                { to: "/", label: t.footer.home },
-                { to: "#about", label: t.footer.about },
-                { to: "#classes", label: t.footer.classes },
-                { to: "#leaderboard", label: t.footer.leaderboard }
-              ].map((link, index) => (
-                <motion.li key={link.label} initial={{ opacity: 0, x: -10 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ delay: 0.2 + index * 0.05 }}>
+                { id: "about", label: t.footer.about },
+                { id: "classes", label: t.footer.classes },
+                { id: "leaderboard", label: t.footer.leaderboard },
+              ].map((item, index) => (
+                <motion.li key={item.id} initial={{ opacity: 0, x: -10 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ delay: 0.25 + index * 0.05 }}>
                   <motion.div variants={linkVariants} whileHover="hover">
-                    <Link to={link.to} className="opacity-90 hover:opacity-100 transition-opacity inline-block">{link.label}</Link>
+                    <button onClick={() => scrollToSection(item.id)} className="opacity-90 hover:opacity-100 transition-opacity inline-block">{item.label}</button>
                   </motion.div>
                 </motion.li>
               ))}
