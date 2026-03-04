@@ -1,22 +1,37 @@
 
 
-## Plan: Add phone number and email validation to Contact Form
+## Plan: Replace "Terms" with "Contact Us" link + Build 3 new pages
 
-### What to change
+### Overview
+Replace "Điều khoản sử dụng" in the footer Support section with "Liên hệ với chúng tôi" (scrolls to contact section on homepage). Then create three new pages: User Guide, FAQ, and Privacy Policy with full bilingual content.
 
-**1. Update Zod schema in `ContactForm.tsx` (line 13-19)**
+### Changes
 
-- **Phone**: Add regex validation to ensure only digits (and optional `+`, spaces, dashes) are allowed. Use `.regex(/^[0-9+\-\s]*$/)` to enforce numeric-only input.
-- **Email**: Add `.refine()` or keep `.email()` — the user wants to ensure it's specifically a Gmail address (`@gmail.com`). Add `.refine(val => val.endsWith('@gmail.com'))` with appropriate error message.
+**1. Update Footer support links** (`src/components/Footer.tsx`)
+- Replace the static `terms` item with a `contactUs` link
+- Make `userGuide`, `faq`, `privacy` use `<Link>` to `/user-guide`, `/faq`, `/privacy`
+- Make `contactUs` use `<Link to="/#contact">` or scroll to `#contact` section on homepage
+- Refactor the support items from a simple `.map()` to individual items with proper routing
 
-**2. Update i18n translations (`vi.ts` and `en.ts`)**
+**2. Update i18n** (`src/i18n/vi.ts`, `src/i18n/en.ts`)
+- Replace `footer.terms` with `footer.contactUs`: "Liên hệ với chúng tôi" / "Contact Us"
+- Add full page content translations for:
+  - `userGuidePage`: title, sections covering how to navigate, play games, track progress, use library
+  - `faqPage`: title, common Q&A items (10+ questions about accounts, games, progress, etc.)
+  - `privacyPage`: title, sections about data collection, usage, security, children's privacy, contact
 
-Add error messages:
-- Vietnamese: `"Số điện thoại chỉ được chứa số"`, `"Email phải là địa chỉ Gmail (@gmail.com)"`
-- English: `"Phone number must contain only digits"`, `"Email must be a Gmail address (@gmail.com)"`
+**3. Create 3 new pages** (`src/pages/`)
+- `UserGuide.tsx` — Accordion-based guide with sections: Getting Started, Navigation, Games, Progress Tracking, Library
+- `FAQ.tsx` — Accordion FAQ with categorized questions and answers
+- `PrivacyPolicy.tsx` — Structured privacy policy with standard sections
+- All pages include Header + Footer, use `useLanguage()` for bilingual support, and follow existing page patterns
 
-### Files to edit
-- `src/components/ContactForm.tsx` — update zod schema for phone regex and email gmail check
-- `src/i18n/vi.ts` — add validation error messages
-- `src/i18n/en.ts` — add validation error messages
+**4. Add routes** (`src/App.tsx`)
+- `/user-guide` → `UserGuide`
+- `/faq` → `FAQ`
+- `/privacy` → `PrivacyPolicy`
+
+### Files to create/edit
+- **Edit**: `src/components/Footer.tsx`, `src/i18n/vi.ts`, `src/i18n/en.ts`, `src/App.tsx`
+- **Create**: `src/pages/UserGuide.tsx`, `src/pages/FAQ.tsx`, `src/pages/PrivacyPolicy.tsx`
 
