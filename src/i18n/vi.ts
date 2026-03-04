@@ -162,6 +162,8 @@ const vi = {
     nameLabel: "Họ và tên",
     namePlaceholder: "Nhập họ tên của bạn",
     emailPlaceholder: "email@example.com",
+    contactPhoneLabel: "Số điện thoại",
+    contactPhonePlaceholder: "Nhập số điện thoại của bạn",
     subjectLabel: "Chủ đề",
     subjectPlaceholder: "Bạn muốn hỏi về điều gì?",
     messageLabel: "Tin nhắn",

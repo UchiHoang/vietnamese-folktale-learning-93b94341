@@ -13,6 +13,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 const contactSchema = z.object({
   name: z.string().trim().min(1, { message: "Vui lòng nhập họ tên" }).max(100, { message: "Họ tên không được quá 100 ký tự" }),
   email: z.string().trim().email({ message: "Email không hợp lệ" }).max(255, { message: "Email không được quá 255 ký tự" }),
+  phone: z.string().trim().max(20, { message: "Số điện thoại không được quá 20 ký tự" }).optional().or(z.literal("")),
   subject: z.string().trim().min(1, { message: "Vui lòng nhập chủ đề" }).max(200, { message: "Chủ đề không được quá 200 ký tự" }),
   message: z.string().trim().min(1, { message: "Vui lòng nhập tin nhắn" }).max(1000, { message: "Tin nhắn không được quá 1000 ký tự" })
 });
@@ -24,6 +25,7 @@ const ContactForm = () => {
   const [formData, setFormData] = useState<ContactFormData>({
     name: "",
     email: "",
+    phone: "",
     subject: "",
     message: ""
   });
@@ -83,7 +85,7 @@ const ContactForm = () => {
         description: t.contact.successDesc,
       });
       
-      setFormData({ name: "", email: "", subject: "", message: "" });
+      setFormData({ name: "", email: "", phone: "", subject: "", message: "" });
     } catch (error) {
       console.error("Contact form error:", error);
       toast({
@@ -410,33 +412,63 @@ const ContactForm = () => {
                 </motion.div>
               </div>
 
-              <motion.div className="mb-6 relative z-10" variants={inputVariants} whileFocus="focus">
-                <label htmlFor="subject" className="flex items-center gap-2 font-semibold mb-2">
-                  <FileText className="h-4 w-4 text-primary" />
-                  {t.contact.subjectLabel}
-                </label>
-                <motion.div whileHover={{ scale: 1.01 }}>
-                  <Input
-                    id="subject"
-                    name="subject"
-                    type="text"
-                    placeholder={t.contact.subjectPlaceholder}
-                    value={formData.subject}
-                    onChange={handleChange}
-                    className={`border-2 transition-all duration-300 ${errors.subject ? 'border-destructive' : 'border-secondary hover:border-primary/50'} focus:border-primary focus:ring-2 focus:ring-primary/20`}
-                    disabled={isSubmitting}
-                  />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6 relative z-10">
+                <motion.div variants={inputVariants} whileFocus="focus">
+                  <label htmlFor="phone" className="flex items-center gap-2 font-semibold mb-2">
+                    <Phone className="h-4 w-4 text-primary" />
+                    {t.contact.contactPhoneLabel}
+                  </label>
+                  <motion.div whileHover={{ scale: 1.01 }}>
+                    <Input
+                      id="phone"
+                      name="phone"
+                      type="tel"
+                      placeholder={t.contact.contactPhonePlaceholder}
+                      value={formData.phone}
+                      onChange={handleChange}
+                      className={`border-2 transition-all duration-300 ${errors.phone ? 'border-destructive' : 'border-secondary hover:border-primary/50'} focus:border-primary focus:ring-2 focus:ring-primary/20`}
+                      disabled={isSubmitting}
+                    />
+                  </motion.div>
+                  {errors.phone && (
+                    <motion.p 
+                      className="text-sm text-destructive mt-1"
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                    >
+                      {errors.phone}
+                    </motion.p>
+                  )}
                 </motion.div>
-                {errors.subject && (
-                  <motion.p 
-                    className="text-sm text-destructive mt-1"
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                  >
-                    {errors.subject}
-                  </motion.p>
-                )}
-              </motion.div>
+
+                <motion.div variants={inputVariants} whileFocus="focus">
+                  <label htmlFor="subject" className="flex items-center gap-2 font-semibold mb-2">
+                    <FileText className="h-4 w-4 text-primary" />
+                    {t.contact.subjectLabel}
+                  </label>
+                  <motion.div whileHover={{ scale: 1.01 }}>
+                    <Input
+                      id="subject"
+                      name="subject"
+                      type="text"
+                      placeholder={t.contact.subjectPlaceholder}
+                      value={formData.subject}
+                      onChange={handleChange}
+                      className={`border-2 transition-all duration-300 ${errors.subject ? 'border-destructive' : 'border-secondary hover:border-primary/50'} focus:border-primary focus:ring-2 focus:ring-primary/20`}
+                      disabled={isSubmitting}
+                    />
+                  </motion.div>
+                  {errors.subject && (
+                    <motion.p 
+                      className="text-sm text-destructive mt-1"
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                    >
+                      {errors.subject}
+                    </motion.p>
+                  )}
+                </motion.div>
+              </div>
 
               <motion.div className="mb-6 relative z-10" variants={inputVariants} whileFocus="focus">
                 <label htmlFor="message" className="flex items-center gap-2 font-semibold mb-2">
