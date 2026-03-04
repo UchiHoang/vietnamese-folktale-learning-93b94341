@@ -1,5 +1,5 @@
 import { GraduationCap, Mail, Phone, Facebook, Youtube, Heart, MapPin } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useLanguage } from "@/contexts/LanguageContext";
 
@@ -10,6 +10,19 @@ interface FooterProps {
 
 const Footer = ({ compact = false, className }: FooterProps) => {
   const { t } = useLanguage();
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const scrollToContact = () => {
+    if (location.pathname === "/") {
+      document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" });
+    } else {
+      navigate("/");
+      setTimeout(() => {
+        document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" });
+      }, 300);
+    }
+  };
 
   const linkVariants = {
     hover: { x: 5, color: "hsl(var(--primary))", transition: { duration: 0.2 } }
@@ -35,7 +48,7 @@ const Footer = ({ compact = false, className }: FooterProps) => {
           <div className="flex items-center gap-6 text-xs font-semibold opacity-70">
             <Link to="/" className="hover:text-primary transition-colors hover:opacity-100">{t.footer.home.toUpperCase()}</Link>
             <Link to="/#about" className="hover:text-primary transition-colors hover:opacity-100">{t.footer.about.toUpperCase()}</Link>
-            <Link to="/#contact" className="hover:text-primary transition-colors hover:opacity-100">{t.footer.contactUs.toUpperCase()}</Link>
+            <button onClick={scrollToContact} className="hover:text-primary transition-colors hover:opacity-100">{t.footer.contactUs.toUpperCase()}</button>
             <div className="flex gap-2 ml-2 pl-4 border-l border-accent-foreground/20">
               <a href="https://www.facebook.com/HCMUE.VN" target="_blank" rel="noopener noreferrer" className="w-6 h-6 bg-accent-foreground/5 rounded-full hover:bg-primary hover:text-white transition-colors flex items-center justify-center">
                 <Facebook className="h-3 w-3" />
@@ -105,7 +118,6 @@ const Footer = ({ compact = false, className }: FooterProps) => {
                 { label: t.footer.userGuide, to: "/user-guide" },
                 { label: t.footer.faq, to: "/faq" },
                 { label: t.footer.privacy, to: "/privacy" },
-                { label: t.footer.contactUs, to: "/#contact" },
               ].map((item, index) => (
                 <motion.li key={item.to} initial={{ opacity: 0, x: -10 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ delay: 0.3 + index * 0.05 }}>
                   <motion.div variants={linkVariants} whileHover="hover">
@@ -115,6 +127,13 @@ const Footer = ({ compact = false, className }: FooterProps) => {
                   </motion.div>
                 </motion.li>
               ))}
+              <motion.li initial={{ opacity: 0, x: -10 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ delay: 0.45 }}>
+                <motion.div variants={linkVariants} whileHover="hover">
+                  <button onClick={scrollToContact} className="opacity-90 hover:opacity-100 transition-opacity inline-block">
+                    {t.footer.contactUs}
+                  </button>
+                </motion.div>
+              </motion.li>
             </ul>
           </motion.div>
 
