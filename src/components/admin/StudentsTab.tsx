@@ -170,12 +170,6 @@ const StudentsTab = () => {
         .eq("user_id", student.id)
         .maybeSingle();
 
-      const { data: gameProgress } = await supabase
-        .from("game_progress")
-        .select("total_xp, level, total_points")
-        .eq("user_id", student.id)
-        .maybeSingle();
-
       const { data: streak } = await supabase
         .from("user_streaks")
         .select("current_streak")
@@ -207,9 +201,9 @@ const StudentsTab = () => {
       }
 
       setStudentStats({
-        total_xp: globalData?.total_xp || gameProgress?.total_xp || 0,
-        level: globalData?.global_level || gameProgress?.level || 1,
-        total_points: totalPoints || gameProgress?.total_points || 0,
+        total_xp: globalData?.total_xp || 0,
+        level: globalData?.global_level || 1,
+        total_points: totalPoints,
         current_streak: streak?.current_streak || 0,
         completed_lessons: totalCompletedLessons,
       });
