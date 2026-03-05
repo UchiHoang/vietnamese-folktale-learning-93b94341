@@ -190,13 +190,6 @@ const Profile = () => {
       .select("*")
       .eq("user_id", userId);
 
-    // Load from game_progress (legacy, for compatibility)
-    const { data: progressData } = await supabase
-      .from("game_progress")
-      .select("*")
-      .eq("user_id", userId)
-      .single();
-
     if (globalError && !globalData) {
       console.error("Error loading global progress:", globalError);
     }
@@ -207,7 +200,6 @@ const Profile = () => {
     
     if (coursesData && coursesData.length > 0) {
       coursesData.forEach((course: any) => {
-        // completed_nodes can be array of numbers [0,1,2] or strings ["n1","n2"]
         const nodes = Array.isArray(course.completed_nodes) ? course.completed_nodes : [];
         allCompletedNodes.push(...nodes);
         totalPoints += (course.total_stars || 0);
@@ -215,15 +207,15 @@ const Profile = () => {
     }
 
     // Use global_xp from game_globals as PRIMARY source
-    const totalXP = (globalData?.total_xp as number) || (progressData?.total_xp as number) || 0;
-    const globalLevel = (globalData?.global_level as number) || (progressData?.level as number) || 1;
+    const totalXP = (globalData?.total_xp as number) || 0;
+    const globalLevel = (globalData?.global_level as number) || 1;
     setGameProgress({
       total_xp: totalXP,
       total_points: totalPoints,
       level: globalLevel,
-      current_node: progressData?.current_node || 0,
+      current_node: 0,
       completed_nodes: allCompletedNodes,
-      earned_badges: (progressData?.earned_badges as any[]) || [],
+      earned_badges: [],
       global_level: globalLevel,
       coins: globalData?.coins || 0,
     });

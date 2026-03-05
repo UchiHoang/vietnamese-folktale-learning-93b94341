@@ -111,33 +111,6 @@ export type Database = {
           },
         ]
       }
-      contacts: {
-        Row: {
-          created_at: string | null
-          email: string
-          id: string
-          message: string
-          name: string
-          subject: string
-        }
-        Insert: {
-          created_at?: string | null
-          email: string
-          id?: string
-          message: string
-          name: string
-          subject: string
-        }
-        Update: {
-          created_at?: string | null
-          email?: string
-          id?: string
-          message?: string
-          name?: string
-          subject?: string
-        }
-        Relationships: []
-      }
       course_progress: {
         Row: {
           completed_nodes: Json
@@ -238,57 +211,6 @@ export type Database = {
           global_level?: number
           total_xp?: number
           unlocked_badges?: Json
-          updated_at?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
-      game_progress: {
-        Row: {
-          completed_nodes: Json
-          created_at: string
-          current_node: number
-          earned_badges: Json
-          grade: string | null
-          id: string
-          last_played_at: string | null
-          level: number
-          points: number | null
-          streak: Json | null
-          total_points: number
-          total_xp: number
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          completed_nodes?: Json
-          created_at?: string
-          current_node?: number
-          earned_badges?: Json
-          grade?: string | null
-          id?: string
-          last_played_at?: string | null
-          level?: number
-          points?: number | null
-          streak?: Json | null
-          total_points?: number
-          total_xp?: number
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          completed_nodes?: Json
-          created_at?: string
-          current_node?: number
-          earned_badges?: Json
-          grade?: string | null
-          id?: string
-          last_played_at?: string | null
-          level?: number
-          points?: number | null
-          streak?: Json | null
-          total_points?: number
-          total_xp?: number
           updated_at?: string
           user_id?: string
         }
@@ -527,57 +449,6 @@ export type Database = {
           },
         ]
       }
-      stage_history: {
-        Row: {
-          accuracy: number | null
-          attempt_number: number
-          completed: boolean
-          correct_answers: number
-          course_id: string
-          created_at: string
-          id: string
-          max_score: number
-          score: number
-          stage_id: string
-          time_spent_seconds: number
-          total_questions: number
-          user_id: string
-          xp_earned: number
-        }
-        Insert: {
-          accuracy?: number | null
-          attempt_number?: number
-          completed?: boolean
-          correct_answers?: number
-          course_id?: string
-          created_at?: string
-          id?: string
-          max_score?: number
-          score?: number
-          stage_id: string
-          time_spent_seconds?: number
-          total_questions?: number
-          user_id: string
-          xp_earned?: number
-        }
-        Update: {
-          accuracy?: number | null
-          attempt_number?: number
-          completed?: boolean
-          correct_answers?: number
-          course_id?: string
-          created_at?: string
-          id?: string
-          max_score?: number
-          score?: number
-          stage_id?: string
-          time_spent_seconds?: number
-          total_questions?: number
-          user_id?: string
-          xp_earned?: number
-        }
-        Relationships: []
-      }
       topics: {
         Row: {
           created_at: string
@@ -651,48 +522,6 @@ export type Database = {
           achievement_name?: string
           earned_at?: string
           id?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
-      user_best_scores: {
-        Row: {
-          attempts: number | null
-          best_accuracy: number
-          best_score: number
-          course_id: string
-          first_completed_at: string | null
-          id: string
-          last_played_at: string
-          stage_id: string
-          total_attempts: number
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          attempts?: number | null
-          best_accuracy?: number
-          best_score?: number
-          course_id?: string
-          first_completed_at?: string | null
-          id?: string
-          last_played_at?: string
-          stage_id: string
-          total_attempts?: number
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          attempts?: number | null
-          best_accuracy?: number
-          best_score?: number
-          course_id?: string
-          first_completed_at?: string | null
-          id?: string
-          last_played_at?: string
-          stage_id?: string
-          total_attempts?: number
-          updated_at?: string
           user_id?: string
         }
         Relationships: []

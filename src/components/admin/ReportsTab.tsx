@@ -132,7 +132,7 @@ const ReportsTab = () => {
         activityRes,
         studentRolesRes,
         globalProgressRes,
-        stageHistoryRes,
+        levelHistoryRes,
       ] = await Promise.all([
         supabase.from("user_roles").select("*", { count: "exact", head: true }).eq("role", "student"),
         supabase.from("classes").select("*", { count: "exact", head: true }),
@@ -143,8 +143,8 @@ const ReportsTab = () => {
         supabase.from("user_roles").select("user_id").eq("role", "student"),
         supabase.from("game_globals").select("user_id, total_xp, global_level").gt("total_xp", 0).order("total_xp", { ascending: false }).limit(5),
         startDate
-          ? supabase.from("stage_history").select("user_id, course_id, correct_answers, total_questions, score, created_at").gte("created_at", startDate)
-          : supabase.from("stage_history").select("user_id, course_id, correct_answers, total_questions, score, created_at"),
+          ? supabase.from("level_history").select("user_id, course_id, score, stars, created_at, node_index, passed").gte("created_at", startDate)
+          : supabase.from("level_history").select("user_id, course_id, score, stars, created_at, node_index, passed"),
       ]);
 
       setTotalStudents(studentCount || 0);
@@ -207,18 +207,18 @@ const ReportsTab = () => {
         setTopStudents([]);
       }
 
-      const stageData = stageHistoryRes.data || [];
-      const gradeMap: Record<string, { users: Set<string>; totalStages: number; totalAcc: number; accCount: number }> = {};
-      stageData.forEach((r: any) => {
+      const levelData = levelHistoryRes.data || [];
+      const gradeMap: Record<string, { users: Set<string>; totalStages: number; totalScore: number; scoreCount: number }> = {};
+      levelData.forEach((r: any) => {
         const coursePrefix = (r.course_id || "").split("-")[0];
         const gradeName = COURSE_TO_GRADE[coursePrefix];
         if (!gradeName) return;
-        if (!gradeMap[gradeName]) gradeMap[gradeName] = { users: new Set(), totalStages: 0, totalAcc: 0, accCount: 0 };
+        if (!gradeMap[gradeName]) gradeMap[gradeName] = { users: new Set(), totalStages: 0, totalScore: 0, scoreCount: 0 };
         gradeMap[gradeName].users.add(r.user_id);
         gradeMap[gradeName].totalStages++;
-        if (r.total_questions > 0) {
-          gradeMap[gradeName].totalAcc += (r.correct_answers / r.total_questions) * 100;
-          gradeMap[gradeName].accCount++;
+        if (r.passed) {
+          gradeMap[gradeName].totalScore += Number(r.score);
+          gradeMap[gradeName].scoreCount++;
         }
       });
 
@@ -227,7 +227,7 @@ const ReportsTab = () => {
         totalStudents: data.users.size,
         activeStudents: data.users.size,
         totalStages: data.totalStages,
-        avgAccuracy: data.accCount > 0 ? Math.round(data.totalAcc / data.accCount) : 0,
+        avgAccuracy: data.scoreCount > 0 ? Math.round(data.totalScore / data.scoreCount) : 0,
         color: GRADE_COLORS[grade] || "#6b7280",
       }));
       setGradeCompletions(completions.sort((a, b) => {

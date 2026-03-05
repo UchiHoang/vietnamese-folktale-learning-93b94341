@@ -40,17 +40,6 @@ interface LevelHistoryRow {
   node_index: number;
 }
 
-interface StageHistoryRow {
-  course_id: string;
-  stage_id: string;
-  score: number;
-  correct_answers: number;
-  total_questions: number;
-  time_spent_seconds: number;
-  accuracy: number | null;
-  xp_earned: number;
-  created_at: string;
-}
 
 const COLORS = ['#22c55e', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899'];
 
@@ -67,7 +56,6 @@ const getCourseGroup = (courseId: string): string => {
 const AnalyticsTab = ({ gameProgress, streak }: AnalyticsTabProps) => {
   const { t } = useLanguage();
   const [levelHistory, setLevelHistory] = useState<LevelHistoryRow[]>([]);
-  const [stageHistory, setStageHistory] = useState<StageHistoryRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [timeRange, setTimeRange] = useState<"7d" | "30d" | "all">("7d");
 
@@ -97,12 +85,8 @@ const AnalyticsTab = ({ gameProgress, streak }: AnalyticsTabProps) => {
     try {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) return;
-      const [levelRes, stageRes] = await Promise.all([
-        supabase.from("level_history").select("course_id, score, stars, duration_seconds, passed, created_at, node_index").eq("user_id", session.user.id).order("created_at", { ascending: true }),
-        supabase.from("stage_history").select("course_id, stage_id, score, correct_answers, total_questions, time_spent_seconds, accuracy, xp_earned, created_at").eq("user_id", session.user.id).order("created_at", { ascending: true }),
-      ]);
+      const levelRes = await supabase.from("level_history").select("course_id, score, stars, duration_seconds, passed, created_at, node_index").eq("user_id", session.user.id).order("created_at", { ascending: true });
       if (levelRes.data) setLevelHistory(levelRes.data);
-      if (stageRes.data) setStageHistory(stageRes.data);
     } catch (error) {
       console.error("Error loading analytics data:", error);
     } finally {
@@ -117,12 +101,6 @@ const AnalyticsTab = ({ gameProgress, streak }: AnalyticsTabProps) => {
     return levelHistory.filter(r => new Date(r.created_at) >= cutoff);
   }, [levelHistory, timeRange]);
 
-  const filteredStage = useMemo(() => {
-    if (timeRange === "all") return stageHistory;
-    const days = timeRange === "7d" ? 7 : 30;
-    const cutoff = new Date(); cutoff.setDate(cutoff.getDate() - days);
-    return stageHistory.filter(r => new Date(r.created_at) >= cutoff);
-  }, [stageHistory, timeRange]);
 
   const chartData = useMemo(() => {
     const byDate: Record<string, { xp: number; lessons: number; time: number }> = {};
@@ -131,13 +109,8 @@ const AnalyticsTab = ({ gameProgress, streak }: AnalyticsTabProps) => {
       if (!byDate[d]) byDate[d] = { xp: 0, lessons: 0, time: 0 };
       byDate[d].xp += Number(r.score); byDate[d].lessons += 1; byDate[d].time += Math.round(r.duration_seconds / 60);
     }
-    for (const r of filteredStage) {
-      const d = new Date(r.created_at).toLocaleDateString("vi-VN", { day: "2-digit", month: "2-digit" });
-      if (!byDate[d]) byDate[d] = { xp: 0, lessons: 0, time: 0 };
-      byDate[d].time += Math.round(r.time_spent_seconds / 60); byDate[d].xp += r.xp_earned;
-    }
     return Object.entries(byDate).map(([date, v]) => ({ date, ...v }));
-  }, [filteredLevel, filteredStage]);
+  }, [filteredLevel]);
 
   const totalXP = gameProgress?.total_xp || chartData.reduce((s, d) => s + d.xp, 0);
   const totalLessons = gameProgress?.completed_nodes?.length || chartData.reduce((s, d) => s + d.lessons, 0);
@@ -150,46 +123,38 @@ const AnalyticsTab = ({ gameProgress, streak }: AnalyticsTabProps) => {
       if (!groups[g]) groups[g] = { totalScore: 0, count: 0, maxScore: 0 };
       groups[g].totalScore += Number(r.score); groups[g].count += 1; groups[g].maxScore = Math.max(groups[g].maxScore, Number(r.score));
     }
-    for (const r of stageHistory) {
-      const g = getCourseGroup(r.course_id); if (g === "other") continue;
-      if (!groups[g]) groups[g] = { totalScore: 0, count: 0, maxScore: 0 };
-      if (r.total_questions > 0) {
-        const calcAcc = (r.correct_answers / r.total_questions) * 100;
-        groups[g].totalScore += calcAcc; groups[g].count += 1; groups[g].maxScore = Math.max(groups[g].maxScore, 100);
-      }
-    }
     const allKeys = ["preschool", "grade1", "grade2", "grade3", "grade4", "grade5"];
     return allKeys.map(k => {
       const g = groups[k]; let value = 0;
       if (g && g.count > 0) { const avg = g.totalScore / g.count; value = g.maxScore > 0 ? Math.round((avg / g.maxScore) * 100) : 0; value = Math.min(value, 100); }
       return { skill: SKILL_LABELS[k] || k, value, fullMark: 100 };
     });
-  }, [levelHistory, stageHistory, SKILL_LABELS]);
+  }, [levelHistory, SKILL_LABELS]);
 
   const subjectData = useMemo(() => {
     const counts: Record<string, number> = {}; let total = 0;
     for (const r of levelHistory) { const g = getCourseGroup(r.course_id); if (g === "other") continue; counts[g] = (counts[g] || 0) + 1; total++; }
-    for (const r of stageHistory) { const g = getCourseGroup(r.course_id); if (g === "other") continue; counts[g] = (counts[g] || 0) + 1; total++; }
+    
     if (total === 0) return [];
     return Object.entries(counts).map(([key, count], i) => ({ name: COURSE_LABELS[key] || key, value: Math.round((count / total) * 100), color: COLORS[i % COLORS.length] })).sort((a, b) => b.value - a.value);
-  }, [levelHistory, stageHistory, COURSE_LABELS]);
+  }, [levelHistory, COURSE_LABELS]);
 
   const performanceByTime = useMemo(() => {
-    const buckets: Record<string, { totalAcc: number; count: number }> = { morning: { totalAcc: 0, count: 0 }, afternoon: { totalAcc: 0, count: 0 }, evening: { totalAcc: 0, count: 0 } };
-    for (const r of stageHistory) {
-      if (r.total_questions <= 0) continue;
+    const buckets: Record<string, { totalScore: number; count: number }> = { morning: { totalScore: 0, count: 0 }, afternoon: { totalScore: 0, count: 0 }, evening: { totalScore: 0, count: 0 } };
+    for (const r of levelHistory) {
+      if (!r.passed) continue;
       const hour = new Date(r.created_at).getHours();
-      const acc = (r.correct_answers / r.total_questions) * 100;
-      if (hour >= 6 && hour < 12) { buckets.morning.totalAcc += acc; buckets.morning.count += 1; }
-      else if (hour >= 12 && hour < 18) { buckets.afternoon.totalAcc += acc; buckets.afternoon.count += 1; }
-      else if (hour >= 18 && hour < 23) { buckets.evening.totalAcc += acc; buckets.evening.count += 1; }
+      const score = Number(r.score);
+      if (hour >= 6 && hour < 12) { buckets.morning.totalScore += score; buckets.morning.count += 1; }
+      else if (hour >= 12 && hour < 18) { buckets.afternoon.totalScore += score; buckets.afternoon.count += 1; }
+      else if (hour >= 18 && hour < 23) { buckets.evening.totalScore += score; buckets.evening.count += 1; }
     }
     return [
-      { time: t.analyticsTab.morning, accuracy: buckets.morning.count > 0 ? Math.round(buckets.morning.totalAcc / buckets.morning.count) : 0, sessions: buckets.morning.count },
-      { time: t.analyticsTab.afternoon, accuracy: buckets.afternoon.count > 0 ? Math.round(buckets.afternoon.totalAcc / buckets.afternoon.count) : 0, sessions: buckets.afternoon.count },
-      { time: t.analyticsTab.evening, accuracy: buckets.evening.count > 0 ? Math.round(buckets.evening.totalAcc / buckets.evening.count) : 0, sessions: buckets.evening.count },
+      { time: t.analyticsTab.morning, accuracy: buckets.morning.count > 0 ? Math.round(buckets.morning.totalScore / buckets.morning.count) : 0, sessions: buckets.morning.count },
+      { time: t.analyticsTab.afternoon, accuracy: buckets.afternoon.count > 0 ? Math.round(buckets.afternoon.totalScore / buckets.afternoon.count) : 0, sessions: buckets.afternoon.count },
+      { time: t.analyticsTab.evening, accuracy: buckets.evening.count > 0 ? Math.round(buckets.evening.totalScore / buckets.evening.count) : 0, sessions: buckets.evening.count },
     ];
-  }, [stageHistory, t]);
+  }, [levelHistory, t]);
 
   const weeklyComparison = useMemo(() => {
     const now = new Date();
@@ -197,22 +162,19 @@ const AnalyticsTab = ({ gameProgress, streak }: AnalyticsTabProps) => {
     const lastWeekStart = new Date(now); lastWeekStart.setDate(now.getDate() - 14);
     const thisWeekLevel = levelHistory.filter(r => new Date(r.created_at) >= thisWeekStart);
     const lastWeekLevel = levelHistory.filter(r => { const d = new Date(r.created_at); return d >= lastWeekStart && d < thisWeekStart; });
-    const thisWeekStage = stageHistory.filter(r => new Date(r.created_at) >= thisWeekStart);
-    const lastWeekStage = stageHistory.filter(r => { const d = new Date(r.created_at); return d >= lastWeekStart && d < thisWeekStart; });
-    const twXP = thisWeekLevel.reduce((s, r) => s + Number(r.score), 0) + thisWeekStage.reduce((s, r) => s + r.xp_earned, 0);
-    const lwXP = lastWeekLevel.reduce((s, r) => s + Number(r.score), 0) + lastWeekStage.reduce((s, r) => s + r.xp_earned, 0);
-    const twTime = thisWeekLevel.reduce((s, r) => s + r.duration_seconds, 0) + thisWeekStage.reduce((s, r) => s + r.time_spent_seconds, 0);
-    const lwTime = lastWeekLevel.reduce((s, r) => s + r.duration_seconds, 0) + lastWeekStage.reduce((s, r) => s + r.time_spent_seconds, 0);
-    const twLessons = thisWeekLevel.length + thisWeekStage.length;
-    const lwLessons = lastWeekLevel.length + lastWeekStage.length;
-    const calcAcc = (r: StageHistoryRow) => r.total_questions > 0 ? (r.correct_answers / r.total_questions) * 100 : null;
-    const twAccArr = thisWeekStage.map(calcAcc).filter((v): v is number => v !== null);
-    const lwAccArr = lastWeekStage.map(calcAcc).filter((v): v is number => v !== null);
-    const twAcc = twAccArr.length > 0 ? Math.round(twAccArr.reduce((a, b) => a + b, 0) / twAccArr.length) : 0;
-    const lwAcc = lwAccArr.length > 0 ? Math.round(lwAccArr.reduce((a, b) => a + b, 0) / lwAccArr.length) : 0;
+    const twXP = thisWeekLevel.reduce((s, r) => s + Number(r.score), 0);
+    const lwXP = lastWeekLevel.reduce((s, r) => s + Number(r.score), 0);
+    const twTime = thisWeekLevel.reduce((s, r) => s + r.duration_seconds, 0);
+    const lwTime = lastWeekLevel.reduce((s, r) => s + r.duration_seconds, 0);
+    const twLessons = thisWeekLevel.length;
+    const lwLessons = lastWeekLevel.length;
+    const twPassedArr = thisWeekLevel.filter(r => r.passed);
+    const lwPassedArr = lastWeekLevel.filter(r => r.passed);
+    const twAcc = twPassedArr.length > 0 ? Math.round(twPassedArr.reduce((s, r) => s + Number(r.score), 0) / twPassedArr.length) : 0;
+    const lwAcc = lwPassedArr.length > 0 ? Math.round(lwPassedArr.reduce((s, r) => s + Number(r.score), 0) / lwPassedArr.length) : 0;
     const delta = (curr: number, prev: number) => { if (prev === 0) return curr > 0 ? 100 : 0; return Math.round(((curr - prev) / prev) * 100); };
     return { avgXPPerDay: twLessons > 0 ? Math.round(twXP / 7) : 0, avgTimePerDay: Math.round(twTime / 60 / 7), accuracy: twAcc, lessonsCompleted: twLessons, deltaXP: delta(twXP, lwXP), deltaTime: delta(twTime, lwTime), deltaAcc: delta(twAcc, lwAcc), deltaLessons: delta(twLessons, lwLessons) };
-  }, [levelHistory, stageHistory]);
+  }, [levelHistory]);
 
   const parentTips = useMemo(() => {
     const tips: string[] = [];
@@ -226,7 +188,7 @@ const AnalyticsTab = ({ gameProgress, streak }: AnalyticsTabProps) => {
     return tips;
   }, [performanceByTime, streak, subjectData, weeklyComparison]);
 
-  const hasData = levelHistory.length > 0 || stageHistory.length > 0;
+  const hasData = levelHistory.length > 0;
 
   const EmptyState = ({ message }: { message: string }) => (
     <div className="flex flex-col items-center justify-center py-8 text-muted-foreground">
@@ -363,7 +325,7 @@ const AnalyticsTab = ({ gameProgress, streak }: AnalyticsTabProps) => {
 
         <Card className="p-6">
           <h3 className="font-bold text-lg mb-4 flex items-center gap-2"><Award className="h-5 w-5 text-orange-500" />{t.analyticsTab.performanceByTime}</h3>
-          {stageHistory.length > 0 ? (
+          {levelHistory.length > 0 ? (
             <ResponsiveContainer width="100%" height={200}>
               <BarChart data={performanceByTime} layout="vertical">
                 <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
