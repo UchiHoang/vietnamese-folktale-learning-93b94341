@@ -20,35 +20,31 @@ export const useOnlineTimeTracker = (enabled: boolean) => {
       const userId = session.user.id;
       const today = new Date().toISOString().split("T")[0];
 
-      // Try insert first (new day = no row yet)
-      const { error: insertError } = await supabase
+      // Check if row exists first to avoid 409 duplicate key error
+      const { data: existing } = await supabase
         .from("daily_activity")
-        .insert({
-          user_id: userId,
-          activity_date: today,
-          time_spent_minutes: 1,
-        });
+        .select("time_spent_minutes")
+        .eq("user_id", userId)
+        .eq("activity_date", today)
+        .maybeSingle();
 
-      if (insertError) {
-        // Row already exists for today, increment time_spent_minutes
-        const { data: current } = await supabase
+      if (existing) {
+        await supabase
           .from("daily_activity")
-          .select("time_spent_minutes")
+          .update({ time_spent_minutes: existing.time_spent_minutes + 1 })
           .eq("user_id", userId)
-          .eq("activity_date", today)
-          .maybeSingle();
-
-        if (current) {
-          await supabase
-            .from("daily_activity")
-            .update({ time_spent_minutes: current.time_spent_minutes + 1 })
-            .eq("user_id", userId)
-            .eq("activity_date", today);
-        }
+          .eq("activity_date", today);
+      } else {
+        await supabase
+          .from("daily_activity")
+          .insert({
+            user_id: userId,
+            activity_date: today,
+            time_spent_minutes: 1,
+          });
       }
     };
 
-    // Start interval (first tick after 60s)
     intervalRef.current = setInterval(tick, 60_000);
 
     return () => {
