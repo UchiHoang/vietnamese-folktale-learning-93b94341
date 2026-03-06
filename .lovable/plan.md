@@ -1,52 +1,65 @@
 
 
-# Plan: Cleanup Redundant Database Functions
+# Plan: Cleanup Redundant Supabase Tables
 
-## Analysis
+## Analysis Summary
 
-After cross-referencing all 14 database functions with the codebase, I identified the following:
+After reviewing all 18 tables and cross-referencing with the codebase, I identified **4 tables** that are redundant or unused:
 
-### Functions to DROP (unused or broken)
+### Tables to Remove
 
-| Function | Issue |
-|----------|-------|
-| **`update_current_node`** | References deleted `game_progress` table. Will error if called. Only appears in auto-generated `types.ts`. Never called from app code. |
-| **`get_user_progress`** | Returns legacy format with hardcoded `points: 0`, `current_node: 0`. Never called from app code (only in `types.ts`). Replaced by `get_full_game_state`. |
-| **`get_public_profile`** | Never called from any app code. |
+| Table | Reason | Current Usage |
+|-------|--------|---------------|
+| **`contacts`** | Contact form uses edge function `send-contact-email` directly via Resend API. This table is never read or written to from any code. | Zero references in app code or edge functions |
+| **`stage_history`** | Legacy table superseded by `level_history`. The `complete_stage` RPC writes to `level_history`, not `stage_history`. Only read in `ReportsTab.tsx` and `AnalyticsTab.tsx` (can be migrated to `level_history`). | Read-only in 2 files, never written to |
+| **`user_best_scores`** | Legacy table. Never written to from app code. Only read in `useSupabaseProgress.ts` which itself is never imported anywhere. | Dead code path |
+| **`game_progress`** | Legacy table superseded by `course_progress` + `game_globals`. Still referenced in `useSupabaseProgress.ts` (unused hook), `Profile.tsx`, `StudentsTab.tsx`, and `handle_new_user()` trigger. | Partially used but redundant |
 
-### Functions to KEEP (actively used or serving infrastructure purpose)
+### Tables to Keep (confirmed active)
 
-| Function | Usage |
-|----------|-------|
-| `complete_stage` | Core game RPC, called from `useGameProgress.ts` |
-| `get_full_game_state` | Core game RPC, called from `useGameProgress.ts` |
-| `get_leaderboard` | Called from `Leaderboard.tsx` |
-| `get_lesson_progress` | Called from `useLessonProgress.ts` |
-| `mark_topic_completed` | Called from lesson components |
-| `unlock_badge` | Called from `useAchievements.ts` |
-| `update_user_streak` | Called from `Profile.tsx` and `complete_stage` |
-| `calculate_level_from_xp` | Used by `complete_stage` internally (utility) |
-| `has_role` | Used in RLS policies across all tables |
-| `handle_new_user` | Trigger function for `auth.users` |
-| `ensure_game_globals` | Trigger function for `auth.users` |
-| `update_updated_at_column` / `handle_updated_at` | Trigger functions for `updated_at` columns |
+`classes`, `comment_likes`, `comments`, `course_progress`, `daily_activity`, `game_globals`, `lessons`, `level_history`, `library_documents`, `notes`, `parental_settings`, `profiles`, `topics`, `user_achievements`, `user_lesson_progress`, `user_roles`, `user_streaks`
 
-### Note on trigger functions
-`update_updated_at_column` and `handle_updated_at` are duplicate trigger helpers (same logic). We should consolidate to one but need to check which triggers reference which. Safe to keep both for now.
+---
 
-## Implementation
+## Implementation Steps
 
-### Step 1: Drop 3 unused functions via SQL migration
+### 1. Migrate code references away from legacy tables
+
+**`Profile.tsx`** and **`StudentsTab.tsx`**: Replace `game_progress` reads with `game_globals` (which already has `total_xp`, `global_level`).
+
+**`ReportsTab.tsx`** and **`AnalyticsTab.tsx`**: Replace `stage_history` reads with `level_history` queries (same data structure, already the primary source of truth).
+
+### 2. Delete unused hook file
+
+Remove `src/hooks/useSupabaseProgress.ts` entirely -- it's never imported and contains all references to `game_progress`, `stage_history`, and `user_best_scores`.
+
+### 3. Update `handle_new_user()` trigger
+
+Remove the `INSERT INTO public.game_progress` line from the trigger function, since new users get `game_globals` + `course_progress` rows created on first game interaction.
+
+### 4. Drop tables via migration
 
 ```sql
-DROP FUNCTION IF EXISTS public.update_current_node(integer, text);
-DROP FUNCTION IF EXISTS public.get_user_progress();
-DROP FUNCTION IF EXISTS public.get_public_profile(uuid);
+DROP TABLE IF EXISTS public.contacts CASCADE;
+DROP TABLE IF EXISTS public.stage_history CASCADE;
+DROP TABLE IF EXISTS public.user_best_scores CASCADE;
+DROP TABLE IF EXISTS public.game_progress CASCADE;
 ```
 
-This single migration removes all 3 broken/unused functions. The `types.ts` file will auto-regenerate to reflect the changes.
+### 5. Update `handle_new_user()` function
 
-### Risk Assessment
-- **Zero risk**: All 3 functions have zero references in application code (only in auto-generated types).
-- `update_current_node` would actively error if called since `game_progress` table no longer exists.
+```sql
+-- Remove game_progress insert from the trigger
+CREATE OR REPLACE FUNCTION public.handle_new_user() ...
+  -- Remove: INSERT INTO public.game_progress (user_id) VALUES (new.id);
+```
+
+---
+
+## Risk Assessment
+
+- **`contacts`**: Zero risk. Completely unused.
+- **`stage_history`**: Low risk. Data can be reconstructed from `level_history`. The 2 read-only references will be updated to use `level_history`.
+- **`user_best_scores`**: Zero risk. Never written to, only accessed from dead code.
+- **`game_progress`**: Low risk. All active game logic uses `course_progress` + `game_globals`. The 2 remaining reads in Profile/Admin will be updated.
 
