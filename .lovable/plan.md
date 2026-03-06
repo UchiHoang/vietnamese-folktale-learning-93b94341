@@ -1,65 +1,41 @@
 
 
-# Plan: Cleanup Redundant Supabase Tables
+# Plan: Database Documentation Page
 
-## Analysis Summary
+## Overview
+Create a `/db-docs` page that displays all 17 tables with their columns, types, defaults, RLS policies, foreign keys, and database functions. The data will be hardcoded as a structured constant (since we cannot query `information_schema` from the client). This serves as a dev reference page.
 
-After reviewing all 18 tables and cross-referencing with the codebase, I identified **4 tables** that are redundant or unused:
+## Implementation
 
-### Tables to Remove
+### 1. Create `src/pages/DatabaseDocs.tsx`
+A single-page component with:
+- **Header** with title "Database Schema Documentation" and last-updated date
+- **Summary section**: table count (17), function count (11), storage buckets (2)
+- **Table list** using Accordion for each table, containing:
+  - Column table (name, type, nullable, default) using the Table component
+  - RLS policies summary (command, policy name, expression preview)
+  - Foreign keys (if any)
+- **Functions section**: collapsible list of all 11 functions with signature and purpose
+- **Storage section**: list of 2 buckets
+- Search/filter input to quickly find tables or columns
 
-| Table | Reason | Current Usage |
-|-------|--------|---------------|
-| **`contacts`** | Contact form uses edge function `send-contact-email` directly via Resend API. This table is never read or written to from any code. | Zero references in app code or edge functions |
-| **`stage_history`** | Legacy table superseded by `level_history`. The `complete_stage` RPC writes to `level_history`, not `stage_history`. Only read in `ReportsTab.tsx` and `AnalyticsTab.tsx` (can be migrated to `level_history`). | Read-only in 2 files, never written to |
-| **`user_best_scores`** | Legacy table. Never written to from app code. Only read in `useSupabaseProgress.ts` which itself is never imported anywhere. | Dead code path |
-| **`game_progress`** | Legacy table superseded by `course_progress` + `game_globals`. Still referenced in `useSupabaseProgress.ts` (unused hook), `Profile.tsx`, `StudentsTab.tsx`, and `handle_new_user()` trigger. | Partially used but redundant |
+### 2. Data source
+Define a `DB_SCHEMA` constant inside the file (or a separate `src/data/dbSchema.ts`) containing all 17 tables' metadata extracted from the current Supabase schema. This is static documentation — no runtime DB queries needed.
 
-### Tables to Keep (confirmed active)
+### 3. Add route
+Add `/db-docs` route in `App.tsx` (no auth protection — dev tool).
 
-`classes`, `comment_likes`, `comments`, `course_progress`, `daily_activity`, `game_globals`, `lessons`, `level_history`, `library_documents`, `notes`, `parental_settings`, `profiles`, `topics`, `user_achievements`, `user_lesson_progress`, `user_roles`, `user_streaks`
+### 4. UI Components Used
+- `Accordion` for collapsible table sections
+- `Table` for column listings
+- `Card` for summary stats
+- `Tabs` for Tables / Functions / Storage sections
+- `Badge` for column types and RLS commands
+- Search `Input` for filtering
 
----
-
-## Implementation Steps
-
-### 1. Migrate code references away from legacy tables
-
-**`Profile.tsx`** and **`StudentsTab.tsx`**: Replace `game_progress` reads with `game_globals` (which already has `total_xp`, `global_level`).
-
-**`ReportsTab.tsx`** and **`AnalyticsTab.tsx`**: Replace `stage_history` reads with `level_history` queries (same data structure, already the primary source of truth).
-
-### 2. Delete unused hook file
-
-Remove `src/hooks/useSupabaseProgress.ts` entirely -- it's never imported and contains all references to `game_progress`, `stage_history`, and `user_best_scores`.
-
-### 3. Update `handle_new_user()` trigger
-
-Remove the `INSERT INTO public.game_progress` line from the trigger function, since new users get `game_globals` + `course_progress` rows created on first game interaction.
-
-### 4. Drop tables via migration
-
-```sql
-DROP TABLE IF EXISTS public.contacts CASCADE;
-DROP TABLE IF EXISTS public.stage_history CASCADE;
-DROP TABLE IF EXISTS public.user_best_scores CASCADE;
-DROP TABLE IF EXISTS public.game_progress CASCADE;
-```
-
-### 5. Update `handle_new_user()` function
-
-```sql
--- Remove game_progress insert from the trigger
-CREATE OR REPLACE FUNCTION public.handle_new_user() ...
-  -- Remove: INSERT INTO public.game_progress (user_id) VALUES (new.id);
-```
-
----
-
-## Risk Assessment
-
-- **`contacts`**: Zero risk. Completely unused.
-- **`stage_history`**: Low risk. Data can be reconstructed from `level_history`. The 2 read-only references will be updated to use `level_history`.
-- **`user_best_scores`**: Zero risk. Never written to, only accessed from dead code.
-- **`game_progress`**: Low risk. All active game logic uses `course_progress` + `game_globals`. The 2 remaining reads in Profile/Admin will be updated.
+### Technical Details
+- All schema data comes from the Supabase configuration already provided in context
+- No database queries or migrations needed
+- Single new file + one route addition to App.tsx
+- Approximately 400-500 lines for the page component with embedded schema data
 
