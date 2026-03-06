@@ -661,17 +661,6 @@ export type Database = {
           total_topics: number
         }[]
       }
-      get_public_profile: {
-        Args: { profile_id: string }
-        Returns: {
-          avatar: string
-          display_name: string
-          grade: string
-          id: string
-          school: string
-        }[]
-      }
-      get_user_progress: { Args: never; Returns: Json }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -694,10 +683,6 @@ export type Database = {
           message: string
           success: boolean
         }[]
-      }
-      update_current_node: {
-        Args: { p_grade_id: string; p_node_index: number }
-        Returns: undefined
       }
       update_user_streak: { Args: { p_user_id: string }; Returns: undefined }
     }
