@@ -22,6 +22,7 @@ import Grade5Game from "./pages/Grade5Game";
 import DataPage from "./pages/data";
 import UserGuide from "./pages/UserGuide";
 import FAQ from "./pages/FAQ";
+import DatabaseDocs from "./pages/DatabaseDocs";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import StudyTimeLimitWrapper from "./components/game/StudyTimeLimitWrapper";
 import { LanguageProvider } from "./contexts/LanguageContext";
